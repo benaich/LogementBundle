@@ -1,0 +1,52 @@
+{% set route = app.request.attributes.get('_route') %} 
+
+
+{% set personMenu = ['etudiant','etudiant_elegible','etudiant_show','etudiant_new','etudiant_edit','etudiant_generate_list'] %} 
+{% set logementMenu = ['logement', 'logement_show', 'logement_new', 'logement_edit', 'block', 'block_show', 'block_new', 'block_edit', 'room', 'room_show', 'room_new', 'room_edit'] %} 
+{% set logementMenu2 = ['logement', 'logement_show', 'logement_new', 'logement_edit'] %} 
+{% set blockMenu = ['block', 'block_show', 'block_new', 'block_edit'] %} 
+{% set roomMenu = ['room', 'room_show', 'room_new', 'room_edit'] %} 
+{% set configMenu = ['config', 'university', 'etablissement', 'university_show', 'university_new', 'university_edit', 'ben_import'] %} 
+
+{% set ReservationMenu = ['reservation','reservation_show','reservation_new','reservation_edit'] %} 
+{% set universityMenu = ['university', 'university_show', 'university_new', 'university_edit'] %} 
+{% set userMenu = ['ben_users','ben_show_user','ben_new_user','ben_edit_user'] %} 
+
+
+<nav id="adminmenu">
+    <ul class="top-menu">
+        <li class="{% if route!='ben_dashboard' %}not-{% endif %}current"><a href="{{ path('ben_dashboard') }}"><span class="glyphicon glyphicon-dashboard block"></span> <span class="menu-title">Dashborad</span></a></li>
+        <li class="{% if route not in personMenu %}not-{% endif %}current has-submenu"><a href="{{ path('etudiant') }}"><span class="glyphicon glyphicon-user block"></span> <span class="menu-title">Etudiants</span></a>
+            <ul class="sub-menu">
+                <li class="submenu-head">Etudiants</li>
+                <li><a href="{{ path('etudiant', {status : 'valide'}) }}" {% if status is defined and status == 'valide' %}class="active"{% endif %}>Liste valide</a></li>
+                <li><a href="{{ path('etudiant_generate_list') }}" {% if route in ['etudiant_generate_list'] %}class="active"{% endif %} >Générer une liste</a></li>
+                <li><a href="{{ path('etudiant_elegible') }}" {% if route in ['etudiant_elegible'] %}class="active"{% endif %}>Liste éligibles</a></li>
+                <li><a href="{{ path('etudiant', {status : 'résidant'}) }}" {% if status is defined and status == 'résidant' %}class="active"{% endif %}>Liste résident</a></li>
+                <li><a href="{{ path('etudiant', {status : 'non valide'}) }}" {% if status is defined and status == 'non valide' %}class="active"{% endif %}>Etudiants rejetés</a></li>
+            </ul>
+        </li>
+        <li class="{% if route not in ReservationMenu %}not-{% endif %}current"><a href="{{ path('reservation') }}"><span class="glyphicon glyphicon-file block"></span> <span class="menu-title">Résérvation</span></a></li>
+        <li class="{% if route not in logementMenu %}not-{% endif %}current has-submenu"><a href="{{ path('logement') }}"><span class="glyphicon glyphicon-home block"></span> <span class="menu-title">Logement</span></a> <ul class="sub-menu">
+                <li class="submenu-head">Logement</li>
+                <li><a href="{{ path('logement') }}" {% if route in logementMenu2 %}class="active"{% endif %}>Logement</a></li>
+                <li><a href="{{ path('block') }}" {% if route in blockMenu %}class="active"{% endif %}>Pavillon</a></li>
+                <li><a href="{{ path('room') }}" {% if route in roomMenu %}class="active"{% endif %}>Chambre</a></li>
+            </ul>
+        </li>
+
+        {% if is_granted("ROLE_MANAGER") %}
+        <li class="{% if route not in userMenu %}not-{% endif %}current"><a href="{{ path('ben_users') }}"><span class="glyphicon glyphicon-cog block"></span> <span class="menu-title">Utilsateurs</span></a></li>
+        <li class="{% if route not in configMenu %}not-{% endif %}current has-submenu"><a href="{{ path('config') }}"><span class="glyphicon glyphicon-wrench block"></span> <span class="menu-title">Préférences</span></a>
+            <ul class="sub-menu">
+                <li class="submenu-head">Préférences</li>
+                <li><a href="{{ path('university') }}" {% if route in universityMenu %}class="active"{% endif %}>Université</a></li>
+                <li><a href="{{ path('etablissement') }}" {% if route in ['etablissement'] %}class="active"{% endif %}>Etablissement</a></li>
+                <li><a href="{{ path('ben_import') }}" {% if route in ['ben_import'] %}class="active"{% endif %}>Importer</a></li>
+            </ul>
+        </li>
+        {% endif %}
+        <li class="{% if route!='fos_user_security_logout' %}not-{% endif %}current"><a href="{{ path('fos_user_security_logout') }}"><span class="glyphicon glyphicon-off block"></span>  <span class="menu-title">Déconnexion</span></a></li>
+        <li class="not-current"><a href="#" id="trigger-shelf"><span class="glyphicon glyphicon-chevron-left block"></span>  <span class="menu-title">Collapse menu</span></a></li>
+    </ul>
+</nav>

@@ -1,0 +1,61 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<h3><span class="glyphicon glyphicon-file"></span> Liste des réservations <a class="btn btn-primary pull-right" id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer</a></h3>
+
+<table class="table table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Etudiant</th>
+            <th>Chambre</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Etat</th>
+            <th>Montant</th>
+            <th class="hide-print">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ entity.person.fullName }}</td>
+            <td>{{ entity.room.name }}</td>
+            <td>{% if entity.datefrom %}{{ entity.datefrom|date('d/m/Y') }}{% endif %}</td>
+            <td>{% if entity.dateto %}{{ entity.dateto|date('d/m/Y') }}{% endif %}</td>
+            <td>{{ entity.status }}</td>
+            <td>{{ entity.price }}</td>
+            <td class="hide-print">
+                <div class="text-center">
+                    <a class="btn btn-info btn-xs" href="{{ path('reservation_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
+                    <a class="btn btn-danger btn-xs" href="{{ path('reservation_edit', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-edit"></span></a>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+{% if entities|length > nombreParPage %}
+      <div class="text-center hide-print">
+          <ul class="pagination">
+            {% if page != 1 %}
+            <li class="previous"><a href="{{ path('reservation', { 'page': page-1 }) }}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+            {% endif %}
+            {% for p in range(1, nombrePage) %}
+            <li{% if p == page %} class="active"{% endif %}>
+              <a href="{{ path('reservation', { 'page': p }) }}" >{{ p}}</a>
+            </li>
+            {% endfor %}
+            {% if page != nombrePage %}
+              <li class="next"><a href="{{ path('reservation', { 'page': page+1 }) }}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+            {% endif %}
+          </ul>
+      </div>
+{% endif %}
+
+{% endblock body %}

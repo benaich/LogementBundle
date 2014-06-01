@@ -1,0 +1,30 @@
+config:
+    pattern:  /
+    defaults: { _controller: "BenLogementBundle:Config:index" }
+
+config_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "BenLogementBundle:Config:show" }
+
+config_new:
+    pattern:  /new
+    defaults: { _controller: "BenLogementBundle:Config:new" }
+
+config_create:
+    pattern:  /create
+    defaults: { _controller: "BenLogementBundle:Config:create" }
+    requirements: { _method: post }
+
+config_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "BenLogementBundle:Config:edit" }
+
+config_update:
+    pattern:  /update
+    defaults: { _controller: "BenLogementBundle:Config:update" }
+    requirements: { _method: post }
+
+config_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "BenLogementBundle:Config:delete" }
+    requirements: { _method: post }

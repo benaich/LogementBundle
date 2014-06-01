@@ -1,0 +1,20 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<div class="col-md-12"><h3><span class="glyphicon glyphicon-import"></span> Importer</h3></div>
+
+<form class="form-horizontal" action="{{ path('ben_import') }}" method="POST" role="form" {{ form_enctype(form) }}>
+   
+  {{ form_row(form.file, { 'label': ' '}) }}
+  
+          {{ form_rest(form) }}
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-sm-4">
+        <button type="submit" name="subvalider" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Upload</button>
+      </div>
+    </div>
+</form>
+        
+{% endblock body %}

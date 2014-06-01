@@ -1,0 +1,56 @@
+    
+    <div class="form-group ">
+        <label class="col-md-4 control-label" for="Person">Etudiant</label>
+        <div class="col-md-4">
+            <input class="form-control" class="disabled" disabled id="Person" type="text" value="{{ form.vars.value.person.fullname }}">
+        </div>
+    </div>
+    {{ form_row(form.date_from, { 'label': 'Date début'}) }}
+    {{ form_row(form.date_to, { 'label': 'Date fin'}) }}
+    {{ form_row(form.price, { 'label': 'Montant'}) }}
+    {{ form_row(form.person) }}
+    {{ form_row(form.room) }}
+
+    <div class="form-group ">
+        <label class="col-md-4 control-label" for="js-block">Pavillon</label>
+        <div class="col-md-4">
+            <input class="form-control" class="disabled" disabled id="js-block" type="text" value="{% if form.vars.value.room.block.name is defined %}{{ form.vars.value.room.block.name }}{% endif %}">
+        </div>
+    </div>
+    <div class="form-group ">
+        <label class="col-md-4 control-label" for="js-room">Chambre</label>
+        <div class="col-md-3">
+            <input class="form-control" class="disabled" disabled id="js-room" type="text" value="{% if form.vars.value.room.name is defined %}{{ form.vars.value.room.name }}{% endif %}">
+        </div>
+        <a id="js-submit" href="#" class="btn btn-primary col-md-1"  data-toggle="modal" data-target="#infoModal"><span class="glyphicon glyphicon-search"></span></a>
+    </div>
+ {{ form_rest(form) }}
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="infoModalLabel">Liste des chambres libre</h4>
+      </div>
+      <div class="modal-body">
+      <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Chambre</th>
+                <th>Etage</th>
+                <th>Pavillon</th>
+                <th>Type</th>
+                <th>Capacité</th>
+                <th>Libre</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataContainer">{% render "BenLogementBundle:Room:freeRooms" with { id: form.vars.value.person.id } %}</tbody>
+    </table>
+      
+      </div>
+    </div>
+  </div>
+</div>

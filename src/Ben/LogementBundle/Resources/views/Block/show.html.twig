@@ -1,0 +1,51 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<div class="col-md-12"><h3>Pavillon {{ entity.name }}</h3></div>
+
+<div class="col-md-9">
+    <table class="table table-bordered">
+        <tr>
+            <th class="col-md-2">Nom du pavillon</th>
+            <td>{{ entity.name }}</td>
+        </tr>
+        <tr>
+            <th>Nombre d'étages</th>
+            <td>{{ entity.floors }}</td>
+        </tr>
+        <tr>
+            <th>Type</th>
+            <td>{{ entity.type }}</td>
+        </tr>
+        <tr>
+            <th>Cité</th>
+            <td>{{ entity.logement.name }}</td>
+        </tr>
+        <tr>
+            <th>Nombre de chambre</th>
+            <td>{{ entity.rooms|length }}</td>
+        </tr>
+        <tr class="hide-print">
+            <th>Listes des chambres</th>
+            <td class="room-widget">
+                {% for item in entity.rooms %}
+                    <div class="col-md-2"><a href="{{ path('room_show', { 'id': item.id }) }}" class="btn btn-{% if item.isFree %}success{% else %}default{% endif %} btn-block">{{ item.name }}</a></div>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-md-3">
+    <form action="{{ path('block_delete', { 'id': entity.id }) }}" method="post" class="">
+    {{ form_widget(delete_form) }}
+    <a id="submitEditForm" class="btn btn-primary btn-block" href="{{ path('block_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
+    <a class="btn btn-primary btn-block " href="{{ path('block') }}"> Back to the list</a>
+    <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
+    <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
+    </form>
+</div>
+
+{% endblock body %}

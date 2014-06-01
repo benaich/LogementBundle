@@ -1,0 +1,56 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<div class="col-md-12"><h3>Réservation #{{ entity.id }}</h3></div>
+
+<div class="col-md-9">
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Etudiant</th>
+                <td>{{ entity.person.fullName }}</td>
+            </tr>
+            <tr>
+                <th>Chambre</th>
+                <td>{{ entity.room.name }}</td>
+            </tr>
+            <tr>
+                <th>Pavillon</th>
+                <td>{{ entity.room.block.name }}</td>
+            </tr>
+            <tr>
+                <th>Cité</th>
+                <td>{{ entity.room.block.logement.name }}</td>
+            </tr>
+            <tr>
+                <th>Date début</th>
+                <td>{{ entity.datefrom|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Date fin</th>
+                <td>{{ entity.dateto|date('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ entity.status }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ entity.price }} DH</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="col-md-3">
+    <form action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post" class="">
+        {{ form_widget(delete_form) }}
+        <a class="btn btn-primary btn-block" href="{{ path('reservation_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
+        <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
+        <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
+    </form>
+</div>
+
+{% endblock body %}

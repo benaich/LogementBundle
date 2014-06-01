@@ -1,0 +1,36 @@
+university:
+    pattern:  /u/{type}
+    defaults: { _controller: "BenLogementBundle:University:index", type: university}
+etablissement:
+    pattern:  /e/{type}
+    defaults: { _controller: "BenLogementBundle:University:index", type: etablissement}
+university_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "BenLogementBundle:University:show" }
+
+university_json:
+    pattern:  /json/{id}
+    defaults: { _controller: "BenLogementBundle:University:jsonList" }
+
+university_new:
+    pattern:  /new/{type}
+    defaults: { _controller: "BenLogementBundle:University:new", type: university}
+
+university_create:
+    pattern:  /create/{type}
+    defaults: { _controller: "BenLogementBundle:University:create", type: university}
+    requirements: { _method: post }
+
+university_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "BenLogementBundle:University:edit" }
+
+university_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "BenLogementBundle:University:update" }
+    requirements: { _method: post }
+
+university_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "BenLogementBundle:University:delete" }
+    requirements: { _method: post }

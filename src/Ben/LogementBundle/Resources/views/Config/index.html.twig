@@ -1,0 +1,146 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<h3><span class="glyphicon glyphicon-cog"></span> Préférences</h3>
+<form class="form-horizontal" action="{{ path('config_update')}}" method="POST" enctype="multipart/form-data">        
+    <div class="tabbable">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#tab1" data-toggle="tab"><span class="glyphicon glyphicon-list-bulleted"></span> Général</a></li>
+          <li><a href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-twitter"></span> Réseaux sociaux</a></li>
+          <li><a href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-gear"></span> Paramètres</a></li>
+        </ul> <!-- /tabs -->
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab1">
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Logo</label>
+          <div class="col-sm-4">
+            <img class="myavatar col-md-4" src="{{ asset( app_config.app_logo )}}">
+          </div>
+        </div>              
+        {{ form_row(imgform.file, { 'label': ' '}) }}
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Nom de l'application</label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_name]" value="{{app_config.app_name}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Description</label>
+          <div class="col-sm-4">
+            <textarea rows="3" name="config[app_description]" placeholder="ajouter une description..." class="form-control">{{app_config.app_description}}</textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Adresse</label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_address]" value="{{app_config.app_address}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Code Postal</label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_cp]" value="{{app_config.app_cp}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Ville</label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_city]" value="{{app_config.app_city}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Tél </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_tel]" value="{{app_config.app_tel}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">GSM </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_gsm]" value="{{app_config.app_gsm}}" class="form-control">
+          </div>
+        </div>
+      </div><!-- /tab1 -->
+        <div class="tab-pane" id="tab2">
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Adresse email </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_email]" value="{{app_config.app_email}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Site Web </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_website]" value="{{app_config.app_website}}" class="form-control">
+          </div>
+        </div>
+        </div><!-- /tab2 -->
+        <div class="tab-pane" id="tab3">
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Latitude </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_map_lat]" value="{{app_config.app_map_lat}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Longuitude </label>
+          <div class="col-sm-4">
+            <input type="text" name="config[app_map_lng]" value="{{app_config.app_map_lng}}" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Langue par défaut </label>
+          <div class="col-sm-4">
+            <select name="config[app_lang]" value="{{app_config.app_lang}}" class="input-sm info">
+                  <option {% if app_config.app_lang =="fr_FR" %}selected="selected"{% endif %} value="fr_FR" selected="selected">Français</option>
+                  <option {% if app_config.app_lang =="en_US" %}selected="selected"{% endif %} value="en_US" >English</option>
+              </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Lignes / Page </label>
+          <div class="col-sm-4">
+            <select name="config[rows_per_page]" class="input-sm info">
+                  <option {% if app_config.rows_per_page =="10" %}selected="selected"{% endif %} value="10">10</option>
+                  <option {% if app_config.rows_per_page =="50" %}selected="selected"{% endif %} value="50">50</option>
+                  <option {% if app_config.rows_per_page =="100" %}selected="selected"{% endif %} value="100">100</option>
+                  <option {% if app_config.rows_per_page =="200" %}selected="selected"{% endif %} value="200">200</option>
+              </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Logement par defaut </label>
+          <div class="col-sm-4">
+            <select name="config[defaut_logement]" class="input-sm info">
+            {% for entity in logements %}
+               <option {% if app_config.defaut_logement == entity.id %}selected="selected"{% endif %} value="{{entity.id}}">{{entity.name}}</option>
+            {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Style CSS </label>
+          <div class="col-sm-4">
+            <textarea rows="3" name="config[app_css]" placeholder="ajouter une description..." class="form-control">{{app_config.app_css}}</textarea>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="" class="col-sm-4 control-label">Permettre aux etudiants de s'inscrire ? </label>
+          <div class="col-sm-4">
+            <input type="checkbox" name="config[allow_registration]" {% if app_config.allow_registration %}checked="checked"{% endif %} data-toggle="switch" />
+          </div>
+        </div>
+        </div><!-- /tab3 -->
+    </div> <!-- /tab-content -->
+   </div>
+       <div class="form-group">
+         <div class="col-sm-offset-4 col-sm-4">
+           <button type="submit" name="subvalider" class="btn btn-primary btn-embossed"><span class="fui-check-inverted"></span> Mettre à jour</button>
+         </div>
+       </div>
+</form>
+   
+{% endblock body %}

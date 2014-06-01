@@ -1,0 +1,56 @@
+room:
+    pattern:  /
+    defaults: { _controller: "BenLogementBundle:Room:index" }
+
+room_ajax:
+    pattern:  /ajaxlist
+    defaults: { _controller: "BenLogementBundle:Room:ajaxList" }
+    requirements: { _method: post }
+
+room_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "BenLogementBundle:Room:show" }
+
+room_free_list:
+    pattern:  /freeRooms/{id}
+    defaults: { _controller: "BenLogementBundle:Room:freeRooms" }
+
+room_new:
+    pattern:  /new
+    defaults: { _controller: "BenLogementBundle:Room:new" }
+
+room_create:
+    pattern:  /create
+    defaults: { _controller: "BenLogementBundle:Room:create" }
+    requirements: { _method: post }
+
+room_new_multiple:
+    pattern:  /new_multiple
+    defaults: { _controller: "BenLogementBundle:Room:newMultiple" }
+
+room_create_multiple:
+    pattern:  /room_create_multiple
+    defaults: { _controller: "BenLogementBundle:Room:createMultiple" }
+    requirements: { _method: post }
+room_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "BenLogementBundle:Room:edit" }
+
+room_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "BenLogementBundle:Room:update" }
+    requirements: { _method: post }
+
+room_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "BenLogementBundle:Room:delete" }
+    requirements: { _method: post }
+
+room_switch:
+    pattern:  /switch
+    defaults: { _controller: "BenLogementBundle:Room:switch" }
+    requirements: { _method: post }
+
+room_set_free:
+    pattern:  /{id}/setFree
+    defaults: { _controller: "BenLogementBundle:Room:setFree" }

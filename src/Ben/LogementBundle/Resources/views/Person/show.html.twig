@@ -1,0 +1,117 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+
+<div class="col-md-12">
+<div class="btn-group pull-right" style="margin-top: 15px;">              
+  <button class="btn btn-primary "><span class="glyphicon glyphicon-cog"></span> Action</button>
+  <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" role="menu">
+    <li><a href="{{ path('etudiant_edit', { 'id': entity.id, 'type': entity.type }) }}"><span class="glyphicon glyphicon-edit"></span> modifier</a></li>
+    {% if entity.status in [person.elegible, person.valide] and entity.status in [person.old, person.foreign] %}
+    <li><a href="{{ path('reservation_new', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-check"></span> Réserver une chambre</a></li>
+    {% endif %}
+    <li class="divider"></li>
+    <li><a id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer</a></li>
+    <li><a href="#" id="js-delete"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></li>
+  </ul>
+</div>
+<h3><span class="glyphicon glyphicon-user"></span> Etudiant{{ entity.gender == 'Fille' ? 'e' }}: {{ entity.fullName }}</h3>
+
+</div>
+<div class="col-md-4">
+    <div class="box">
+      <header>
+          <h4><span class="glyphicon glyphicon-file"></span> Informations générale</h4>
+      </header>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Nom :</strong> {{ entity.fullName }}
+          <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
+          </li>
+          <li class="list-group-item"><strong>Preom :</strong>  {{ entity.firstname }} 
+          <span class="pull-right text-right">{{ entity.firstnamear }} </span>
+          </li>
+          <li class="list-group-item"><strong>CIN :</strong> {{ entity.cin }}</li>
+          <li class="list-group-item"><strong>CNE :</strong> {{ entity.cne }}</li>
+          <li class="list-group-item"><strong>Sexe :</strong> {{ entity.gender }}</li>
+          <li class="list-group-item"><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
+          <li class="list-group-item"><strong>Université :</strong> {{ entity.etablissement.parent }}</li>
+          <li class="list-group-item"><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
+          <li class="list-group-item"><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
+          <li class="list-group-item"><strong>Note du Baccalauréat :</strong> {{ entity.exellence }}</li>
+          <li class="list-group-item"><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
+        </ul>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="box">
+      <header>
+          <h4><span class="glyphicon glyphicon-pushpin"></span> Informations de contact</h4>
+      </header>
+      <ul class="list-group">
+          <li class="list-group-item"><strong>Adresse :</strong> {{ entity.address }}</li>
+          <li class="list-group-item"><strong>Province :</strong> {{ entity.city }}</li>
+          <li class="list-group-item"><strong>Pay :</strong> {{ entity.contry }}</li>
+          <li class="list-group-item"><strong>Tél :</strong> {{ entity.tel }}</li>
+          {% if entity.type == person.foreign %}
+          <li class="list-group-item"><strong>Passeport :</strong> {{ entity.passport }}</li>
+          <li class="list-group-item"><strong>Carte de séjour :</strong> {{ entity.carteSejour }}</li>
+          {% endif %}
+          <li class="list-group-item"><strong>adresse email :</strong> <a href="mailto:{{ entity.email }}">{{ entity.email }}</a></li>
+      </ul>
+    </div>
+</div>
+<div class="col-md-4">
+    <div class="box">
+        <header>
+            <h4><span class="glyphicon glyphicon-home"></span> Informations de logement</h4>
+        </header>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
+          <li class="list-group-item"><strong>Note de logement :</strong> {{ entity.note }}</li>
+        {% if entity.hasReservation %}
+        {% set reservation = entity.reservations|last %}
+          <li class="list-group-item"><strong>Date début :</strong> {{ reservation.dateFrom|date('d/m/Y') }}  </li>
+          <li class="list-group-item"><strong>Date fin :</strong> {{ reservation.dateTo|date('d/m/Y') }} </li>
+          <li class="list-group-item"><strong>Numero de chambre :</strong> {{ reservation.room.name }} </li>
+          <li class="list-group-item"><strong>Numero de pavé :</strong> {{ reservation.room.block.name }} </li>
+          <li class="list-group-item"><strong>Date de payement :</strong> {{ reservation.datePayement|date('d/m/Y') }}  </li>
+          <li class="list-group-item"><strong>Montant :</strong> {{ reservation.price }} DH </li>
+        </ul>
+        {% endif %}
+    </div>   
+    <div class="box">
+        <header>
+            <h4><span class="glyphicon glyphicon-tag"></span> Autres Informations</h4>
+        </header>
+        <ul class="list-group">
+          <li class="list-group-item"><strong>Revenu des parents :</strong> {{ entity.parentsrevenu }} DH </li>
+          <li class="list-group-item"><strong>Nombre de frères et soeurs :</strong> {{ entity.brosisnumber }} </li>
+          {% if entity.type == person.special %}<li class="list-group-item"><strong>Comportement :</strong> {{ entity.conditionSpecial }}</li>{% endif %}
+          <li class="list-group-item"><strong>Etat :</strong> {{ entity.status }}</li>
+          <li class="list-group-item"><strong>Type :</strong> {{ entity.type }}</li>
+          <li class="list-group-item"><strong>Remarque :</strong> {{ entity.remarque }} </li>
+        </ul>
+    </div>          
+</div>
+
+<form id="deleteForm" action="{{ path('etudiant_delete', { 'id': entity.id }) }}" method="post" class="">
+    {{ form_widget(delete_form) }}
+</form>  
+{% endblock body %}
+{% block javascripts %}
+{{ parent() }}
+<script> 
+    (function($) {
+
+        $('#js-delete').on('click', function(){
+            $('#deleteForm').submit();
+            return false;
+        });
+    })(jQuery);
+</script>
+{% endblock %}

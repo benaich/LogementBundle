@@ -1,0 +1,878 @@
+<?php
+
+namespace Ben\LogementBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * Person
+ *
+ * @ORM\Table()
+ * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\PersonRepository")
+ */
+class Person
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var string $family_name
+     *
+     * @ORM\Column(name="family_name", type="string", length=255, nullable=true)
+     */
+    private $family_name;
+
+    /**
+     * @var string $first_name
+     *
+     * @ORM\Column(name="first_name", type="string", length=255, nullable=true)
+     */
+    private $first_name;
+    
+    /**
+     * @var string $email
+     *
+     * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     */
+    private $email;
+
+    /**
+     * @var string $cin
+     *
+     * @ORM\Column(name="cin", type="string", length=255, nullable=true)
+     */
+    private $cin;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="cne", type="string", length=255)
+     */
+    private $cne;
+
+    /**
+     * @var \DateTime $bird_day
+     *
+     * @ORM\Column(name="bird_day", type="date")
+     */
+    private $bird_day;
+
+    /**
+     * @var string $gender
+     *
+     * @ORM\Column(name="gender", type="string", length=255, nullable=true)
+     */
+    private $gender;
+
+    /**
+     * @var string $address
+     *
+     * @ORM\Column(name="address", type="string", length=255, nullable=true)
+     */
+    private $address;
+
+    /**
+     * @var string $city
+     *
+     * @ORM\Column(name="city", type="string", length=255, nullable=true)
+     */
+    private $city;
+
+    /**
+     * @var string $contry
+     *
+     * @ORM\Column(name="contry", type="string", length=255, nullable=true)
+     */
+    private $contry;
+    
+    /**
+     * @var string $tel
+     *
+     * @ORM\Column(name="tel", type="string", length=255, nullable=true)
+     */
+    private $tel;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="parents_revenu", type="float")
+     */
+    private $parents_revenu;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="bro_sis_number", type="integer")
+     */
+    private $bro_sis_number;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="n_dossier", type="integer")
+     */
+    private $n_dossier;
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(name="distance", type="float")
+     */
+    private $distance;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="condition_special", type="boolean", length=255)
+     */
+    private $condition_special;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ancientete", type="string", length=255)
+     */
+    private $ancientete;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="niveau_etude", type="integer")
+     */
+    private $niveau_etude;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="diplome", type="string", length=255)
+     */
+    private $diplome;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="remarque", type="text")
+     */
+    private $remarque;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="passport", type="string", length=255)
+     */
+    private $passport;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="carte_sejour", type="string", length=255)
+     */
+    private $carte_sejour;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", length=255)
+     */
+    private $status;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="exellence", type="string", length=255)
+     */
+    private $exellence;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="note", type="string", length=255)
+     */
+    private $note;
+
+    /**
+    * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\Reservation", mappedBy="user", cascade={"remove", "persist"})
+    */
+    protected $reservations;
+    
+    /**
+    * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\Logement",inversedBy="blocks")
+    * @ORM\JoinColumn(name="logement_id",referencedColumnName="id", nullable=false)
+    * @Assert\Valid()
+    */
+    private $logement;
+    
+    /**
+    * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\University", inversedBy="children")
+    * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+    */
+    protected $etablissement;
+    
+    /************ Le constructeur ************/
+    
+    public function __construct()
+    {
+        $this->bird_day =  new \DateTime;
+        $this->reservations = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /************ Les setters et getters ************/
+
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set cne
+     *
+     * @param string $cne
+     * @return Person
+     */
+    public function setCne($cne)
+    {
+        $this->cne = $cne;
+    
+        return $this;
+    }
+
+    /**
+     * Get cne
+     *
+     * @return string 
+     */
+    public function getCne()
+    {
+        return $this->cne;
+    }
+
+    /**
+     * Set parents_revenu
+     *
+     * @param float $parentsRevenu
+     * @return Person
+     */
+    public function setParentsRevenu($parentsRevenu)
+    {
+        $this->parents_revenu = $parentsRevenu;
+    
+        return $this;
+    }
+
+    /**
+     * Get parents_revenu
+     *
+     * @return float 
+     */
+    public function getParentsRevenu()
+    {
+        return $this->parents_revenu;
+    }
+
+    /**
+     * Set bro_sis_number
+     *
+     * @param integer $broSisNumber
+     * @return Person
+     */
+    public function setBroSisNumber($broSisNumber)
+    {
+        $this->bro_sis_number = $broSisNumber;
+    
+        return $this;
+    }
+
+    /**
+     * Get bro_sis_number
+     *
+     * @return integer 
+     */
+    public function getBroSisNumber()
+    {
+        return $this->bro_sis_number;
+    }
+
+    /**
+     * Set niveau_etude
+     *
+     * @param integer $niveauEtude
+     * @return Person
+     */
+    public function setNiveauEtude($niveauEtude)
+    {
+        $this->niveau_etude = $niveauEtude;
+    
+        return $this;
+    }
+
+    /**
+     * Get niveau_etude
+     *
+     * @return integer 
+     */
+    public function getNiveauEtude()
+    {
+        return $this->niveau_etude;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     * @return Person
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string 
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set n_dossier
+     *
+     * @param integer $nDossier
+     * @return Person
+     */
+    public function setNDossier($nDossier)
+    {
+        $this->n_dossier = $nDossier;
+    
+        return $this;
+    }
+
+    /**
+     * Get n_dossier
+     *
+     * @return integer 
+     */
+    public function getNDossier()
+    {
+        return $this->n_dossier;
+    }
+
+    /**
+     * Set distance
+     *
+     * @param float $distance
+     * @return Person
+     */
+    public function setDistance($distance)
+    {
+        $this->distance = $distance;
+    
+        return $this;
+    }
+
+    /**
+     * Get distance
+     *
+     * @return float 
+     */
+    public function getDistance()
+    {
+        return $this->distance;
+    }
+
+    /**
+     * Set condition_special
+     *
+     * @param string $conditionSpecial
+     * @return Person
+     */
+    public function setConditionSpecial($conditionSpecial)
+    {
+        $this->condition_special = $conditionSpecial;
+    
+        return $this;
+    }
+
+    /**
+     * Get condition_special
+     *
+     * @return boolean 
+     */
+    public function getConditionSpecial()
+    {
+        return $this->condition_special;
+    }
+
+    /**
+     * Set ancientete
+     *
+     * @param string $ancientete
+     * @return Person
+     */
+    public function setAncientete($ancientete)
+    {
+        $this->ancientete = $ancientete;
+    
+        return $this;
+    }
+
+    /**
+     * Get ancientete
+     *
+     * @return string 
+     */
+    public function getAncientete()
+    {
+        return $this->ancientete;
+    }
+
+    /**
+     * Set diplome
+     *
+     * @param string $diplome
+     * @return Person
+     */
+    public function setDiplome($diplome)
+    {
+        $this->diplome = $diplome;
+    
+        return $this;
+    }
+
+    /**
+     * Get diplome
+     *
+     * @return string 
+     */
+    public function getDiplome()
+    {
+        return $this->diplome;
+    }
+
+    /**
+     * Set remarque
+     *
+     * @param string $remarque
+     * @return Person
+     */
+    public function setRemarque($remarque)
+    {
+        $this->remarque = $remarque;
+    
+        return $this;
+    }
+
+    /**
+     * Get remarque
+     *
+     * @return string 
+     */
+    public function getRemarque()
+    {
+        return $this->remarque;
+    }
+
+    /**
+     * Set passport
+     *
+     * @param string $passport
+     * @return Person
+     */
+    public function setPassport($passport)
+    {
+        $this->passport = $passport;
+    
+        return $this;
+    }
+
+    /**
+     * Get passport
+     *
+     * @return string 
+     */
+    public function getPassport()
+    {
+        return $this->passport;
+    }
+
+    /**
+     * Set carte_sejour
+     *
+     * @param string $carteSejour
+     * @return Person
+     */
+    public function setCarteSejour($carteSejour)
+    {
+        $this->carte_sejour = $carteSejour;
+    
+        return $this;
+    }
+
+    /**
+     * Get carte_sejour
+     *
+     * @return string 
+     */
+    public function getCarteSejour()
+    {
+        return $this->carte_sejour;
+    }
+
+    /**
+     * Set exellence
+     *
+     * @param string $exellence
+     * @return Person
+     */
+    public function setExellence($exellence)
+    {
+        $this->exellence = $exellence;
+    
+        return $this;
+    }
+
+    /**
+     * Get exellence
+     *
+     * @return string 
+     */
+    public function getExellence()
+    {
+        return $this->exellence;
+    }
+
+    /**
+     * Set family_name
+     *
+     * @param string $familyName
+     * @return Person
+     */
+    public function setFamilyName($familyName)
+    {
+        $this->family_name = $familyName;
+    
+        return $this;
+    }
+
+    /**
+     * Get family_name
+     *
+     * @return string 
+     */
+    public function getFamilyName()
+    {
+        return $this->family_name;
+    }
+
+    /**
+     * Set first_name
+     *
+     * @param string $firstName
+     * @return Person
+     */
+    public function setFirstName($firstName)
+    {
+        $this->first_name = $firstName;
+    
+        return $this;
+    }
+
+    /**
+     * Get first_name
+     *
+     * @return string 
+     */
+    public function getFirstName()
+    {
+        return $this->first_name;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Person
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set cin
+     *
+     * @param string $cin
+     * @return Person
+     */
+    public function setCin($cin)
+    {
+        $this->cin = $cin;
+    
+        return $this;
+    }
+
+    /**
+     * Get cin
+     *
+     * @return string 
+     */
+    public function getCin()
+    {
+        return $this->cin;
+    }
+
+    /**
+     * Set bird_day
+     *
+     * @param \DateTime $birdDay
+     * @return Person
+     */
+    public function setBirdDay($birdDay)
+    {
+        $this->bird_day = $birdDay;
+    
+        return $this;
+    }
+
+    /**
+     * Get bird_day
+     *
+     * @return \DateTime 
+     */
+    public function getBirdDay()
+    {
+        return $this->bird_day;
+    }
+
+    /**
+     * Set gender
+     *
+     * @param string $gender
+     * @return Person
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
+    
+        return $this;
+    }
+
+    /**
+     * Get gender
+     *
+     * @return string 
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     * @return Person
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string 
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set city
+     *
+     * @param string $city
+     * @return Person
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+    
+        return $this;
+    }
+
+    /**
+     * Get city
+     *
+     * @return string 
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * Set contry
+     *
+     * @param string $contry
+     * @return Person
+     */
+    public function setContry($contry)
+    {
+        $this->contry = $contry;
+    
+        return $this;
+    }
+
+    /**
+     * Get contry
+     *
+     * @return string 
+     */
+    public function getContry()
+    {
+        return $this->contry;
+    }
+
+    /**
+     * Set tel
+     *
+     * @param string $tel
+     * @return Person
+     */
+    public function setTel($tel)
+    {
+        $this->tel = $tel;
+    
+        return $this;
+    }
+
+    /**
+     * Get tel
+     *
+     * @return string 
+     */
+    public function getTel()
+    {
+        return $this->tel;
+    }
+
+    /**
+     * Set note
+     *
+     * @param string $note
+     * @return Person
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+    
+        return $this;
+    }
+
+    /**
+     * Get note
+     *
+     * @return string 
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * Add reservation
+     *
+     * @param Ben\LogementBundle\Entity\Reservation $reservation
+     * @return reservations
+     */
+    public function addReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
+    {
+        $this->reservations[] = $reservation;
+        $reservation->setUser($this);
+    
+        return $this;
+    }
+
+    /**
+     * Remove reservations
+     *
+     * @param Ben\LogementBundle\Entity\Reservation $reservations
+     */
+    public function removeReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
+    {
+        $this->reservations->removeElement($reservation);
+    }
+
+    /**
+     * Get reservations
+     *
+     * @return Doctrine\Common\Collections\Collection 
+     */
+    public function getReservations()
+    {
+        return $this->reservations;
+    }  
+
+    /**
+     * already has a reservation
+     */
+    public function hasReservation()
+    {
+        return false;
+        // return ($this->reservations->lastEelement()->status === 'valide') ;
+    }
+
+    /**
+     * Set logement
+     *
+     * @param \Ben\LogementBundle\Entity\Logement $logement
+     * @return Block
+     */
+    public function setLogement(\Ben\LogementBundle\Entity\Logement $logement)
+    {
+        $this->logement = $logement;
+    
+        return $this;
+    }
+
+    /**
+     * Get logement
+     *
+     * @return \Ben\LogementBundle\Entity\Logement 
+     */
+    public function getLogement()
+    {
+        return $this->logement;
+    }
+}

@@ -1,0 +1,55 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<h3>modification d'une réservation</h3>
+
+<form class="form-horizontal" action="{{ path('reservation_update', { 'id': entity.id }) }}" method="post" {{ form_enctype(form) }}>
+
+<div class="col-md-10">
+  {% include "BenLogementBundle:Reservation:form.html.twig" %}
+</div>
+
+<div class="col-md-2">
+        <a id="js-submit" href="#" class="btn btn-primary btn-block"  data-toggle="modal" data-target="#infoModal">Liste des chambre</a>
+        <button type="submit" class="btn btn-primary btn-block"> Mettre à jour</button>
+        <a class="btn btn-primary btn-block " href="{{ path('reservation') }}"> Retourner</a>
+        <button id="js-delete" class="btn btn-danger btn-block"> Supprimer</button>
+</div>
+</form>
+
+
+
+<form id="deleteForm" action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post">
+    {{ form_widget(delete_form) }}
+</form>
+
+{% endblock body %}
+{% block javascripts %}
+{{ parent() }}
+<script> 
+(function($) {
+
+    var roomInput = $('#reservationtype_room'),
+        jsroom = $('#js-room'),
+        jsblock = $('#js-block'),
+        closeBtn = $('#infoModal').find('.close');
+
+    roomInput.closest('.form-group').hide().prev().hide();   
+    $('#js-delete').on('click', function(){
+            $('#deleteForm').submit();
+            return false;
+        });
+    $('#dataContainer').on('click', '.js-check', function(){
+      var id = $(this).data('id'),
+          data = $(this).closest('tr').find('td');
+      roomInput.val(id);
+      jsroom.val(data[0].innerHTML);
+      jsblock.val(data[2].innerHTML);
+      closeBtn.trigger('click');
+    });
+
+})(jQuery);
+</script>
+{% endblock %}

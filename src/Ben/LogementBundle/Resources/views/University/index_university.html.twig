@@ -1,0 +1,39 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<h3>Liste des universités
+
+<div class="pull-right">
+    <a href="{{ path('university_new') }}" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Univérsité </a>
+</div>
+</h3>
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Univérsité</th>
+            <th class="hide-print">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for entity in entities %}
+        <tr>
+            <td>{{ loop.index }}</a></td>
+            <td>{{ entity.name }}</td>
+            <td class="hide-print">
+                <div class="text-center">
+                    <a class="btn btn-info btn-xs" href="{{ path('university_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
+                    <a class="btn btn-danger btn-xs" href="{{ path('university_edit', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-edit"></span></a>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock body %}

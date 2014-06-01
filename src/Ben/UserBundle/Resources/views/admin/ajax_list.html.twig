@@ -1,0 +1,19 @@
+{% for entity in entities %}
+  <tr>
+    <td><input type="checkbox" name="users[]" value="{{ entity.id }}"></td>
+    <td>
+        <img class="img40" src="{{ asset( entity.image.getwebpath)}}"/>
+        <em> {{ entity.username }} {{ entity.enabled }}</em>
+    </td>
+    <td>{{ entity.fullName }}</td>
+    <td>{{ entity.email }}</td>
+    <td>{{ entity.tel }}</td>
+    <td>{% if entity.logement %}{{ entity.logement.name }}{% endif %}</td>
+    <td>{{ entity.role}}</td>
+    <td class="hide-print">
+        <a class="btn " href="{{ path('ben_edit_user', {id: entity.id }) }}"><span class="glyphicon glyphicon-edit"></span> modifier</a>
+    </td>
+  </tr>
+{% endfor %}
+                
+{% include "BenLogementBundle:Default:pagination.html.twig" %}

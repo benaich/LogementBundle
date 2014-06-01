@@ -1,0 +1,14 @@
+parameters:
+#    ben_logement.example.class: Ben\LogementBundle\Example
+
+services:
+    ben.twig.time_ago:
+        class: Ben\LogementBundle\Twig\TimeAgoExtension
+        arguments: ["@translator"]
+        tags:
+        - { name: twig.extension }
+    ben.twig.extension.config:
+        class: Ben\LogementBundle\Twig\ConfigExtension
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+        - { name: twig.extension }

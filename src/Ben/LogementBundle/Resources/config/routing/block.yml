@@ -1,0 +1,30 @@
+block:
+    pattern:  /
+    defaults: { _controller: "BenLogementBundle:Block:index" }
+
+block_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "BenLogementBundle:Block:show" }
+
+block_new:
+    pattern:  /new
+    defaults: { _controller: "BenLogementBundle:Block:new" }
+
+block_create:
+    pattern:  /create
+    defaults: { _controller: "BenLogementBundle:Block:create" }
+    requirements: { _method: post }
+
+block_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "BenLogementBundle:Block:edit" }
+
+block_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "BenLogementBundle:Block:update" }
+    requirements: { _method: post }
+
+block_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "BenLogementBundle:Block:delete" }
+    requirements: { _method: post }

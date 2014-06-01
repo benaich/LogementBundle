@@ -1,0 +1,30 @@
+BenLogementBundle_default:
+    resource: "@BenLogementBundle/Resources/config/routing/default.yml"
+
+BenLogementBundle_etudiant:
+    resource: "@BenLogementBundle/Resources/config/routing/person.yml"
+    prefix:   /etudiant
+
+BenLogementBundle_room:
+    resource: "@BenLogementBundle/Resources/config/routing/room.yml"
+    prefix:   /room
+
+BenLogementBundle_block:
+    resource: "@BenLogementBundle/Resources/config/routing/block.yml"
+    prefix:   /block
+
+BenLogementBundle_logement:
+    resource: "@BenLogementBundle/Resources/config/routing/logement.yml"
+    prefix:   /logement
+
+BenLogementBundle_reservation:
+    resource: "@BenLogementBundle/Resources/config/routing/reservation.yml"
+    prefix:   /reservation
+
+BenLogementBundle_university:
+    resource: "@BenLogementBundle/Resources/config/routing/university.yml"
+    prefix:   /university
+
+BenLogementBundle_config:
+    resource: "@BenLogementBundle/Resources/config/routing/config.yml"
+    prefix:   /config

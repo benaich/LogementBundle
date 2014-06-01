@@ -1,0 +1,8 @@
+ben_dashboard:
+    pattern:  /
+    defaults: { _controller: BenLogementBundle:Default:index }
+
+ben_import:
+    pattern:  /import
+    defaults: { _controller: BenLogementBundle:Default:import }
+

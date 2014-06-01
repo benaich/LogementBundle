@@ -1,0 +1,30 @@
+reservation:
+    pattern:  /page/{page}-{perPage}
+    defaults: { _controller: "BenLogementBundle:Reservation:index", page:1,  perPage:100}
+
+reservation_show:
+    pattern:  /{id}/show
+    defaults: { _controller: "BenLogementBundle:Reservation:show" }
+
+reservation_new:
+    pattern:  /new/{id}
+    defaults: { _controller: "BenLogementBundle:Reservation:new" }
+
+reservation_create:
+    pattern:  /create
+    defaults: { _controller: "BenLogementBundle:Reservation:create" }
+    requirements: { _method: post }
+
+reservation_edit:
+    pattern:  /{id}/edit
+    defaults: { _controller: "BenLogementBundle:Reservation:edit" }
+
+reservation_update:
+    pattern:  /{id}/update
+    defaults: { _controller: "BenLogementBundle:Reservation:update" }
+    requirements: { _method: post }
+
+reservation_delete:
+    pattern:  /{id}/delete
+    defaults: { _controller: "BenLogementBundle:Reservation:delete" }
+    requirements: { _method: post }
