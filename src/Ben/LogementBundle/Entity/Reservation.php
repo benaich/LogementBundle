@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\ReservationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Reservation
 {
@@ -62,7 +63,7 @@ class Reservation
     private $price;
     
     /**
-    * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\Person", inversedBy="reservations")
+    * @ORM\OneToOne(targetEntity="Ben\LogementBundle\Entity\Person", inversedBy="reservation")
     * @ORM\JoinColumn(name="person_id",referencedColumnName="id", nullable=false)
     */
     private $person;
@@ -81,7 +82,7 @@ class Reservation
         $this->date_from = new \DateTime;
         $this->date_payement = new \DateTime;
         $this->date_to = new \DateTime;
-        $this->status = Reservation::$valideStatus;
+        $this->status = Reservation::$notValideStatus;
     }
     
     /************ getters & setters  ************/
@@ -189,6 +190,16 @@ class Reservation
     }
 
     /**
+     * check status
+     *
+     * @return boolean 
+     */
+    public function isValide()
+    {
+        return ($this->status === Reservation::$valideStatus);
+    }
+
+    /**
      * Set price
      *
      * @param float $price
@@ -280,12 +291,31 @@ class Reservation
         return $this->oldroom;
     }
 
+    public function switchRoom(Reservation $entity)
+    {
+        $temp = $this->room;
+        $this->room = $entity->getRoom();
+        $entity->setRoom($temp);
+        
+        return $this;
+    }
+
+    /**
+     * @ORM\PreRemove()
+     */
+    public function freeRoom()
+    {
+        $this->room->plusFree();
+        $this->person->setStatus(\Ben\LogementBundle\Entity\person::$notValideStatus);
+    }
+
     public function setData($data)
     {
         $this->setDatePayement(new \DateTime($data['DATE_PAY']));
         $this->setDateFrom(new \DateTime($data['date_from']));
         $this->setDateTo(new \DateTime($data['date_to']));
         $this->setPrice(floatval($data['MONTANT']));
+        $this->setStatus(Reservation::$valideStatus);
 
         return $this;
     }

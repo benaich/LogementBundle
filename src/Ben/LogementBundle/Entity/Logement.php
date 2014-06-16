@@ -4,6 +4,7 @@ namespace Ben\LogementBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Logement
@@ -54,11 +55,6 @@ class Logement
     * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\Block", mappedBy="logement", cascade={"remove", "persist"})
     */
     private $blocks;
-
-    /**
-    * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\University", mappedBy="logement", cascade={"remove", "persist"})
-    */
-    private $etablissements;
     
     /**
     * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\Person", mappedBy="logement", cascade={"remove", "persist"})
@@ -69,12 +65,20 @@ class Logement
     * @ORM\OneToMany(targetEntity="Ben\UserBundle\Entity\User", mappedBy="logement")
     */
     private $users;
+
+    /**
+    * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\OrderList", mappedBy="logement", cascade={"remove", "persist"})
+    */
+    private $orderlists;
     
     /************ constructeur ************/
     
     public function __construct()
     {
-        $this->blocks = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->blocks = new ArrayCollection();
+        $this->persons = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        $this->orderlists = new ArrayCollection();
     }
     
     /************ getters & setters  ************/
@@ -192,13 +196,13 @@ class Logement
     }
 
     /**
-     * Get etablissement
+     * Get orderlists
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getEtablissements()
+    public function getOrderlists()
     {
-        return $this->etablissements;
+        return $this->orderlists;
     }
 
     /**

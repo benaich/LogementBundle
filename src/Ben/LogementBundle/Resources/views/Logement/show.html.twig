@@ -31,16 +31,6 @@ Tableau de bord | {{ parent() }}
             <td>{{ entity.blocks|length }}</td>
         </tr>
         <tr>
-            <th>Liste des Etablissements</th>
-            <td>
-                <ul>
-                {% for item in entity.etablissements %}
-                    <li>{{ item.name }}</li>
-                {% endfor %}
-                </ul>
-            </td>
-        </tr>
-        <tr>
             <th>Liste des utilisateurs qui gére ce logement</th>
             <td>
                 <ul>
@@ -57,7 +47,7 @@ Tableau de bord | {{ parent() }}
     <form action="{{ path('logement_delete', { 'id': entity.id }) }}" method="post">
     {{ form_widget(delete_form) }}
     <a id="submitEditForm" class="btn btn-primary btn-block" href="{{ path('logement_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
-    <a class="btn btn-primary btn-block " href="{{ path('logement') }}"> Back to the list</a>
+    <a class="btn btn-primary btn-block " href="{{ path('logement') }}"> Revenir vers la liste</a>
     <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> Imprimer</a>
     <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
     </form>

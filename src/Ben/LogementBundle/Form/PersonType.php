@@ -29,24 +29,21 @@ class PersonType extends AbstractType
             ->add('city')
             ->add('tel')
             ->add('etablissement')
-            ->add('niveau_etude')
+            ->add('niveau_etude', 'choice', array('choices' => array('S1'=>'S1' ,'S2'=>'S2' ,'S3'=>'S3' ,'S4'=>'S4' ,'S5'=>'S5' ,'S6'=>'S6' ,'S7'=>'S7' ,'S8'=>'S8' ,'S9'=>'S9' ,'S10'=>'S10', '>=S11'=>'>=S11'),
+                'required' => true,))
             ->add('diplome');
 
          if($this->type ==='nouveau')
             $builder
             ->add('parents_revenu')
             ->add('bro_sis_number')
-            ->add('exellence');
+            ->add('exellence')
+            ->add('obtention_bac', 'choice', array('choices' => array('2006'=>'2006','2007'=>'2007','2008'=>'2008','2009'=>'2009','2010'=>'2010','2011'=>'2011','2012'=>'2012','2013'=>'2013','2014'=>'2014'),
+                'required' => true,));
 
          if($this->type ==='special')
             $builder
-            ->add('condition_special', 'choice', array('choices' => array(
-                       'Handicapé' => 'Handicapé',
-                       'Ancien combattant ' => 'Ancien combattant',
-                       'Ancien militaire' => 'Ancien militaire',
-                       'Pupille de l’état' => 'Pupille de l’état',
-                       'Gendarmerie Royale militaire' => 'Gendarmerie Royale militaire'),
-                'required' => false,));
+            ->add('condition_special');
 
         if($this->type ==='etranger')
             $builder

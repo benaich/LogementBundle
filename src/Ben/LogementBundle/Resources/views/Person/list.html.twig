@@ -1,44 +1,52 @@
 {% extends "BenLogementBundle::layout.html.twig" %}
 {% block title %}
-Tableau de bord | {{ parent() }}
+Elaboration des listes | {{ parent() }}
 {% endblock %}
 {% block body %}
 
- <h3><span class="glyphicon glyphicon-user"></span> Elaboration des listes</h3>
-    <form  id="form1" role="form" method="post" action="">
-      <div class="row">
-        <div class="col-md-5">
-          <div class="form-group">
-            <label class="col-md-8 control-label" for="">Nombre de candidat éligible</label>
-            <div class="col-md-4 form-group">
-              <input class="form-control" id="" type="number" name="limit" required="required">
-            </div>
-          </div>
-        </div><!-- /.col-md-3 -->        
-        <div class="col-lg-2">
-          <div class="col-md-9">
-          <select id="js-perpage" name="gender" class="form-control">
+<form  id="form1" role="form" method="post" action=""> 
+ <h3><span class="glyphicon glyphicon-user"></span> Elaboration des listes
+ <div class="pull-right hidden-print">
+  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#infoModal"><span class="glyphicon glyphicon-cog"></span> université</a>
+   {% if entities %}<a href="#" class="btn btn-primary" id="js-submit"><span class="glyphicon glyphicon-ok-circle"></span> Confirmer</a>{% endif %}
+   <a id="btnPrint" class="btn btn-primary" href="#"><span class="glyphicon glyphicon-print"></span> Imprimer</a>
+ </div>
+</h3>
+
+      <!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <div class="col-md-3 pull-right">
+          <select  name="gender" class="form-control">
             <option value="Fille" >Fille</option>
             <option value="Garçon" >Garçon</option>
           </select>
           </div>
-        </div>
+        <h4 class="modal-title" id="infoModalLabel"><span class="glyphicon glyphicon-user"></span> Nombre de candidat éligible</h4>
 
-
-        <div class="col-md-5">
-          <div class="btn-group pull-right">              
-            <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-cog"></span> Lancer</button>
-            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#" id="js-submit"><span class="glyphicon glyphicon-ok-circle"></span> Valider</a></li>
-              <li><a href="#" id="btnApprouver"><span class="glyphicon glyphicon-export"></span> Exporter</a></li>
-              <li><a href="#"><span class="glyphicon glyphicon-print"></span> Imprimer</a></li>
-            </ul>
+      </div>
+      <div class="modal-body">
+        {% for entity in universities %}
+        <div class="col-md-12">
+          <div class="form-group">
+            <label class="col-md-10 control-label" for=""><small>{{entity.name}}</small></label>
+            <div class="col-md-2 form-group">
+              <input class="form-control" id="" type="number" name="quota[{{entity.id}}]">
+            </div>
           </div>
-        </div>
-      </div><!-- /.row -->
+        </div> 
+        {% endfor %}
+        <div class="clearfix"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Lancer</button>
+      </div>
+    </div>
+  </div>
+</div>
   </form>
   <form  id="form2" role="form" method="post" action="{{ path('etudiant_validate_list') }}">
     <table class="table table-striped table-hover table-bordered">
@@ -47,29 +55,33 @@ Tableau de bord | {{ parent() }}
                 <th>#</th>
                 <th>Dossier</th>
                 <th>Nom</th>
-                <th>Email</th>
+                <th class="hidden-print">Type</th>
                 <th>CIN</th>
                 <th>CNE</th>
-                <th>Etablissement</th>
-                <th>Note</th>
+                <th class="hidden-print">Note</th>
             </tr>
         </thead>
         <tbody id="dataContainer">
-        {% for entity in entities %}
+        {% set i = 0 %}
+        {% for e in entities %}
+        <tr class="info hidden-print"><td colspan="10">{{ e[0].etablissement }} <span class="badge pull-right">{{ e|length }}</span></td></tr>
+        {% for entity in e %}
+        {% set i = i+1 %}
             <tr>
-                <td>{{ loop.index }} <input type="hidden" name="entities[]" value="{{ entity.id }}"></td>
+                <td>{{ i }} <input type="hidden" name="entities[]" value="{{ entity.id }}"></td>
                 <td>{{ entity.ndossier }}</td>
-                <td><a href="{{ path('etudiant_show', { 'id': entity.id }) }}">{{ entity.fullName }}</a></td>
-                <td><a href="mailto:{{ entity.email }}">{{ entity.email }}</a></td>
-                <td>{{ entity.type }}</td>
+                <td>{{ entity.fullName }}</td>
+                <td class="hidden-print">{{ entity.type }}</td>
+                <td>{{ entity.cin }}</td>
                 <td>{{ entity.cne }}</td>
-                <td>{{ entity.etablissement }}</td>
-                <td>{{ entity.note }}</td>
+                <td class="hidden-print">{{ entity.note }}</td>
             </tr>
+        {% endfor %}
         {% endfor %}
         </tbody>
     </table>
   </form>
+
 {% endblock body %}
 {% block javascripts %}
 {{ parent() }}

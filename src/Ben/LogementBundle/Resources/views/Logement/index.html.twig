@@ -3,8 +3,9 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h2>Liste des logements <a class="btn btn-primary pull-right hide-print" href="{{ path('logement_new') }}"><span class="glyphicon glyphicon-plus"></span> Ajouter un logement</a></h2>
-
+<h2>Liste des logements 
+{% if is_granted("ROLE_MANAGER") %}<a class="btn btn-primary pull-right hidden-print" href="{{ path('logement_new') }}"><span class="glyphicon glyphicon-plus"></span> Ajouter un logement</a>{% endif %}
+</h2>
 
 <table class="table table-hover table-bordered">
     <thead>
@@ -14,7 +15,7 @@ Tableau de bord | {{ parent() }}
             <th>Ville</th>
             <th>Nombre de place pour les étrangers</th>
             <th>Nombre de place pour les anciens</th>
-            <th class="hide-print">Actions</th>
+            {% if is_granted("ROLE_MANAGER") %}<th class="hidden-print">Actions</th>{% endif %}
         </tr>
     </thead>
     <tbody>
@@ -25,12 +26,14 @@ Tableau de bord | {{ parent() }}
             <td>{{ entity.city }}</td>
             <td>{{ entity.placeetranger }}</td>
             <td>{{ entity.placeancien }}</td>
-            <td class="hide-print">
+            {% if is_granted("ROLE_MANAGER") %}
+            <td class="hidden-print">
                 <div class="text-center">
                     <a class="btn btn-info btn-xs" href="{{ path('logement_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
                     <a class="btn btn-danger btn-xs" href="{{ path('logement_edit', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-edit"></span></a>
                 </div>
             </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </tbody>

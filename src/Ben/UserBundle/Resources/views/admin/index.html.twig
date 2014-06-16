@@ -53,8 +53,8 @@ Tableau de bord | {{ parent() }}
             <table class="table table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" value=""></th>
-                        <th>Identifiant</th>
+                        <th><input id="checkall" type="checkbox" value=""></th>
+                        <th class="col-md-2">Identifiant</th>
                         <th>Nom et prénom</th>
                         <th>Email</th>
                         <th>Tél</th>
@@ -67,12 +67,12 @@ Tableau de bord | {{ parent() }}
             </table>
             <div>
               <em><strong>Total:</strong> {{ entitiesLength }} utilisateur</em>
-              <a name="remove" href="{{ path('ben_new_user') }}" class="btn btn-embossed btn-primary btn-wide pull-right"><span class="glyphicon glyphicon-plus"></span> Ajouter un utilisateur</a>
+              <a name="remove" href="{{ path('ben_new_user') }}" class="btn btn-embossed btn-primary btn-wide pull-right"><span class="glyphicon glyphicon-plus"></span> Ajouter un utilisateurs</a>
             </div>
         </form>
-
 </div>
-    
+   
+<div class="clearfix"></div> 
 {% endblock body %}
 
  {% block javascripts %}
@@ -101,14 +101,13 @@ Tableau de bord | {{ parent() }}
         jsFormUrl = '{{ path('ben_users_ajax') }}';
       }
       function ajaxPost(action) {
-        console.log(form.serialize());
-        form.addClass('working');
+        container.addClass('working');
         $.ajax({ 
           type: "POST", 
           data: form.serialize(),
           url: jsFormUrl, 
           success: function(data){ 
-            form.removeClass('working');
+            container.removeClass('working');
             init();
             if(!action){
               dataContainer.empty().hide().html(data).fadeIn();
@@ -116,14 +115,15 @@ Tableau de bord | {{ parent() }}
           },
           error:function(){
               alert('service denied');
-              form.removeClass('working');
+              container.removeClass('working');
           }
         });
         return false;
       }
 
       /* ajax dashboard*/
-      var form = $('#jsForm'),
+      var container= $('.container'),
+          form = $('#jsForm'),
           dataContainer = form.find('#dataContainer');
           enableBtn = form.find('.js-enable'),
           promoteBtn = form.find('.js-promote'),
@@ -160,7 +160,8 @@ Tableau de bord | {{ parent() }}
 
       /* delete a user */
       deleteBtn.on('click', function(){
-        jsFormUrl='{{ path('ben_remove_users') }}';
+        if(!confirmation()) return false;
+        jsFormUrl = '{{ path('ben_remove_users') }}';
         ajaxPost('delete');
       });
       form.on('submit', ajaxPost);

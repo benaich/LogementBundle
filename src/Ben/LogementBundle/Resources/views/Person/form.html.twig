@@ -40,6 +40,7 @@
           {{ form_row(form.diplome, { 'label': 'Cycle d\'etude'}) }}
           {% if personType == person.new %}
             {{ form_row(form.exellence, { 'label': 'Note du Baccalauréat'}) }}
+            {{ form_row(form.obtention_bac, { 'label': 'Année d\'obtention du Bac'}) }}
             {{ form_row(form.parents_revenu, { 'label': 'Revenu des parents'}) }}
             {{ form_row(form.bro_sis_number, { 'label': 'Nombre de frères et soeurs'}) }}
           {% endif %}
@@ -48,5 +49,4 @@
           {% endif %}
           {{ form_rest(form) }}
           <input type="hidden" name="type" value="{{ personType }}"> 
-
-            
+      

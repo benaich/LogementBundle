@@ -10,6 +10,8 @@ use Ben\LogementBundle\Entity\Reservation;
 use Ben\LogementBundle\Form\ReservationType;
 use Ben\LogementBundle\Entity\Person;
 
+use Ben\LogementBundle\Pagination\Paginator;
+
 /**
  * Reservation controller.
  *
@@ -21,18 +23,18 @@ class ReservationController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function indexAction($page, $perPage)
+    public function indexAction($page, $perPage, $status)
     {
         $em = $this->getDoctrine()->getManager();
 
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
-        $entities = $em->getRepository('BenLogementBundle:Reservation')->findbyLogement($perPage, $page, $logement->getId());
-
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
+        $entities = $em->getRepository('BenLogementBundle:Reservation')->findbyLogement($logement->getId(), $perPage, $page, $status);
+        $pagination = (new Paginator())->setItems(count($entities), $perPage)->setPage($page)->toArray();
         return $this->render('BenLogementBundle:Reservation:index.html.twig', array(
             'entities' => $entities,
-            'nombreParPage' => $perPage,
-            'nombrePage' => ceil(count($entities) / $perPage),
-            'page' => $page
+            'status' => $status,
+            'pagination' => $pagination
             ));
     }
 
@@ -41,18 +43,15 @@ class ReservationController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function showAction($id)
+    public function showAction(Reservation $entity)
     {
         $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Reservation')->find($id);
-        if (!$entity) throw $this->createNotFoundException('Unable to find Reservation entity.');
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Reservation:show.html.twig', array(
             'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),        ));
+            'delete_form' => $deleteForm->createView(),
+            ));
     }
 
     /**
@@ -92,12 +91,12 @@ class ReservationController extends Controller
         $form->bind($request);
 
         if ($form->isValid()) {
-            $entity->getPerson()->setStatus(Person::$residentStatus);
             $entity->getRoom()->minusFree();
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
             return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
         }
 
@@ -112,17 +111,12 @@ class ReservationController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function editAction($id)
+    public function editAction(Reservation $entity)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Reservation')->find($id);
-        if (!$entity) throw $this->createNotFoundException('Unable to find Reservation entity.');
-
         $entity->setOldroom($entity->getRoom()->getId());
 
         $editForm = $this->createForm(new ReservationType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Reservation:edit.html.twig', array(
             'entity'      => $entity,
@@ -136,14 +130,11 @@ class ReservationController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, Reservation $entity)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BenLogementBundle:Reservation')->find($id);
-        if (!$entity) throw $this->createNotFoundException('Unable to find Reservation entity.');
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
         $editForm = $this->createForm(new ReservationType(), $entity);
         $editForm->bind($request);
 
@@ -157,7 +148,8 @@ class ReservationController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('reservation_edit', array('id' => $id)));
+            $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
+            return $this->redirect($this->generateUrl('reservation_edit', array('id' => $entity->getId())));
         }
 
         return $this->render('BenLogementBundle:Reservation:edit.html.twig', array(
@@ -172,25 +164,16 @@ class ReservationController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Reservation $entity)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($entity->getId());
         $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BenLogementBundle:Reservation')->find($id);
-            if (!$entity) throw $this->createNotFoundException('Unable to find Reservation entity.');
-
-            $room = $entity->getRoom();
-            $room->plusFree();
-            $person = $entity->getPerson();
-            $person->setStatus(Person::$eligibleStatus);
-            $em->persist($room);
-            $em->persist($person);
-
             $em->remove($entity);
             $em->flush();
+            $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
         }
 
         return $this->redirect($this->generateUrl('reservation'));
@@ -202,5 +185,24 @@ class ReservationController extends Controller
             ->add('id', 'hidden')
             ->getForm()
         ;
+    }
+
+    /**
+     * @Secure(roles="ROLE_USER")
+     */
+    public function setStatusAction(Reservation $entity, $status)
+    {
+        $em = $this->getDoctrine()->getManager();
+        if($status == 1){
+            $entity->setStatus(Reservation::$valideStatus);
+            $entity->getPerson()->setStatus(Person::$residentStatus);
+        }else{
+            $entity->setStatus(Reservation::$notValideStatus);
+            $entity->getPerson()->setStatus(Person::$notValideStatus);
+        }
+        $em->persist($entity);
+        $em->flush();
+        $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
+        return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
     }
 }

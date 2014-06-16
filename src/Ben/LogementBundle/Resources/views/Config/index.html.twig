@@ -7,9 +7,9 @@ Tableau de bord | {{ parent() }}
 <form class="form-horizontal" action="{{ path('config_update')}}" method="POST" enctype="multipart/form-data">        
     <div class="tabbable">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#tab1" data-toggle="tab"><span class="glyphicon glyphicon-list-bulleted"></span> Général</a></li>
-          <li><a href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-twitter"></span> Réseaux sociaux</a></li>
-          <li><a href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-gear"></span> Paramètres</a></li>
+          <li class="active"><a href="#tab1" data-toggle="tab"><span class="glyphicon glyphicon-cog"></span> Général</a></li>
+          <li><a href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-file"></span> Réseaux sociaux</a></li>
+          <li><a href="#tab3" data-toggle="tab"><span class="glyphicon glyphicon-wrench"></span> Paramètres</a></li>
         </ul> <!-- /tabs -->
 
     <div class="tab-content">
@@ -109,16 +109,6 @@ Tableau de bord | {{ parent() }}
                   <option {% if app_config.rows_per_page =="100" %}selected="selected"{% endif %} value="100">100</option>
                   <option {% if app_config.rows_per_page =="200" %}selected="selected"{% endif %} value="200">200</option>
               </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="" class="col-sm-4 control-label">Logement par defaut </label>
-          <div class="col-sm-4">
-            <select name="config[defaut_logement]" class="input-sm info">
-            {% for entity in logements %}
-               <option {% if app_config.defaut_logement == entity.id %}selected="selected"{% endif %} value="{{entity.id}}">{{entity.name}}</option>
-            {% endfor %}
-            </select>
           </div>
         </div>
         <div class="form-group">

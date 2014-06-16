@@ -46,17 +46,9 @@ class ConfigController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function showAction($id)
+    public function showAction(config $entity)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Config')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find config entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Config:show.html.twig', array(
             'entity'      => $entity,
@@ -109,18 +101,10 @@ class ConfigController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function editAction($id)
+    public function editAction(config $entity)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Config')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find config entity.');
-        }
-
         $editForm = $this->createForm(new configType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Config:edit.html.twig', array(
             'entity'      => $entity,
@@ -150,6 +134,8 @@ class ConfigController extends Controller
         foreach ($config as $key => $value) {
             $em->getRepository('BenLogementBundle:Config')->updateBy($key, $value);
         }
+
+        $this->get('session')->getFlashBag()->add('success', "Vos modifications ont été enregistré avec succée.");
         return $this->redirect($this->generateUrl('config'));
     }
 
@@ -158,21 +144,16 @@ class ConfigController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, config $entity)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($entity->getId());
         $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BenLogementBundle:Config')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find config entity.');
-            }
-
             $em->remove($entity);
             $em->flush();
+            $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
         }
 
         return $this->redirect($this->generateUrl('config'));

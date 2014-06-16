@@ -2,19 +2,25 @@
 {% block title %}
 Tableau de bord | {{ parent() }}
 {% endblock %}
+{% block stylesheet %}
+{{ parent() }}
+        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
+{% endblock %}
 {% block body %}
 
  <h3><span class="glyphicon glyphicon-user"></span> {% if status == 'résidant' %}Liste des étudiants résidents{% else  %}Gestion des etudiants{% endif %}</h3>
     <form  id="jsForm" role="form" method="post" action="">
           <input id="pagenumber" type="hidden" name="page" value="1"> 
+          <input id="sortBy" type="hidden" name="searchEntity[sortBy]" value="all"> 
+          <input id="sortDir" type="hidden" name="searchEntity[sortDir]" value="ASC"> 
           <input type="hidden" name="template" value="ajax_list"> 
           <input id="status" type="hidden" name="status" value="{{ status }}"> 
-            <div class="row hide-print">
+            <div class="row hidden-print">
               <div class="col-md-5 form-group">
                 <div class="input-group">
                   <input type="text" name="keyword" class="form-control" placeholder="Search">
                   <div class="input-group-btn">
-                  <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                  <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                   </div><!-- /btn-group -->
                 </div><!-- /input-group -->
               </div><!-- /.col-md-6 -->
@@ -51,16 +57,15 @@ Tableau de bord | {{ parent() }}
                     <li><a href="{{ path('etudiant_new', {type: person.foreign}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter ({{person.foreign}})</a></li>
                     <li><a href="{{ path('etudiant_new', {type: person.special}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter ({{person.special}})</a></li>
                     <li><a href="#"  data-toggle="modal" data-target="#searchModal"><span class="glyphicon glyphicon-search"></span> Recherche avancée</a></li>
-                {% if status == 'résidant' %}
-                    <li><a href="#" class="js-reject"><span class="glyphicon glyphicon-ban-circle"></span> Rejeter</a></li>
+                {% if status == person.resident %}
                     <li><a href="#" id="js-switch"><span class="glyphicon glyphicon-resize-small"></span> Changement de chambre</a></li>
-                {% else %}
-                    <li><a href="#" class="js-enable" data-action="non valide"><span class="glyphicon glyphicon-ban-circle"></span> Rejeter</a></li>
                 {% endif %}
                     <li class="divider"></li>
-                    <li><a href="#" id="btnApprouver"><span class="glyphicon glyphicon-export"></span> Exporter</a></li>
-                      <li><a id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer</a></li>
-                    <li><a href="#" id="btnSupprimer"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></li>
+                    <li><a href="{{ path('etudiant_to_excel', {status:status}) }}"><span class="glyphicon glyphicon-export"></span> Exporter</a></li>
+                      <li><a id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer cette page</a></li>
+                      <li><a href="{{ path('etudiant_to_pdf', {status:status}) }}" id="js-print-all"><span class="glyphicon glyphicon-print"></span> imprimer tout</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#confirmationModal"><span class="glyphicon glyphicon-ban-circle"></span> Rejeter</a></li>
+                    <li><a href="#" id="js-delete"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></li>
                   </ul>
                 </div>
               </div>
@@ -69,120 +74,49 @@ Tableau de bord | {{ parent() }}
             <table class="table table-striped table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th class="hide-print"><input type="checkbox" value=""></th>
-                        <th>Dossier</th>
-                        <th>Nom</th>
-                        <th>Email</th>
-                        <th>CIN</th>
-                        <th>CNE</th>
-                        <th>Etat</th>
-                        <th>Type</th>
-                        <th class="hide-print">action</th>
+                        <th class="hidden-print"><input id="checkall" type="checkbox" value=""></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="n_dossier">Dossier<span class="caret"></span></a></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="family_name">Nom<span class="caret"></span></a></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="cin">CIN<span class="caret"></span></a></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="cne">CNE<span class="caret"></span></a></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="status">Etat<span class="caret"></span></a></th>
+                        <th class="sortable"><a href="#" class="js-sort" data-order="type">Type<span class="caret"></span></a></th>
+                        <th class="hidden-print">action</th>
                     </tr>
                 </thead>
-                <tbody id="dataContainer">
-                    
-                </tbody>
+                <tbody id="dataContainer"></tbody>
             </table>
         <div class="caption">
           <strong>Total:</strong> <em>{{ entitiesLength }} Etudiants</em>
         </div>
+<!-- Search Modal -->
 {% include "BenLogementBundle:Person:search.html.twig" %}
+<!-- confirmation modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Voulez-vous spécifier la raison du reject</h4>
+      </div>
+      <div class="modal-body form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-5 control-label">Raison du reject</label>
+            <div class="col-sm-6">
+              <input id="reject-raison" type="text" name="remarque" class="form-control">
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button id="js-reject" type="button" class="btn btn-primary">Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
 </form>
 
 {% endblock body %}
 {% block javascripts %}
 {{ parent() }}
-<script> 
-    (function($) {
-
-      /* profile navigation */
-      var form = $('#jsForm'),
-          dataContainer = form.find('#dataContainer'),
-          pageInput = form.find('#pagenumber'),
-          typeInput = form.find('#js-type'),
-          perPageBtn = form.find('#js-perpage'),
-          enableBtn = form.find('.js-enable'),
-          rejectBtn = form.find('.js-reject'),
-          searchBtn = form.find('#js-search'),
-          switchBtn = form.find('#js-switch'),
-          closeBtn = $('#searchModal').find('.close'),
-          jsFormUrl = '',
-          checkboxBtn = form.find("input:checkbox"),
-          infomodal = $('#infoModal'),
-          modalBody = infomodal.find('.modal-body'),
-          index=0;
-
-      function init(){
-        pageInput.val('1');
-        // checkboxBtn.prop("checked",false);
-        jsFormUrl = '{{ path('etudiant_ajax') }}';
-      }
-      function ajaxPost(action) {
-        console.log(form.serialize());
-        form.addClass('working');
-        $.ajax({ 
-          type: "POST", 
-          data: form.serialize(),
-          url: jsFormUrl, 
-          success: function(data){ 
-            form.removeClass('working');
-            init();
-            if(!action)
-                dataContainer.empty().hide().html(data).fadeIn();
-            else ajaxPost();
-          },
-          error:function(){
-              alert('service denied');
-              form.removeClass('working');
-          }
-        });
-        return false;
-      }
-      
-      /* enable or disable a user*/
-      enableBtn.on('click', function(){
-        var url = '{{ path('etudiant_status', {'status': 1111 }) }}',
-            etat = $(this).data('action');
-        jsFormUrl = url.replace("1111", etat);
-        ajaxPost('enable');
-      });
-      /* reject a user */
-      rejectBtn.on('click', function(){
-        jsFormUrl = '{{ path('etudiant_cancel') }}';
-        ajaxPost('reject');
-      });
-
-      /* pagination */    
-      form.on('click', '.js-page', function(){
-          pageInput.val($(this).data('page'));
-          ajaxPost();
-      });
-
-      /* number of rows per page */
-      perPageBtn.on('change', ajaxPost);
-      typeInput.on('change', ajaxPost);
-      searchBtn.on('click', function () {
-        closeBtn.trigger('click');
-          ajaxPost();
-      });
-
-      /* switch rooms */
-      switchBtn.on('click', function(){
-        if (dataContainer.find('input:checkbox:checked').length != 2) {
-          alert('vous devez selectionner deux etudiants');
-          return false;
-        };
-        jsFormUrl='{{ path('room_switch') }}';
-        ajaxPost('switch');
-      });
-
-      form.on('submit', ajaxPost);
-
-      /* submit the form after loading the page*/
-      init();
-      setTimeout(ajaxPost, 1);
-
-    })(jQuery);
-</script>
+{% include "BenLogementBundle:Person:js.html.twig" %}
 {% endblock %}

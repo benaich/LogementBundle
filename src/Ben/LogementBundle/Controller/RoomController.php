@@ -12,6 +12,8 @@ use Ben\LogementBundle\Entity\Block;
 use Ben\LogementBundle\Form\RoomType;
 use Ben\LogementBundle\Entity\Person;
 
+use Ben\LogementBundle\Pagination\Paginator;
+
 /**
  * Room controller.
  *
@@ -27,6 +29,7 @@ class RoomController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
         $blocks = $em->getRepository('BenLogementBundle:Block')->findbyLogement($logement->getId());
         $entities = $em->getRepository('BenLogementBundle:Room')->findbyLogement($logement->getId());
 
@@ -48,17 +51,20 @@ class RoomController extends Controller
         $perPage = $request->get('perpage');
         $page = $request->get('page');
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement()->getId();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
         $searchEntity = $request->get('searchEntity');
         $template='BenLogementBundle:Room:ajax_list.html.twig';
         $entities = $em->getRepository('BenLogementBundle:Room')->search($perPage, $page, $logement, $searchEntity);
+
+        $pagination = (new Paginator())->setItems(count($entities), $perPage)->setPage($page)->toArray();
         return $this->render($template, array(
                     'entities' => $entities,
-                    'nombreParPage' => $perPage,
-                    'nombrePage' => ceil(count($entities) / $perPage),
-                    'page' => $page));
+                    'pagination' => $pagination
+                    ));
     }
 
     /**
+     * List all available rooms
      * @Secure(roles="ROLE_USER")
      * 
      */
@@ -121,9 +127,11 @@ class RoomController extends Controller
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add('success', "la chambre a été ajouté avec succée.");
             return $this->redirect($this->generateUrl('room_show', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Room:new.html.twig', array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -131,7 +139,7 @@ class RoomController extends Controller
     }
 
     /**
-     * Displays a form to create a new Room entity.
+     * Displays a form to create a mutiple Rooms entity.
      * @Secure(roles="ROLE_USER")
      *
      */
@@ -151,7 +159,7 @@ class RoomController extends Controller
     }
 
     /**
-     * Creates a new Room entity.
+     * Creates mutiple Room entity.
      * @Secure(roles="ROLE_USER")
      *
      */
@@ -170,19 +178,21 @@ class RoomController extends Controller
             $floors = $request->get('floor');
             if(count($floors) > 0){
                 foreach ($floors as $key => $value ) {
-                    $key++;
                     for ($i=1; $i <= $value['length'] ; $i++) { 
-                       $data['NOM_CHAMBRE'] = $key.$value['number'].$i; // floor.room.number
-                       $data['CAPACITE'] = $value['capacity'];
-                       $data['LIBRE'] = $value['capacity'];
-                       $data['ETAGE'] = $key;
-                       $room  = new Room();
-                       $room->setData($data);
-                       $rooms[] = $room;
+                        $room_number = ($i<10)? '0'.$i : $i;
+                        $data['NOM_CHAMBRE'] = $key.$room_number; // floor.room_number
+                        $data['CAPACITE'] = $value['capacity'];
+                        $data['LIBRE'] = $value['capacity'];
+                        $data['ETAGE'] = $key;
+                        $room  = new Room();
+                        $room->setData($data);
+                        $rooms[] = $room;
                     }
+                    $key++;
                 }
 
                 $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+                if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
                 $block->setLogement($logement);
                 $block->setFloors(count($floors));
                 $em->persist($block);
@@ -192,9 +202,11 @@ class RoomController extends Controller
                 }
                 $em->flush();
             }
+            $this->get('session')->getFlashBag()->add('success', "Le pavillon a été ajouté avec succée.");
             return $this->redirect($this->generateUrl('block_show', array('id' => $block->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Room:multiple_form.html.twig', array(
             'entity' => $block,
             'form'   => $form->createView(),
@@ -237,9 +249,11 @@ class RoomController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('room_edit', array('id' => $id)));
+            $this->get('session')->getFlashBag()->add('success', "Mise à jour effectué avec succée.");
+            return $this->redirect($this->generateUrl('room_edit', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Room:edit.html.twig', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -252,19 +266,16 @@ class RoomController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Room $entity)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($entity->getId());
         $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BenLogementBundle:Room')->find($id);
-            if (!$entity) throw $this->createNotFoundException('Unable to find Room entity.');
-
-            $this->setFree($entity);
             $em->remove($entity);
             $em->flush();
+            $this->get('session')->getFlashBag()->add('success', "Supression effectué avec succée.");
         }
 
         return $this->redirect($this->generateUrl('room'));
@@ -284,14 +295,9 @@ class RoomController extends Controller
         $person2 = $em->getRepository('BenLogementBundle:Person')->find($ids[1]);
         if (!$person2)  throw $this->createNotFoundException('Unable to find Person entity.');
 
-        $reservation1 = $person1->getReservations()->last();
-        $reservation2 = $person2->getReservations()->last();
-
-        $room1 = $reservation1->getRoom();
-        $room2 = $reservation2->getRoom();
-
-        $reservation1->setRoom($room2);
-        $reservation2->setRoom($room1);
+        $reservation1 = $person1->getReservation();
+        $reservation2 = $person2->getReservation();
+        $reservation1->switchRoom($reservation2);
 
         $em->persist($reservation1);
         $em->persist($reservation2);
@@ -307,29 +313,74 @@ class RoomController extends Controller
      */
     public function setFreeAction(Room $entity)
     {
-        $this->setFree($entity);
+        $em = $this->getDoctrine()->getManager();
+        $reservations = $entity->getReservations();
+        foreach ($reservations as $reservation) $em->remove($reservation);
         
+        $em->flush();
+        $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
         return $this->redirect($this->generateUrl('room_show', array('id' => $entity->getId())));
     }
 
-    /* helper functions */
-    public function setFree(Room $entity)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $reservations = $entity->setFree($entity->getCapacity())->getReservations();
-        foreach ($reservations as $reservation) {
-            $person = $reservation->getPerson()->setStatus(Person::$valideStatus);
-        }
-        
-        $em->persist($entity);
-        foreach ($reservations as $reservation) $em->remove($reservation);
-        $em->flush();
-    }
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder(array('id' => $id))
             ->add('id', 'hidden')
             ->getForm()
         ;
+    }
+    
+    /**
+     * export to excel.
+     * @Secure(roles="ROLE_USER")
+     *
+     */
+    public function toExcelAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entities = $em->getRepository('BenLogementBundle:room')->findAll();
+        // ask the service for a Excel5
+        $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject();
+
+        $phpExcelObject->getProperties()->setCreator("onousc");
+        $phpExcelObject->setActiveSheetIndex(0)
+            ->setCellValue("A1", "Id")
+            ->setCellValue("B1", "Chambre")
+            ->setCellValue("C1", "Etage")
+            ->setCellValue("D1", "Pavillon")
+            ->setCellValue("E1", "Chambre pour")
+            ->setCellValue("F1", "Capacité")
+            ->setCellValue("G1", "Place libre");
+        $i=2;
+        foreach ($entities as $entity) {
+           $phpExcelObject->setActiveSheetIndex(0)
+                ->setCellValue("A$i", $entity->getId())
+                ->setCellValue("B$i", $entity->getName())
+                ->setCellValue("C$i", $entity->getFloor())
+                ->setCellValue("D$i", $entity->getBlock()->getName())
+                ->setCellValue("E$i", $entity->getBlock()->getType())
+                ->setCellValue("F$i", $entity->getCapacity())
+                ->setCellValue("G$i", $entity->getFree());
+            $i++;
+        }
+
+        $phpExcelObject->getActiveSheet()->setTitle('Liste des Chambres');
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $phpExcelObject->setActiveSheetIndex(0);
+
+        // create the writer
+        $writer = $this->get('phpexcel')->createWriter($phpExcelObject, 'Excel5');
+        // create the response
+        $response = $this->get('phpexcel')->createStreamedResponse($writer);
+        // adding headers
+        $now = new \DateTime;
+        $now = $now->format('d-m-Y_H-i');
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', "attachment;filename=onousc_chambre_$now.xls");
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+
+        return $response;        
     }
 }

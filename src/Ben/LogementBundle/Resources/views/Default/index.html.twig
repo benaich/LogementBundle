@@ -3,6 +3,146 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h1>Dashboard</h1>
+<div class="col-md-12  hidden-print"><h3><span class="glyphicon glyphicon-dashboard"></span> Tableau de bord</h3></div>
+<div class="col-md-12  visible-print">
+            <h3 class="text-center">Procès verbal de la commission d'octroi d'un logement au sein de la Cité Universitaire</h3>
+            <h4><span class="glyphicon glyphicon-user"></span> Membres de la commission </h4>
+            <ul id="comity-list"></ul>
+            <h4><span class="glyphicon glyphicon-file"></span> Statistiques:</h4>
+</div>
+<div class="col-md-8">
+    <div class="box">
+        <header class=" hidden-print">
+            <h4><span class="glyphicon glyphicon-file"></span> Statistiques: {{ app.user.logement }}</h4>
+        </header>
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Fille</th>
+                    <th>Garçon</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Capacité d'accueil</td>
+                    <td>{{ capacityWomen }}</td>
+                    <td>{{ capacityMen }}</td>
+                    <td>{{ capacity }}</td>
+                </tr>
+                <tr>
+                    <td>Place disponibles</td>
+                    <td>{{ availableWomen }}</td>
+                    <td>{{ availableMen }}</td>
+                    <td>{{ available }}</td>
+                </tr>
+                <tr>
+                    <td>Nombre de demandes</td>
+                    <td>{{ requestWomen }}</td>
+                    <td>{{ requestMen }}</td>
+                    <td>{{ request }}</td>
+                </tr>
+                <tr>
+                    <td>Etudiants résidents</td>
+                    <td>{{ residentWomen }}</td>
+                    <td>{{ residentMen }}</td>
+                    <td>{{ resident }}</td>
+                </tr>
+                <tr>
+                    <td>Anciens étudiants résidents</td>
+                    <td>{{ oldResidentWomen }}</td>
+                    <td>{{ oldResidentMen }}</td>
+                    <td>{{ oldResident }}</td>
+                </tr>
+                <tr>
+                    <td>Nouveau étudiants résidents</td>
+                    <td>{{ newResidentWomen }}</td>
+                    <td>{{ newResidentMen }}</td>
+                    <td>{{ newResident }}</td>
+                </tr>
+                <tr>
+                    <td>Nouveau étudiants étrangers</td>
+                    <td>{{ foreignResidentWomen }}</td>
+                    <td>{{ foreignResidentMen }}</td>
+                    <td>{{ foreignResident }}</td>
+                </tr>
+                <tr>
+                    <td>Taux de satisfactions</td>
+                    <td>{% if capacityWomen %}{{ (residentWomen * 100 / capacityWomen)| number_format(2)  }} %{% else %}-{% endif %}</td>
+                    <td>{% if capacityMen %}{{ (residentMen * 100 / capacityMen)| number_format(2)  }} %{% else %}-{% endif %}</td>
+                    <td>{% if capacity %}{{ (resident * 100 / capacity)| number_format(2)  }} %{% else %}-{% endif %}</td>
+                </tr>
+                <tr class="hidden-print">
+                <td colspan="10" class="text-center">
+                    <div class="col-md-10">
+                    <input type="text" id="comity" name="comity" class="form-control" placeholder="Membres du comité (séparé par des virgules)">
+                    </div>
+                    <a id="comitymemmbersPrint" href="#" class="btn btn-default"><span class="glyphicon glyphicon-print"></span> Imprimer</a>
+                    <a href="#" class="hide" id="btnPrint"></a>
+                </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="visible-print">
+        <br><br>
+        <table>
+            <tr>
+                <td class="text-center" width="50%">Signature du directeur de la cité universitaire président de la commission</td>
+                <td class="text-center" style="vertical-align: top;">Signature du chargé des affaires estudianes</td>
+            </tr>
+            <tr><td><br><br></td><td><br><br></td></tr>
+            <tr><td class="text-center">Signature du chargé des affaires économiques</td><td></td></tr>
+            <tr><td><br><br></td><td><br><br></td></tr>
+        </table>
+            <div class="pull-right">
+                Fait à {{ app_config.app_city }} le {{ 'now'|date('d/m/Y')}}
+            </div>
+        </div> 
+    </div>
+</div>
 
+<div class="col-md-4 hidden-print">
+    <div class="box">
+      <header>
+          <h4><span class="glyphicon glyphicon-user"></span> Contacts</h4>
+      </header>
+      <ul class="list-group" id="contact-list">
+      {% for entity in users %}
+          <li class="list-group-item">
+              <div class="col-xs-12 col-sm-3">
+                  <img src="{{ asset( entity.image.getwebpath)}}" alt="{{ entity.fullName }}" class="img-responsive img-circle" />
+              </div>
+              <div class="col-xs-12 col-sm-9">
+                  <span class="name">{{ entity.fullName }}</span><br/>
+                  <span class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip" title="{{ entity.tel }}"></span>
+                  <span class="visible-xs"> <span class="text-muted">{{ entity.tel }}</span><br/></span>
+                  <span class="glyphicon glyphicon-envelope text-muted c-info" data-toggle="tooltip" title="{{ entity.email }}"></span>
+                  <span class="visible-xs"> <span class="text-muted">{{ entity.email }}</span><br/></span>
+              </div>
+              <div class="clearfix"></div>
+          </li>
+      {% endfor %}
+      </ul>
+    </div>
+</div>
 {% endblock body %}
+{% block javascripts %}
+{{ parent() }}
+
+<script> 
+(function($) { 
+    var comitymemmbersBtn = $("#comitymemmbersPrint"),
+        comityList = $('#comity-list'),
+        comityInput = $('#comity');
+    comitymemmbersBtn.on('click', function(){
+        var list = comityInput.val().split(',').join('</li><li>'),
+            html = '<li>'+list+'</li>';
+        comityList.html(html);
+        $('#btnPrint').trigger('click');
+    });
+
+})(jQuery);
+
+</script>
+{% endblock %}

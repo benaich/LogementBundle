@@ -34,3 +34,7 @@ university_delete:
     pattern:  /{id}/delete
     defaults: { _controller: "BenLogementBundle:University:delete" }
     requirements: { _method: post }
+
+university_to_excel:
+    pattern:  /excel/{type}
+    defaults: { _controller: "BenLogementBundle:University:toExcel", type: university}

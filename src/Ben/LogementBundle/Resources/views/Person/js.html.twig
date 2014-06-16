@@ -1,0 +1,175 @@
+    <script src="{{ asset('js/select2.min.js') }}"></script>
+<script> 
+    (function($) {
+
+      /* profile navigation */
+      var container= $('.container'),
+          form = $('#jsForm'),
+          dataContainer = form.find('#dataContainer'),
+          pageInput = form.find('#pagenumber'),
+          sortByInput = form.find('#sortBy'),
+          sortDirInput = form.find('#sortDir'),
+          sortBtn = form.find('.js-sort'),
+          typeInput = form.find('#js-type'),
+          perPageBtn = form.find('#js-perpage'),
+          enableBtn = form.find('.js-enable'),
+          rejectBtn = form.find('#js-reject'),
+
+          {% if status == person.eligible %}
+          orderListInput = form.find('#orderList'),
+          orderListBtn = form.find('.js-order-list'),
+          {% else %}
+          deleteBtn = form.find('#js-delete'),
+          {% endif %}
+          {% if status == person.resident %}
+          switchBtn = form.find('#js-switch'),
+          {% endif %}
+
+          searchBtn = form.find('#js-search'),
+          closeBtn = $('#searchModal').find('.close'),
+          closeConfirmationBtn = $('#confirmationModal').find('.close'),
+          printAllBtn = form.find('#js-print-all'),
+          jsFormUrl = '',
+          checkboxBtn = form.find("input:checkbox");
+
+      function init(){
+        pageInput.val('1');
+        jsFormUrl = '{{ path('etudiant_ajax') }}';
+      }
+      function ajaxPost(action) {
+        container.addClass('working');
+        $.ajax({ 
+          type: "POST", 
+          data: form.serialize(),
+          url: jsFormUrl, 
+          success: function(data){ 
+            container.removeClass('working');
+            init();
+            if(!action)
+                dataContainer.empty().hide().html(data).fadeIn();
+            else ajaxPost();
+          },
+          error:function(){
+              alert('service non disponible pour le moment');
+              container.removeClass('working');
+          }
+        });
+        return false;
+      }
+      
+      /* enable or disable a user*/
+      enableBtn.on('click', function(){
+        if (dataContainer.find('input:checkbox:checked').length == 0) {
+          alert('vous devez selectionner au moin un etudiant');
+          return false;
+        };
+        var url = '{{ path('etudiant_status', {'status': 1111 }) }}',
+            etat = $(this).data('action');
+        jsFormUrl = url.replace("1111", etat);
+        ajaxPost('enable');
+      });
+      /* change sort order */
+      sortBtn.on('click', function(){
+        var th = $(this).parent();
+        th.addClass('sorted').toggleClass('asc').siblings().removeClass('sorted');
+        sortByInput.val($(this).data('order'));
+        if (th.hasClass('asc')) sortDirInput.val('ASC');
+        else sortDirInput.val('DESC');
+        ajaxPost();
+        return false;
+      });
+      /* reject a user */
+      rejectBtn.on('click', function(){
+        closeConfirmationBtn.trigger('click');
+        if (dataContainer.find('input:checkbox:checked').length == 0) {
+          alert('vous devez selectionner au moin un etudiant');
+          return false;
+        };
+        jsFormUrl = '{{ path('etudiant_cancel') }}';
+        ajaxPost('reject');
+      });
+
+      /* pagination */    
+      form.on('click', '.js-page', function(){
+          pageInput.val($(this).data('page'));
+          ajaxPost();
+      });
+
+      /* number of rows per page */
+      perPageBtn.on('change', ajaxPost);
+      typeInput.on('change', function () {
+        var url = '{{ path('etudiant_to_pdf', { type: 1111, status: status }) }}';
+            type = $(this).val();
+        url = url.replace("1111", type);
+        printAllBtn.attr('href', url);
+        ajaxPost();
+      });
+      
+      searchBtn.on('click', function () {
+        closeBtn.trigger('click');
+        ajaxPost();
+      });
+
+      {% if status == person.eligible %}
+      /* change the order list */
+      orderListBtn.on('click', function(){
+        orderListInput.val($(this).data('ids'));
+        ajaxPost();
+      });
+      {% else %}
+
+      /* delete users */
+      deleteBtn.on('click', function(){
+        if (dataContainer.find('input:checkbox:checked').length == 0) {
+          alert('vous devez selectionner au moin un etudiant');
+          return false;
+        };
+        if(!confirmation()) return false;
+        jsFormUrl='{{ path('etudiant_remove_some') }}';
+        ajaxPost('delete');
+      });
+      {% endif %}
+
+      {% if status == person.resident %}
+      /* switch rooms */
+      switchBtn.on('click', function(){
+        if (dataContainer.find('input:checkbox:checked').length != 2) {
+          alert('vous devez selectionner deux etudiants');
+          return false;
+        };
+        jsFormUrl='{{ path('room_switch') }}';
+        ajaxPost('switch');
+      });
+      {% endif %}
+
+      form.on('submit', ajaxPost);
+      /* submit the form after loading the page*/
+      init();
+      setTimeout(ajaxPost, 1);
+
+      /* select2 */
+      var rejectRaisonInput = form.find('#reject-raison'),
+            rejectRaisonData = ['Problem de paiment', 'Dossier non complet', 'l\'etudiant à retirer son dossier', 'l\'etudiant à quitter'];
+        rejectRaisonData = $.map(rejectRaisonData, function(val,index){return {id:val, text:val};});
+        rejectRaisonInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { 
+            if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+          },
+          multiple: false,
+          data: rejectRaisonData
+        });
+        typeInput.removeClass('form-control').select2();
+        perPageBtn.removeClass('form-control').select2();
+        $('#universitySelect').removeClass('form-control').select2();
+
+        citiesData = ['','AL HAJEB', 'AGADIR', 'AL HOCEIMA', 'AZILAL', 'BENI MELLAL', 'BENSLIMANE', 'BOUJDOUR', 'BOULEMANE', 'BERRECHID', 'CASABLANCA  ', 'CHEFCHAOUEN', 'CHTOUKA AIT BAHA', 'CHICHAOUA', 'EL JADIDA', 'EL KELAA DES SRAGHNAS', 'ERRACHIDIA  ESSAOUIRA', 'ES SEMARA', 'FES', 'FIGUIG', 'GUELMIM', 'IFRANE', 'KENITRA', 'KHEMISSET', 'KHENIFRA  ', 'KHOURIBGA', 'LAAYOUNE  ', 'LARACHE', 'MOHAMMEDIA  ', 'MARRAKECH', 'MEKNES  ', 'NADOR', 'OUARZAZATE  ', 'OUJDA', 'OUED EDDAHAB  ', 'RABAT', 'SALE', 'SKHIRAT ', 'TEMARA', 'SEFROU', 'SAFI', 'SETTAT', 'SIDI KACEM', 'TANGER', 'TAN TAN', 'TAOUNAT', 'TAROUDANNT', 'TATA', 'TAZA', 'TETOUAN', 'TIZNIT'];
+
+        citiesData = $.map(citiesData, function(val,index){return {id:val, text:val};});
+        $('#citySelect').removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+          multiple: false,
+          data: citiesData
+          });
+
+    })(jQuery);
+</script>

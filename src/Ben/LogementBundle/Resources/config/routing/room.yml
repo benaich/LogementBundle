@@ -54,3 +54,7 @@ room_switch:
 room_set_free:
     pattern:  /{id}/setFree
     defaults: { _controller: "BenLogementBundle:Room:setFree" }
+
+room_to_excel:
+    pattern:  /export/excel
+    defaults: { _controller: BenLogementBundle:Room:toExcel}

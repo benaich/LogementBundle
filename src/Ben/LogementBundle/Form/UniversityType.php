@@ -25,8 +25,7 @@ class UniversityType extends AbstractType
                         'query_builder' => function(UniversityRepository $er) {
                             return $er->createQueryBuilder('u')->where('u.parent IS NULL');
                         })
-                    )
-                ->add('logement');
+                    );
         }
     }
 

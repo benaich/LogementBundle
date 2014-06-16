@@ -38,6 +38,11 @@ etudiant_delete:
     defaults: { _controller: "BenLogementBundle:Person:delete" }
     requirements: { _method: post }
 
+etudiant_remove_some:
+    pattern:  /removeSome
+    defaults: { _controller: "BenLogementBundle:Person:removeSome" }
+    requirements: { _method: post }
+
 etudiant_status:
     pattern:  /status/{status}
     defaults: { _controller: "BenLogementBundle:Person:setStatus"}
@@ -51,7 +56,24 @@ etudiant_cancel:
 etudiant_generate_list:
     pattern:  /generate/list
     defaults: { _controller: BenLogementBundle:Person:generateList }
+
 etudiant_validate_list:
     pattern:  /generate/list/valide
     defaults: { _controller: BenLogementBundle:Person:validateList }
     requirements: { _method: post }
+
+etudiant_to_excel:
+    pattern:  /export/excel/{status}
+    defaults: { _controller: BenLogementBundle:Person:toExcel , status: all}
+
+etudiant_to_pdf:
+    pattern:  /pdf/{type}-{status}
+    defaults: { _controller: "BenLogementBundle:Person:toPdf" , type: all, status: all}
+
+etudiant_prepare_pdf:
+    pattern:  /prepare/pdf
+    defaults: { _controller: "BenLogementBundle:Person:prepareToPdf" }
+
+order_clear:
+    pattern:  /orders/clear
+    defaults: { _controller: "BenLogementBundle:Person:clearOrders" }

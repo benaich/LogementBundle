@@ -1,13 +1,12 @@
 {% for entity in entities %}
     <tr>
-        <td class="hide-print"><input type="checkbox" name="entities[]" value="{{ entity.id }}"></td>
+        <td class="hidden-print"><input type="checkbox" name="entities[]" value="{{ entity.id }}"></td>
         <td>{{ entity.ndossier }}</td>
         <td>{{ entity.fullName }}</td>
-        <td>{{ entity.email }}</td>
         <td>{{ entity.cin }}</td>
         <td>{{ entity.cne }}</td>
         <td>{{ entity.remarque }}</td>
-        <td class="hide-print">
+        <td class="hidden-print">
         <div class="text-center">
             <a class="btn btn-primary js-show btn-xs" href="{{ path('etudiant_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
             <a class="btn btn-info btn-xs" href="{{ path('etudiant_edit', { 'id': entity.id, 'type': entity.type }) }}"><span class="glyphicon glyphicon-edit"></span></a>

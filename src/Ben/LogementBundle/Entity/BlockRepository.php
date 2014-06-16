@@ -12,13 +12,21 @@ use Doctrine\ORM\EntityRepository;
  */
 class BlockRepository extends EntityRepository
 {
-	public function findbyLogement($logement) {     
+	public function findbyLogement($logement, $name=null) {     
        $qb = $this->createQueryBuilder('b')
+                ->leftJoin('b.rooms', 'rooms')
+                ->addSelect('rooms')
                 ->leftJoin('b.logement', 'l')
                 ->andWhere('l.id = :logement')
                 ->setParameter('logement', $logement)
                 ;
-        return $qb->getQuery()->getResult();
+        if($name){
+            $qb->andWhere('b.name = :name')
+                ->setParameter('name', $name);
+            return $qb->getQuery()->getOneOrNullResult();
+        }
+
+        return $qb->getQuery()->getArrayResult();
     }
 
     public function counter($logement) {

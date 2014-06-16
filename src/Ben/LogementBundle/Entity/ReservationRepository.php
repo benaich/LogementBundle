@@ -14,8 +14,10 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 class ReservationRepository extends EntityRepository
 {
    
-	public function findbyLogement($perPage, $page, $logement) {     
+	public function findbyLogement($logement, $perPage, $page, $status) {     
        $qb = $this->createQueryBuilder('r')
+                ->leftJoin('r.room', 'room')
+                ->addSelect('room')
                 ->leftJoin('r.person', 'p')
                 ->addSelect('p')
                 ->leftJoin('p.logement', 'l')
@@ -23,6 +25,9 @@ class ReservationRepository extends EntityRepository
                 ->setParameter('logement', $logement)
                 ;
 
+        if ($status !== 'all')
+            $qb->andWhere('r.status = :status')
+                ->setParameter('status', $status);
         $qb->setFirstResult(($page - 1) * $perPage)
         ->setMaxResults($perPage);
 

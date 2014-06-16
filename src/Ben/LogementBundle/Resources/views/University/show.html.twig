@@ -3,7 +3,7 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h3>{{ entity.name }}</h3>
+<div class="col-md-12"><h3>{{ entity.name }}</h3></div>
 <div class="col-md-9">
     <table class="table table-hover table-bordered">
         <tr>
@@ -38,7 +38,7 @@ Tableau de bord | {{ parent() }}
     <form action="{{ path('university_delete', { 'id': entity.id }) }}" method="post" class="">
     {{ form_widget(delete_form) }}
     <a id="submitEditForm" class="btn btn-primary btn-block" href="{{ path('university_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
-    <a class="btn btn-primary btn-block " href="{{ path('university') }}"> Back to the list</a>
+    <a class="btn btn-primary btn-block " href="{{ path('university') }}"> Revenir vers la liste</a>
     <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
     <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
 </form>

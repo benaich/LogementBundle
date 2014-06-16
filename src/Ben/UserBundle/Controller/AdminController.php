@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ben\UserBundle\Entity\User;
 use Ben\UserBundle\Form\userType;
 use JMS\SecurityExtraBundle\Annotation\Secure;
+use Ben\LogementBundle\Pagination\Paginator;
 
 class AdminController extends Controller
 {
@@ -34,11 +35,12 @@ class AdminController extends Controller
         $keyword = $request->get('keyword');
         $template='BenUserBundle:admin:ajax_list.html.twig';
         $entities = $em->getRepository('BenUserBundle:user')->getUsersBy($perPage, $page, $keyword);
+        
+        $pagination = (new Paginator())->setItems(count($entities), $perPage)->setPage($page)->toArray();
         return $this->render($template, array(
                     'entities' => $entities,
-                    'nombreParPage' => $perPage,
-                    'nombrePage' => ceil(count($entities) / $perPage),
-                    'page' => $page));
+                    'pagination' => $pagination
+                    ));
     }
 
     /**
@@ -65,7 +67,7 @@ class AdminController extends Controller
             $entity->getImage()->upload();
 
             $this->getDoctrine()->getManager()->flush();
-            $this->get('session')->getFlashBag()->add('success', "Vos modifications ont été enregistrées.");
+            $this->get('session')->getFlashBag()->add('success', "L'utilisateur a été ajouté avec succès.");
             return $this->redirect($this->generateUrl('ben_show_user', array('id' => $entity->getId())));
         }
         $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
@@ -102,9 +104,9 @@ class AdminController extends Controller
         $form = $this->createForm(new userType(), $user);
         $form->bind($request);
         /* check if user has admin role */
-        if (array_search('ROLE_ADMIN', $user->getRoles()) !== false ){
-            $this->get('session')->getFlashBag()->add('Unauthorized access', "impossible de modifier un super utilisateur de cette interface");
-            // return $this->redirect($this->generateUrl('ben_users'));
+        if (in_array('ROLE_ADMIN', $user->getRoles())){
+            $this->get('session')->getFlashBag()->add('danger', "impossible de modifier les informations d'un administrateur de cette interface");
+            return $this->redirect($this->generateUrl('ben_users'));
         }
         if ($form->isValid()) {
             $em->updateUser($user, false);
@@ -134,10 +136,12 @@ class AdminController extends Controller
      */   
     public function removeUsersAction(Request $request)
     {
+        $loginUser = $this->container->get('security.context')->getToken()->getUser();
         $users = $request->get('users');
         $userManager = $this->get('fos_user.user_manager');
         foreach( $users as $id){
             $user = $userManager->findUserBy(array('id' => $id));
+            if($loginUser == $user) return new Response('Impossible de supprimer cet utilisateur');
             $userManager->deleteUser($user);
         }
         return new Response('supression effectué avec succès');
@@ -202,12 +206,8 @@ class AdminController extends Controller
      */
     public function editMeAction() {
         $entity = $this->container->get('security.context')->getToken()->getUser();
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find profile entity.');
-        }
-
-        $form = $this->createForm(new UserType(false), $entity);
+        $isAdmin = $this->get('security.context')->isGranted('ROLE_MANAGER');
+        $form = $this->createForm(new UserType(false, $isAdmin), $entity);
         return $this->render('BenUserBundle:myProfile:edit.html.twig', array(
                     'entity' => $entity,
                     'form' => $form->createView(),
@@ -221,7 +221,8 @@ class AdminController extends Controller
      */
     public function updateMeAction(Request $request, \Ben\UserBundle\Entity\User $entity) {
         $em = $this->getDoctrine()->getManager();
-        $form = $this->createForm(new UserType(false), $entity);
+        $isAdmin = $this->get('security.context')->isGranted('ROLE_MANAGER');
+        $form = $this->createForm(new UserType(false, $isAdmin), $entity);
         $form->bind($request);
 
         if ($form->isValid()) {

@@ -8,6 +8,8 @@ use JMS\SecurityExtraBundle\Annotation\Secure;
 
 use Ben\LogementBundle\Entity\Import;
 use Ben\LogementBundle\Form\ImportType;
+use Ben\LogementBundle\Entity\Person;
+use \Ben\LogementBundle\Entity\Room;
 
 class DefaultController extends Controller
 {
@@ -18,7 +20,41 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('BenLogementBundle:Default:index.html.twig');
+        $em = $this->getDoctrine()->getManager();
+        $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
+
+        $data['capacityMen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'all', 'Garçon');
+        $data['capacityWomen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'all', 'Fille');
+        $data['capacity'] = $data['capacityMen'] + $data['capacityWomen'];
+
+        $data['availableMen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'free', 'Garçon');
+        $data['availableWomen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'free', 'Fille');
+        $data['available'] = $data['availableMen'] + $data['availableWomen'];
+
+        $data['requestMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'all', 'Garçon');
+        $data['requestWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'all', 'Fille');
+        $data['request'] = $data['requestMen'] + $data['requestWomen'];
+
+        $data['residentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon');
+        $data['residentWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Fille');
+        $data['resident'] = $data['residentMen'] + $data['residentWomen'];
+
+        $data['oldResident'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'all', Person::$oldType);
+        $data['oldResidentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon', Person::$oldType);
+        $data['oldResidentWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Fille', Person::$oldType);
+
+        $data['newResidentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon', Person::$newType);
+        $data['newResidentWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Fille', Person::$newType);
+        $data['newResident'] = $data['newResidentMen'] + $data['newResidentWomen'];
+
+        $data['foreignResidentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon', Person::$foreignType);
+        $data['foreignResidentWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Fille', Person::$foreignType);
+        $data['foreignResident'] = $data['foreignResidentMen'] + $data['foreignResidentWomen'];
+
+        $data['users'] = $em->getRepository('BenUserBundle:user')->findAll();
+
+        return $this->render('BenLogementBundle:Default:index.html.twig', $data);
     }
 
     /**
@@ -35,9 +71,13 @@ class DefaultController extends Controller
             if ($form->isValid()) {
                 $entity->upload();
                 if ($this->valideDb()) {
-                    // $this->addBlock();
-                    // $this->addRoom();
-                    $this->addPerson();
+                    $this->addLogement();
+                    if($request->get('room')) {
+                        $this->addBlock();
+                        $this->addRoom();
+                    }
+                    if($request->get('person')) $this->addPerson();
+                    if($request->get('university')) $this->addUniversity();
                 }
             }
         }
@@ -48,26 +88,6 @@ class DefaultController extends Controller
         ));
     }
 
-    // public function addNew()
-    // {
-    //     $conn = $this->get('doctrine.dbal.sqlite_connection');
-
-    //     $em = $this->getDoctrine()->getManager();
-    //     $logement = $conn->fetchAll("select *  from REFERENTIEL;")[0]['NOM'];
-    //     $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
-    //     $data_array = $conn->fetchAll("select e.*, datetime(e.DATE_NAISSANCE_ETUDIANT) as birday
-    //      from ETUDIANT as e where ETAT_ETUDIANT ='non résidant';");
-    //     foreach ($data_array as $data) {    
-    //         $person  = new \Ben\LogementBundle\Entity\Person();
-    //         $person->setData($data);
-    //         $etablissement = $em->getRepository('BenLogementBundle:University')->findOneByName($data['ETABLISMENT']);
-    //         $person->setEtablissement($etablissement);
-    //         $person->setLogement($logement);
-    //         $em->persist($person);
-    //     }
-    //     $em->flush();
-    //     return $data_array;
-    // }
     public function addPerson()
     {
         $conn = $this->get('doctrine.dbal.sqlite_connection');
@@ -77,23 +97,35 @@ class DefaultController extends Controller
         $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         $data_array = $conn->fetchAll("select e.*, datetime(e.DATE_NAISSANCE_ETUDIANT) as birday, datetime(e.DATE_DEBUT) as date_from, datetime(e.DATE_FIN) as date_to, datetime(p.DATE_PAY) as DATE_PAY, p.MONTANT 
          from ETUDIANT as e
-         left join  PAIEMENT as p on e.N_DOSSIER = p.N_DOSSIER ;");
+         left join  PAIEMENT as p on e.N_DOSSIER = p.N_DOSSIER 
+         group by e.ID_ETUDIANT;");
         foreach ($data_array as $data) {    
-            $person  = new \Ben\LogementBundle\Entity\Person();
+            $person  = new Person();
             $person->setData($data);
             $etablissement = $em->getRepository('BenLogementBundle:University')->findOneByName($data['ETABLISMENT']);
             $person->setEtablissement($etablissement);
             $person->setLogement($logement);
             $em->persist($person);
 
-
-            $reservation  = new \Ben\LogementBundle\Entity\Reservation();
-            $room = $em->getRepository('BenLogementBundle:Room')->findRoombyName($logement->getName(), $data['PAVILLON'], $data['CHAMBRE']);
-            if($room){
-                $reservation->setData($data);
-                $reservation->setPerson($person);
-                $reservation->setRoom($room);
-                $em->persist($reservation);
+            if($person->getStatus()==='0'){
+                $reservation  = new \Ben\LogementBundle\Entity\Reservation();
+                $room = $em->getRepository('BenLogementBundle:Room')->findRoombyName($logement->getName(), $data['PAVILLON'], $data['CHAMBRE']);
+                if(!$room){
+                    $person->setStatus(Person::$valideStatus);
+                    $em->persist($person);
+                    // $room  = new Room();
+                    // $block = $em->getRepository('BenLogementBundle:Block')->findOneByName($data['PAVILLON']);
+                    // $room->setData($data);
+                    // $room->setBlock($block);
+                    // $em->persist($room);
+                }else{
+                    $reservation->setData($data);
+                    $reservation->setPerson($person);
+                    $reservation->setRoom($room);
+                    $person->setStatus(Person::$residentStatus);
+                    $em->persist($person);
+                    $em->persist($reservation);
+                }
             }
         }
 
@@ -123,9 +155,10 @@ class DefaultController extends Controller
     public function addBlock()
     {
         $conn = $this->get('doctrine.dbal.sqlite_connection');
-
         $em = $this->getDoctrine()->getManager();
-        $logement = $em->getRepository('BenLogementBundle:Logement')->find(1);
+        
+        $logement = $conn->fetchAll("select *  from REFERENTIEL;")[0]['NOM'];
+        $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         $data_array = $conn->fetchAll("select *  from PAVILLON;");
         $unique_aray = array_map(function($data){
             return $data['PAVILLON'];
@@ -151,6 +184,8 @@ class DefaultController extends Controller
         $conn = $this->get('doctrine.dbal.sqlite_connection');
 
         $em = $this->getDoctrine()->getManager();
+        $logement = $conn->fetchAll("select * from REFERENTIEL;")[0]['NOM'];
+        $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         $data_array = $conn->fetchAll("select *  from CHAMBRE;");
         $unique_aray = array_map(function($data){
              unset($data['ID_CHAMBRE'], $data['CAPACITE'], $data['LIBRE'], $data['TYPE']);
@@ -162,8 +197,8 @@ class DefaultController extends Controller
         }
 
         foreach ($uniquedata as $data) {    
-            $entity  = new \Ben\LogementBundle\Entity\Room();
-            $block = $em->getRepository('BenLogementBundle:Block')->findOneByName($data['PAVILLON']);
+            $entity  = new Room();
+            $block = $em->getRepository('BenLogementBundle:Block')->findbyLogement($logement->getId(), $data['PAVILLON']);
             $entity->setData($data);
             $entity->setBlock($block);
             $em->persist($entity);
@@ -214,12 +249,12 @@ class DefaultController extends Controller
     {
         $conn = $this->get('doctrine.dbal.sqlite_connection');
         $em = $this->getDoctrine()->getManager();
-        $logement = $conn->fetchAll("select *  from REFERENTIEL;")[0]['NOM'];
+        $logement = $conn->fetchAll("select * from REFERENTIEL;")[0]['NOM'];
         $entity = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
-        // if ($entity)  {
-        //     $this->get('session')->getFlashBag()->add('danger', "cette base de données a déja été importé");
-        //     return false;
-        // }
+        if ($entity)  {
+            $this->get('session')->getFlashBag()->add('danger', "cette base de données a déja été importé");
+            return false;
+        }
                 
         return true;
     }

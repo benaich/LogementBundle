@@ -24,9 +24,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="" class="col-sm-5 control-label">Ville</label>
+            <label for="citySelect" class="col-sm-5 control-label">Ville</label>
             <div class="col-sm-6">
-              <input type="text" name="searchEntity[city]" class="form-control">
+              <input id="citySelect" type="text" name="searchEntity[city]" class="form-control">
             </div>
           </div>
           <div class="form-group">
@@ -36,9 +36,9 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="" class="col-sm-5 control-label">Etablissement</label>
+            <label for="universitySelect" class="col-sm-5 control-label">Etablissement</label>
             <div class="col-sm-6">
-              <select name="searchEntity[etablissement]" class="form-control">
+              <select id="universitySelect" name="searchEntity[etablissement]" class="form-control">
                 <option value=""></option>
               {% for item in universities %}
                 <option value="{{ item.id }}">{{ item.name }}</option>
@@ -56,12 +56,6 @@
             <label for="" class="col-sm-5 control-label">Nombre de frères et soeurs</label>
             <div class="col-sm-6">
               <input type="text" name="searchEntity[bro_sis_number]" class="form-control">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="" class="col-sm-5 control-label">Distance en km</label>
-            <div class="col-sm-6">
-              <input type="text" name="searchEntity[distance]" class="form-control">
             </div>
           </div>
           <div class="form-group">

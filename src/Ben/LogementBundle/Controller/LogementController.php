@@ -36,17 +36,9 @@ class LogementController extends Controller
      * @Secure(roles="ROLE_USER")
      *
      */
-    public function showAction($id)
+    public function showAction(Logement $entity)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Logement')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Logement entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Logement:show.html.twig', array(
             'entity'      => $entity,
@@ -88,6 +80,7 @@ class LogementController extends Controller
             return $this->redirect($this->generateUrl('logement_show', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Logement:new.html.twig', array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -99,18 +92,10 @@ class LogementController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function editAction($id)
+    public function editAction(Logement $entity)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('BenLogementBundle:Logement')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Logement entity.');
-        }
-
         $editForm = $this->createForm(new LogementType(), $entity);
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
 
         return $this->render('BenLogementBundle:Logement:edit.html.twig', array(
             'entity'      => $entity,
@@ -124,17 +109,11 @@ class LogementController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function updateAction(Request $request, $id)
+    public function updateAction(Request $request, Logement $entity)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('BenLogementBundle:Logement')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Logement entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($entity->getId());
         $editForm = $this->createForm(new LogementType(), $entity);
         $editForm->bind($request);
 
@@ -142,9 +121,10 @@ class LogementController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('logement_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('logement_edit', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Logement:edit.html.twig', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -157,19 +137,13 @@ class LogementController extends Controller
      * @Secure(roles="ROLE_MANAGER")
      *
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, Logement $entity)
     {
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($entity->getId());
         $form->bind($request);
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('BenLogementBundle:Logement')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Logement entity.');
-            }
-
             $em->remove($entity);
             $em->flush();
         }

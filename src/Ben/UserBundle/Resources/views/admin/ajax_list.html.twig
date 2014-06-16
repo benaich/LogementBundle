@@ -1,10 +1,7 @@
 {% for entity in entities %}
   <tr>
-    <td><input type="checkbox" name="users[]" value="{{ entity.id }}"></td>
-    <td>
-        <img class="img40" src="{{ asset( entity.image.getwebpath)}}"/>
-        <em> {{ entity.username }} {{ entity.enabled }}</em>
-    </td>
+    <td {% if entity.enabled %}class="active-row"{% endif %}><input type="checkbox" name="users[]" value="{{ entity.id }}"></td>
+    <td>{{ entity.username }}</td>
     <td>{{ entity.fullName }}</td>
     <td>{{ entity.email }}</td>
     <td>{{ entity.tel }}</td>

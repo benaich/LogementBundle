@@ -47,12 +47,6 @@ class University
     private $children;
     
     /**
-    * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\Logement", inversedBy="etablissement")
-    * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-    */
-    protected $logement;
-    
-    /**
     * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\Person",mappedBy="etablissement")
     */
     private $persons;
@@ -177,29 +171,6 @@ class University
     public function getChildren()
     {
         return $this->children;
-    }
-    
-    /**
-     * Set logement
-     *
-     * @param \Ben\LogementBundle\Entity\Logement $logement
-     * @return Logement
-     */
-    public function setLogement(\Ben\LogementBundle\Entity\Logement $logement = null)
-    {
-        $this->logement = $logement;
-    
-        return $this;
-    }
-
-    /**
-     * Get logement
-     *
-     * @return \Ben\LogementBundle\Entity\Logement 
-     */
-    public function getLogement()
-    {
-        return $this->logement;
     }
 
     /**

@@ -4,7 +4,7 @@ Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
 <div class="col-md-12"><h3>Liste des pavillons </h3></div>
-<div class="col-md-8"> 
+<div class="col-md-9"> 
 <table class="table table-hover table-bordered">
     <thead>
         <tr>
@@ -34,11 +34,13 @@ Tableau de bord | {{ parent() }}
     {% endfor %}
     </tbody>
 </table>
-
-<div class="caption">
-  <strong>Total:</strong> <em>{{ entities|length }} Pavillons</em>
-  <a class="btn btn-primary pull-right" href="{{ path('block_new') }}"><span class="glyphicon glyphicon-plus"></span> Ajouter un pavillon</a>
-</div>
 </div>
 
+<div class="col-md-3">
+    <a class="btn btn-primary btn-block" href="{{ path('block_new') }}"> Ajouter un pavillon</a>
+    <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
+        <div class="caption text-center">
+          <strong>Total:</strong> <em>{{ entities|length }} Pavillons</em>
+        </div>
+</div>
 {% endblock body %}

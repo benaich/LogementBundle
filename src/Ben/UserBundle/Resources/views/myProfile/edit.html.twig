@@ -18,6 +18,7 @@ Profile - {{ parent() }}
   {{ form_row(form.family_name, { 'label': 'Nom'}) }}
   {{ form_row(form.first_name, { 'label': 'Prénom'}) }}
   {{ form_row(form.tel, { 'label': 'Tél'}) }}
+  {% if is_granted("ROLE_MANAGER") %} {{ form_row(form.logement, { 'label': 'Logement'}) }} {% endif %}
   {{ form_rest(form) }}
 
     <div class="form-group">

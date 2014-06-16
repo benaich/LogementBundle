@@ -13,7 +13,7 @@ class BlockType extends AbstractType
         $builder
             ->add('name', 'text', array('label'  => 'Nom du pavillon'))
             ->add('floors', 'text', array('label'  => 'Nombre d\'etages'))
-            ->add('type', 'choice', array('choices' => array('Garçon' => 'Garçon','Fille' => 'Fille'),'required' => false,))
+            ->add('type', 'choice', array('choices' => array('Garçon'=>'Garçon', 'Fille'=>'Fille')))
         ;
     }
 

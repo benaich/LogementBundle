@@ -3,6 +3,7 @@
 namespace Ben\LogementBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Ben\LogementBundle\Entity\Person;
 
 /**
  * UniversityRepository
@@ -22,4 +23,19 @@ class UniversityRepository extends EntityRepository
 		 
 		 return $qb->getArrayResult();
 	}
+
+	public function findUniversity($logement) {       
+       $qb = $this->createQueryBuilder('u')
+                ->select('distinct u.id, u.name')
+                ->leftJoin('u.persons', 'p')
+                ->leftJoin('p.logement', 'l')
+                ->andWhere('l.id = :logement')
+                ->setParameter('logement', $logement)
+                ->andWhere('p.status = :status')
+                ->setParameter('status', Person::$valideStatus)
+                ->andWhere('p.type != :type')
+                ->setParameter('type', Person::$oldType);
+
+       return $qb->getQuery()->getArrayResult();
+    }
 }

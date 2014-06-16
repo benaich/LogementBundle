@@ -24,6 +24,7 @@ class BlockController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
         $entities = $em->getRepository('BenLogementBundle:Block')->findbyLogement($logement->getId());
 
         return $this->render('BenLogementBundle:Block:index.html.twig', array(
@@ -76,13 +77,16 @@ class BlockController extends Controller
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+            if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
             $entity->setLogement($logement);
             $em->persist($entity);
             $em->flush();
 
+            $this->get('session')->getFlashBag()->add('success', "Le pavillon a été ajouté avec succée.");
             return $this->redirect($this->generateUrl('block_show', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Block:new.html.twig', array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -91,7 +95,7 @@ class BlockController extends Controller
 
     /**
      * Displays a form to edit an existing Block entity.
-     * @Secure(roles="ROLE_USER")
+     * @Secure(roles="ROLE_MANAGER")
      *
      */
     public function editAction(Block $entity)
@@ -109,7 +113,7 @@ class BlockController extends Controller
 
     /**
      * Edits an existing Block entity.
-     * @Secure(roles="ROLE_USER")
+     * @Secure(roles="ROLE_MANAGER")
      *
      */
     public function updateAction(Request $request, Block $entity)
@@ -123,9 +127,11 @@ class BlockController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('block_edit', array('id' => $id)));
+            $this->get('session')->getFlashBag()->add('success', "Mise à jour effectué avec succée.");
+            return $this->redirect($this->generateUrl('block_edit', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('error', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Block:edit.html.twig', array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -135,7 +141,7 @@ class BlockController extends Controller
 
     /**
      * Deletes a Block entity.
-     * @Secure(roles="ROLE_USER")
+     * @Secure(roles="ROLE_MANAGER")
      *
      */
     public function deleteAction(Request $request, $id)
@@ -151,6 +157,7 @@ class BlockController extends Controller
                 throw $this->createNotFoundException('Unable to find Block entity.');
             }
 
+            $this->get('session')->getFlashBag()->add('success', "Supression effectué avec succée.");
             $em->remove($entity);
             $em->flush();
         }

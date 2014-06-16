@@ -7,7 +7,6 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Gestion des membres</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="application-name" content="Tacharock"/>
     <meta name="author" content="benaich.med@gmail.com">
@@ -18,8 +17,9 @@
         <link href="{{ asset('css/layout.css') }}" rel="stylesheet">
         <link href="{{ asset('css/main.css') }}" rel="stylesheet">
     {% endblock %}
-    <title>{% block title %}webpractice{% endblock %}</title>
+    <title>{% block title %}onousc{% endblock %}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('icon.png') }}" />
+    <style>{{ app_config.app_css }}</style>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->
     <!--[if lt IE 9]>
       <script src="js/html5shiv.js"></script>
@@ -29,11 +29,12 @@
 {% block container %}
     {% include "BenLogementBundle:Default:menu.html.twig" %}
 
+    <div class="visible-print col-md-12 text-left"><img src="{{ asset( 'images/header.png' )}}" alt="logo" /></div>
     <section class="wrap">
         <header id="adminbar">
-            <div id="logo"><img src="{{ asset( app_config.app_logo )}}" alt="logo" /> <span>{{ app_config.app_name }}</span></div>
-            <img id="logo-header" class="hide" src="{{ asset( 'images/header.png' )}}" alt="logo" />
+            <div id="logo"><img src="{{ asset( app_config.app_logo )}}" alt="logo" class="img-small" /> <span>{{ app_config.app_name }}</span></div>
             <div class="header-btn pull-left hide">
+            <div class="pull-right"><small>Cité en cours : Cité Universitaire Souissi II</small></div>
                 <div class="btn-group">
                     <a href="#" class="btn btn-primary">Etudiant <span class="glyphicon glyphicon-plus"></span></a>
                     <a href="#" class="btn btn-info">Cité <span class="glyphicon glyphicon-plus"></span></a>
@@ -43,14 +44,40 @@
             </div>
                 <div class="dropdown pull-right user-profile">
                   <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="{{ asset( app.user.image.getwebpath)}}" alt="{{ app.user.username }}">
+                  <img class="img-small" src="{{ asset( app.user.image.getwebpath)}}" alt="{{ app.user.username }}">
                   {{ app.user.fullName }} <span class="glyphicon glyphicon-chevron-down"></span></a>
-                  <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-                    <li><a href="{{ path('ben_profile_edit', { 'name': app.user.username}) }}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-                    <li><a href="{{ path('fos_user_profile_edit') }}"><span class="glyphicon glyphicon-lock"></span> Reglage</a></li>
-                    <li class="divider"></li>
-                    <li><a href="{{ path('fos_user_security_logout') }}"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
-                  </ul>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <div class="navbar-content">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <img src="{{ asset( app.user.image.getwebpath)}}" alt="Alternate Text" class="img-responsive" />
+                                        <div class="clearfix"></div>
+                                        <p></p>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <span>{{ app.user.username }}</span>
+                                        <p class="text-muted small">{{ app.user.email }}</p>
+                                        <div class="divider"></div>
+                                        <a href="{{ path('ben_profile_edit', { 'name': app.user.username}) }}" class="btn btn-primary btn-sm">Afficher mon profil</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="navbar-footer">
+                                <div class="navbar-footer-content">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <a href="{{ path('fos_user_profile_edit') }}" class="btn btn-default btn-sm">Compte</a>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <a href="{{ path('fos_user_security_logout') }}" class="btn btn-default btn-sm pull-right">Déconnexion</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
         </header>
 
@@ -66,6 +93,7 @@
     <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap-select.js') }}"></script>
     <script src="{{ asset('bootstrap/js/bootstrap-switch.js') }}"></script>
+    <script src="{{ asset('js/jquery.cookie.js') }}"></script>
     <script src="{{ asset('js/application.js') }}"></script>
     {% endblock javascripts %}
 {% endblock container %}

@@ -49,7 +49,7 @@ Tableau de bord | {{ parent() }}
     {{ form_widget(delete_form) }}
     <a id="submitEditForm" class="btn btn-primary btn-block" href="{{ path('room_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
     <a id="submitEditForm" class="btn btn-primary btn-block" href="{{ path('room_set_free', { 'id': entity.id }) }}"> Libérer</a>
-    <a class="btn btn-primary btn-block " href="{{ path('room') }}"> Back to the list</a>
+    <a class="btn btn-primary btn-block " href="{{ path('room') }}"> Revenir vers la liste</a>
     <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
     <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
 </form>

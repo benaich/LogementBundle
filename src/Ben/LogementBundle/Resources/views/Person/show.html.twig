@@ -12,10 +12,9 @@ Tableau de bord | {{ parent() }}
   </button>
   <ul class="dropdown-menu" role="menu">
     <li><a href="{{ path('etudiant_edit', { 'id': entity.id, 'type': entity.type }) }}"><span class="glyphicon glyphicon-edit"></span> modifier</a></li>
-    {% if entity.status in [person.elegible, person.valide] and entity.status in [person.old, person.foreign] %}
+    {# {% if entity.status in [person.eligible, person.valide] and entity.status in [person.old, person.foreign] %}
     <li><a href="{{ path('reservation_new', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-check"></span> Réserver une chambre</a></li>
-    {% endif %}
-    <li class="divider"></li>
+    {% endif %} #}
     <li><a id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer</a></li>
     <li><a href="#" id="js-delete"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></li>
   </ul>
@@ -29,7 +28,7 @@ Tableau de bord | {{ parent() }}
           <h4><span class="glyphicon glyphicon-file"></span> Informations générale</h4>
       </header>
         <ul class="list-group">
-          <li class="list-group-item"><strong>Nom :</strong> {{ entity.fullName }}
+          <li class="list-group-item"><strong>Nom :</strong> {{ entity.familyName }}
           <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
           </li>
           <li class="list-group-item"><strong>Preom :</strong>  {{ entity.firstname }} 
@@ -39,7 +38,7 @@ Tableau de bord | {{ parent() }}
           <li class="list-group-item"><strong>CNE :</strong> {{ entity.cne }}</li>
           <li class="list-group-item"><strong>Sexe :</strong> {{ entity.gender }}</li>
           <li class="list-group-item"><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
-          <li class="list-group-item"><strong>Université :</strong> {{ entity.etablissement.parent }}</li>
+          <li class="list-group-item"><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
           <li class="list-group-item"><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
           <li class="list-group-item"><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
           <li class="list-group-item"><strong>Note du Baccalauréat :</strong> {{ entity.exellence }}</li>
@@ -74,15 +73,14 @@ Tableau de bord | {{ parent() }}
           <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
           <li class="list-group-item"><strong>Note de logement :</strong> {{ entity.note }}</li>
         {% if entity.hasReservation %}
-        {% set reservation = entity.reservations|last %}
-          <li class="list-group-item"><strong>Date début :</strong> {{ reservation.dateFrom|date('d/m/Y') }}  </li>
-          <li class="list-group-item"><strong>Date fin :</strong> {{ reservation.dateTo|date('d/m/Y') }} </li>
-          <li class="list-group-item"><strong>Numero de chambre :</strong> {{ reservation.room.name }} </li>
-          <li class="list-group-item"><strong>Numero de pavé :</strong> {{ reservation.room.block.name }} </li>
-          <li class="list-group-item"><strong>Date de payement :</strong> {{ reservation.datePayement|date('d/m/Y') }}  </li>
-          <li class="list-group-item"><strong>Montant :</strong> {{ reservation.price }} DH </li>
-        </ul>
+          <li class="list-group-item"><strong>Date début :</strong> {{ entity.reservation.dateFrom|date('d/m/Y') }}  </li>
+          <li class="list-group-item"><strong>Date fin :</strong> {{ entity.reservation.dateTo|date('d/m/Y') }} </li>
+          <li class="list-group-item"><strong>Numero de chambre :</strong> {{ entity.reservation.room.name }} </li>
+          <li class="list-group-item"><strong>Numero de pavé :</strong> {{ entity.reservation.room.block.name }} </li>
+          <li class="list-group-item"><strong>Date de payement :</strong> {{ entity.reservation.datePayement|date('d/m/Y') }}  </li>
+          <li class="list-group-item"><strong>Montant :</strong> {{ entity.reservation.price }} DH </li>
         {% endif %}
+        </ul>
     </div>   
     <div class="box">
         <header>

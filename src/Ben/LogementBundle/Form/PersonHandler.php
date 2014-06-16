@@ -40,6 +40,8 @@ class PersonHandler {
             $entity->setLogement($logement);
         }
 
+        if($entity->getType()===Person::$foreignType)
+            $entity->setStatus(Person::$eligibleStatus);
         $entity->calculateNote(); // pour clalculer la note de logement 
         $this->em->persist($entity);
         $this->em->flush();

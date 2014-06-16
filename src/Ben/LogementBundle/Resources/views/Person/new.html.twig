@@ -2,6 +2,11 @@
 {% block title %}
 Tableau de bord | {{ parent() }}
 {% endblock %}
+
+{% block stylesheet %}
+{{ parent() }}
+        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
+{% endblock %}
 {% block body %}
 <div class="col-md-12"><h3><span class="glyphicon glyphicon-pencil"></span> Inscription d'un étudiant</h3></div>
 
@@ -20,7 +25,9 @@ Tableau de bord | {{ parent() }}
 
 {% block javascripts %}
 {{ parent() }}
+    <script src="{{ asset('js/select2.min.js') }}"></script>
 <script> 
+
     (function($) {
         var form = $('#ajaxForm'),
             formFeedback = $('#formFeedback'),
@@ -31,6 +38,9 @@ Tableau de bord | {{ parent() }}
             cinInput = form.find('#ben_persontype_cin'),
             passportInput = form.find('#ben_persontype_passport'),
             sejourInput = form.find('#ben_persontype_carte_sejour'),
+            cityInput = form.find('#ben_persontype_city'),
+            noteInput = form.find('#ben_persontype_exellence'),
+            revenuInput = form.find('#ben_persontype_parents_revenu'),
             etabInput = form.find('#ben_persontype_etablissement');
             
         parentSelect.on('change', function(){
@@ -61,9 +71,12 @@ Tableau de bord | {{ parent() }}
           if(passportInput.val()==="") errors.push('N° passport est obligatoire');
           if(sejourInput.val()==="") errors.push('N° de la carte de séjour est obligatoire');
           {% else %}
-          if(!validateCin(cinInput.val())) errors.push('Cin non valide ');
-          if(!validateCne(cneInput.val())) errors.push('Cne non valide: il doit contenir 10 chiffres');
+          if(!validateCin(cinInput.val())) errors.push('CIN non valide ');
+          if(!validateCne(cneInput.val())) errors.push('CNE non valide: il doit contenir 10 chiffres');
           {% endif %}
+
+          if(!validateFloat(noteInput.val()) or parseInt(noteInput.val()) > 20) errors.push('Note du Baccalauréat non valide (ex: 15.30)');
+          if(!validateFloat(revenuInput.val())) errors.push('Revenu des parents non valide (ex: 5700.90)');
           if(etabInput.val()==="") errors.push('L\'etablissement est obligatoire');
           if(errors.length > 0){
             html = '<ul><li>';
@@ -74,6 +87,32 @@ Tableau de bord | {{ parent() }}
             return false;
           }
         });
+
+        form.find('select').removeClass('form-control').select2();
+        citiesData = ['AL HAJEB', 'AGADIR', 'AL HOCEIMA', 'AZILAL', 'BENI MELLAL', 'BENSLIMANE', 'BOUJDOUR', 'BOULEMANE', 'BERRECHID', 'CASABLANCA  ', 'CHEFCHAOUEN', 'CHTOUKA AIT BAHA', 'CHICHAOUA', 'EL JADIDA', 'EL KELAA DES SRAGHNAS', 'ERRACHIDIA  ESSAOUIRA', 'ES SEMARA', 'FES', 'FIGUIG', 'GUELMIM', 'IFRANE', 'KENITRA', 'KHEMISSET', 'KHENIFRA  ', 'KHOURIBGA', 'LAAYOUNE  ', 'LARACHE', 'MOHAMMEDIA  ', 'MARRAKECH', 'MEKNES  ', 'NADOR', 'OUARZAZATE  ', 'OUJDA', 'OUED EDDAHAB  ', 'RABAT', 'SALE', 'SKHIRAT ', 'TEMARA', 'SEFROU', 'SAFI', 'SETTAT', 'SIDI KACEM', 'TANGER', 'TAN TAN', 'TAOUNAT', 'TAROUDANNT', 'TATA', 'TAZA', 'TETOUAN', 'TIZNIT'];
+
+        citiesData = $.map(citiesData, function(val,index){return {id:val, text:val};});
+        cityInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+          multiple: false,
+          data: citiesData
+          });
+
+
+        {% if personType == person.special %}
+        var specialInput = form.find('#ben_persontype_condition_special'),
+            specialData = ['Handicapé', 'Ancien combattant', 'Ancien militaire', 'Pupille de l’état', 'Gendarmerie Royale militaire', 'Sud'];
+        specialData = $.map(specialData, function(val,index){return {id:val, text:val};});
+        specialInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { 
+            if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+          },
+          multiple: false,
+          data: specialData
+        });
+        {% endif %}
+
     })(jQuery);
 </script>
 {% endblock %}
+

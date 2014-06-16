@@ -11,8 +11,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\PersonRepository")
- * @UniqueEntity(fields="cne", message="Un etudiant existe déja avec ce CNE")
- * @UniqueEntity(fields="n_dossier", message="Un etudiant existe déja avec ce n° de dossier")
  */
 class Person
 {
@@ -144,7 +142,7 @@ class Person
     private $bro_sis_number;
 
     /**
-     * @var integer
+     * @var string
      *
      * @ORM\Column(name="n_dossier", type="string")
      */
@@ -158,9 +156,9 @@ class Person
     private $condition_special;
 
     /**
-     * @var string
+     * @var integer
      *
-     * @ORM\Column(name="ancientete", type="string", length=255, nullable=true)
+     * @ORM\Column(name="ancientete", type="integer", length=255, nullable=true)
      */
     private $ancientete;
 
@@ -223,14 +221,21 @@ class Person
     /**
      * @var string
      *
+     * @ORM\Column(name="obtention_bac", type="string", length=255, nullable=true)
+     */
+    private $obtention_bac;
+
+    /**
+     * @var float
+     *
      * @ORM\Column(name="note", type="float")
      */
     private $note;
 
     /**
-    * @ORM\OneToMany(targetEntity="Ben\LogementBundle\Entity\Reservation", mappedBy="person", cascade={"remove", "persist"})
+    * @ORM\OneToOne(targetEntity="Ben\LogementBundle\Entity\Reservation", mappedBy="person", cascade={"remove", "persist"})
     */
-    protected $reservations;
+    protected $reservation;
     
     /**
     * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\Logement",inversedBy="persons")
@@ -250,10 +255,10 @@ class Person
     {
         $this->bird_day =  new \DateTime;
         $this->note=0;
+        $this->ancientete = 1;
         $this->parents_revenu=0;
         $this->bro_sis_number=0;
         $this->status= Person::$valideStatus;
-        $this->reservations = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     /************ Les setters et getters ************/
@@ -458,7 +463,7 @@ class Person
     /**
      * Set ancientete
      *
-     * @param string $ancientete
+     * @param integer $ancientete
      * @return Person
      */
     public function setAncientete($ancientete)
@@ -471,7 +476,7 @@ class Person
     /**
      * Get ancientete
      *
-     * @return string 
+     * @return integer 
      */
     public function getAncientete()
     {
@@ -591,6 +596,29 @@ class Person
     public function getExellence()
     {
         return $this->exellence;
+    }
+
+    /**
+     * Set obtention_bac
+     *
+     * @param string $obtention_bac
+     * @return Person
+     */
+    public function setObtentionBac($obtention_bac)
+    {
+        $this->obtention_bac = $obtention_bac;
+    
+        return $this;
+    }
+
+    /**
+     * Get obtention_bac
+     *
+     * @return string 
+     */
+    public function getObtentionBac()
+    {
+        return $this->obtention_bac;
     }
 
     /**
@@ -904,47 +932,37 @@ class Person
     }
 
     /**
-     * Add reservation
+     * set reservation
      *
      * @param Ben\LogementBundle\Entity\Reservation $reservation
-     * @return reservations
+     * @return Person
      */
-    public function addReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
+    public function setReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
     {
-        $this->reservations[] = $reservation;
-        $reservation->setUser($this);
+        $this->reservation = $reservation;
     
         return $this;
     }
 
     /**
-     * Remove reservations
+     * Get reservation
      *
-     * @param Ben\LogementBundle\Entity\Reservation $reservations
+     * @return Ben\LogementBundle\Entity\Reservation
      */
-    public function removeReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
+    public function getReservation()
     {
-        $this->reservations->removeElement($reservation);
-    }
+        return $this->reservation;
+    } 
 
     /**
-     * Remove reservations
+     * remove reservation
      *
-     * @param Ben\LogementBundle\Entity\Reservation $reservations
+     * @return Person
      */
-    public function popReservation()
+    public function removeReservation()
     {
-        $this->reservations->removeElement($this->reservations->last());
-    }
-
-    /**
-     * Get reservations
-     *
-     * @return Doctrine\Common\Collections\Collection 
-     */
-    public function getReservations()
-    {
-        return $this->reservations;
+        $this->reservation = null;
+        return $this;
     }  
 
     /**
@@ -952,15 +970,15 @@ class Person
      */
     public function hasReservation()
     {
-        if(!$this->reservations->last()) return false;
-        return ($this->reservations->last()->getStatus() === \Ben\LogementBundle\Entity\Reservation::$valideStatus) ;
+        if(!$this->reservation) return false;
+        return ($this->reservation->getStatus() === \Ben\LogementBundle\Entity\Reservation::$valideStatus) ;
     }
 
     /**
      * Set logement
      *
      * @param \Ben\LogementBundle\Entity\Logement $logement
-     * @return Block
+     * @return Person
      */
     public function setLogement(\Ben\LogementBundle\Entity\Logement $logement)
     {
@@ -1062,7 +1080,7 @@ class Person
         $this->setStatus($data['ETAT_ETUDIANT']);
         $this->setNDossier($data['N_DOSSIER']);
         $this->setConditionSpecial($data['COMPORTEMENT']);
-        $this->setAncientete((intval($data['ANCIENNETE'])+1).'');
+        $this->setAncientete((intval($data['ANCIENNETE'])+1));
         $this->setDiplome($data['DIPLOME']);
         $this->setRemarque($data['REMARQUE']);
         $this->setPassport($data['PASSPORT']);
@@ -1072,7 +1090,12 @@ class Person
         $this->type = ($data['COMPORTEMENT'] != '') ? 'special' : 'ancien';
         $this->type = ($data['PASSPORT'] != '') ? 'etranger' : $this->type;
 
-        if($this->getStatus() === 'non résidant') $this->setStatus(Person::$notValideStatus);
+        if($this->getStatus() === 'non résidant') {
+            $this->setStatus(Person::$valideStatus);
+            if($this->getAncientete() === 1) $this->type = Person::$newType;
+        }
+        elseif($this->getStatus() === Person::$residentStatus) $this->setStatus('0');
+
         $this->calculateNote();
     
         return $this;

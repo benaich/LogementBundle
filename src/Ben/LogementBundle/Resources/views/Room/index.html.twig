@@ -7,27 +7,27 @@ Tableau de bord | {{ parent() }}
 <div class="col-md-12"><h3>Liste des chambres</h3></div>
 <form  id="jsForm" role="form" method="post" action="">
 <div class="col-md-9">
-        <input id="pagenumber" type="hidden" name="page" value="1">  
-
-        <table class="table table-striped table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th>Chambre</th>
-                    <th>Etage</th>
-                    <th>Pavillon</th>
-                    <th>Chambre pour</th>
-                    <th>Capacité</th>
-                    <th>Place libre</th>
-                    <th class="hide-print">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="dataContainer"></tbody>
-        </table>
+    <input id="pagenumber" type="hidden" name="page" value="1">  
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Chambre</th>
+                <th>Etage</th>
+                <th>Pavillon</th>
+                <th>Chambre pour</th>
+                <th>Capacité</th>
+                <th>Place libre</th>
+                <th class="hide-print">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="dataContainer"></tbody>
+    </table>
 </div>
 <div class="col-md-3">
     <a class="btn btn-primary btn-block" href="{{ path('room_new') }}"> Ajouter une chambre</a>
     <a class="btn btn-primary btn-block" href="{{ path('room_new_multiple') }}"> Ajouter Multiple</a>
     <a class="btn btn-primary btn-block" href="#"  data-toggle="modal" data-target="#searchModal"> Recherche avancée</a>
+    <a class="btn btn-primary btn-block" href="{{ path('room_to_excel') }}"> Exporter vers Excel</a>
     <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
         <div class="caption text-center">
           <strong>Total:</strong> <em>{{ entitiesLength }} Chambres</em>
@@ -109,8 +109,8 @@ Tableau de bord | {{ parent() }}
     </div>
   </div>
 </div>
-
-    </from>
+<div class="clearfix"></div>
+</from>
 {% endblock body %}
 {% block javascripts %}
 {{ parent() }}
@@ -118,7 +118,8 @@ Tableau de bord | {{ parent() }}
     (function($) {
 
       /* profile navigation */
-      var form = $('#jsForm'),
+      var container= $('.container'),
+          form = $('#jsForm'),
           dataContainer = form.find('#dataContainer'),
           pageInput = form.find('#pagenumber'),
           searchBtn = form.find('#js-search'),
@@ -130,14 +131,15 @@ Tableau de bord | {{ parent() }}
         pageInput.val('1');
         jsFormUrl = '{{ path('room_ajax') }}';
       }
+
       function ajaxPost(action) {
-        form.addClass('working');
+        container.addClass('working');
         $.ajax({ 
           type: "POST", 
           data: form.serialize(),
           url: jsFormUrl, 
           success: function(data){ 
-            form.removeClass('working');
+            container.removeClass('working');
             if(!action)
                 dataContainer.empty().hide().html(data).fadeIn();
             else ajaxPost();
@@ -145,12 +147,11 @@ Tableau de bord | {{ parent() }}
           },
           error:function(){
               alert('service denied');
-              form.removeClass('working');
+              container.removeClass('working');
           }
         });
         return false;
       }
-
 
       /* pagination */    
       form.on('click', '.js-page', function(){

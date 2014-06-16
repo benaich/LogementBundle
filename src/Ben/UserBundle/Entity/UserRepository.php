@@ -20,7 +20,7 @@ class UserRepository extends EntityRepository
  
         return $qb->getQuery()->getResult();
     }
-    
+
     public function getUsers()
     {
         $qb = $this->createQueryBuilder('u')

@@ -6,7 +6,6 @@ Login - {{ parent() }}
 {% block container %}
 
 <body class="sign-in-bg">
-
     <div class="sign-in">
         <div class="sign-in-head text-center">
             <h1>{{ app_config.app_name }}</h1>
@@ -31,11 +30,10 @@ Login - {{ parent() }}
                        <input type="password" class="form-control" id="password" name="_password" required="required" placeholder="Password"/>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label class="checkbox primary checked" for="checkbox6">
-                    <span class="icons"><span class="first-icon glyphicon glyphicon-checkbox-unchecked"></span><span class="second-icon glyphicon glyphicon-checkbox-checked"></span></span><input type="checkbox" checked="checked" value="" id="checkbox6" data-toggle="checkbox">
-                    Se souvenir de moi
+                    <label for="remeberme">
+                   <input id="remeberme" type="checkbox" name="_remember_me" value="on">
+                    Garder ma session active
                   </label>
                 </div>
                <p class="text-center btn-area">

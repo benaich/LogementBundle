@@ -194,4 +194,57 @@ class UniversityController extends Controller
             ->getForm()
         ;
     }
+    
+    /**
+     * Deletes a University entity.
+     * @Secure(roles="ROLE_MANAGER")
+     *
+     */
+    public function toExcelAction($type)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entities = $em->getRepository('BenLogementBundle:university')->findByType($type);
+        // ask the service for a Excel5
+        $phpExcelObject = $this->get('phpexcel')->createPHPExcelObject();
+
+        $phpExcelObject->getProperties()->setCreator("onousc");
+        $phpExcelObject->setActiveSheetIndex(0)
+            ->setCellValue("A1", "Id");
+
+        if($type === 'university') $phpExcelObject
+            ->setActiveSheetIndex(0)->setCellValue("B1", "Univérsité");
+        else $phpExcelObject->setActiveSheetIndex(0)
+            ->setCellValue("B1", "Etablissement")
+            ->setCellValue("C1", "Univérsité");
+        $i=2;
+        foreach ($entities as $entity) {
+           $phpExcelObject->setActiveSheetIndex(0)
+                ->setCellValue("A$i", $entity->getId())
+                ->setCellValue("B$i", $entity->getName());
+
+           if($type !== 'university')
+            $phpExcelObject->setActiveSheetIndex(0)
+                ->setCellValue("C$i", $entity->getParent()->getName());
+            $i++;
+        }
+
+        $phpExcelObject->getActiveSheet()->setTitle('Liste des Chambres');
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $phpExcelObject->setActiveSheetIndex(0);
+
+        // create the writer
+        $writer = $this->get('phpexcel')->createWriter($phpExcelObject, 'Excel5');
+        // create the response
+        $response = $this->get('phpexcel')->createStreamedResponse($writer);
+        // adding headers
+        $now = new \DateTime;
+        $now = $now->format('d-m-Y_H-i');
+        $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
+        $response->headers->set('Content-Disposition', "attachment;filename=onousc_university_$now.xls");
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+
+        return $response;        
+    }
 }

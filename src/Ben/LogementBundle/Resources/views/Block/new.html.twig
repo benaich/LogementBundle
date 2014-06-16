@@ -3,7 +3,7 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h1>Block creation</h1>
+<h3>Ajout d'un pavillon</h3>
 
 <form class="form-horizontal" action="{{ path('block_create') }}" method="post" {{ form_enctype(form) }}>
     {{ form_widget(form) }}

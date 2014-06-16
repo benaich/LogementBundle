@@ -66,7 +66,7 @@ class RoomRepository extends EntityRepository
             if($searchEntity['block'] !== '')
                 $qb->andWhere('b.id = :block')->setParameter('block', $searchEntity['block']);
             if($searchEntity['gender'] !== '')
-                $qb->andWhere('r.gender = :gender')->setParameter('gender', $searchEntity['gender']);
+                $qb->andWhere('b.type = :gender')->setParameter('gender', $searchEntity['gender']);
             if($searchEntity['name'] !== '')
                 $qb->andWhere('r.name = :name')->setParameter('name', $searchEntity['name']);
             if($searchEntity['floor'] !== '')
@@ -87,7 +87,7 @@ class RoomRepository extends EntityRepository
     }
 
 
-    public function counter($logement, $status = 'all') {
+    public function counter($logement, $status = 'all', $type = 'all') {
         $qb = $this->createQueryBuilder('r')
                 ->select('COUNT(r)')
                 ->leftJoin('r.block', 'b')
@@ -98,6 +98,29 @@ class RoomRepository extends EntityRepository
             $qb->andWhere('r.free > 0');
         elseif ($status === 'notfree')
             $qb->andWhere('r.free > 0');
+
+        if($type !== 'all') 
+            $qb->andWhere('b.type = :type')
+                ->setParameter('type', $type);
+
+        return $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function sum($logement, $status = 'all', $type = 'all') {
+        $qb = $this->createQueryBuilder('r')
+                ->select('SUM(r.capacity)')
+                ->leftJoin('r.block', 'b')
+                ->leftJoin('b.logement', 'l')
+                ->andWhere('l.id = :logement')
+                ->setParameter('logement', $logement);
+        if($status === 'free') 
+            $qb->andWhere('r.free > 0');
+        elseif ($status === 'notfree')
+            $qb->andWhere('r.free > 0');
+
+        if($type !== 'all') 
+            $qb->andWhere('b.type = :type')
+                ->setParameter('type', $type);
 
         return $qb->getQuery()->getSingleScalarResult();
     }

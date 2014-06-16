@@ -14,40 +14,48 @@ use Ben\LogementBundle\Entity\Person;
  */
 class PersonRepository extends EntityRepository
 {
-
-
-    public function search($nombreParPage, $page, $keyword, $type, $status, $searchEntity, $logement) {       
+    public function search($nombreParPage, $page, $keyword, $type, $status, $searchEntity, $logement, $orderList = null) { 
        $qb = $this->createQueryBuilder('p')
                 ->leftJoin('p.logement', 'l')
                 ->andWhere('l.id = :logement')
                 ->setParameter('logement', $logement)
                 ->leftJoin('p.etablissement', 'e')
-                ->andWhere('p.family_name like :keyword or p.first_name like :keyword or p.email like :keyword')
+                ->andWhere("concat(p.family_name, p.first_name) like :keyword or p.email like :keyword or p.cin like :keyword or p.cne like :keyword")
                 ->setParameter('keyword', '%'.$keyword.'%');
                  
         if($type !== 'all')
             $qb->andWhere('p.type = :type')->setParameter('type', $type);
         if($status !== 'all')
             $qb->andWhere('p.status = :status')->setParameter('status', $status);
+
+        if ($orderList) {
+            $qb->andWhere('p.id in (:orderList)')->setParameter('orderList', $orderList)
+                ->andWhere('p.status = :status')->setParameter('status', Person::$eligibleStatus);
+        }
+
         if($searchEntity){
-            if($searchEntity['dossier'] !== '')
-                $qb->andWhere('p.n_dossier = :dossier')->setParameter('dossier', $searchEntity['dossier']);
-            if($searchEntity['gender'] !== '')
-                $qb->andWhere('p.gender = :gender')->setParameter('gender', $searchEntity['gender']);
-            if($searchEntity['city'] !== '')
-                $qb->andWhere('p.city = :city')->setParameter('city', $searchEntity['city']);
-            if($searchEntity['exellence'] !== '')
-                $qb->andWhere('p.exellence = :exellence')->setParameter('exellence', $searchEntity['exellence']);
-            if($searchEntity['parents_revenu'] !== '')
-                $qb->andWhere('p.parents_revenu = :parents_revenu')->setParameter('parents_revenu', $searchEntity['parents_revenu']);
-            if($searchEntity['bro_sis_number'] !== '')
-                $qb->andWhere('p.bro_sis_number = :bro_sis_number')->setParameter('bro_sis_number', $searchEntity['bro_sis_number']);
-            if($searchEntity['distance'] !== '')
-                $qb->andWhere('p.distance = :distance')->setParameter('distance', $searchEntity['distance']);
-            if($searchEntity['ancientete'] !== '')
-                $qb->andWhere('p.ancientete = :ancientete')->setParameter('ancientete', $searchEntity['ancientete']);
-            if($searchEntity['etablissement'] !== '')
-                $qb->andWhere('e.id = :etablissement')->setParameter('etablissement', $searchEntity['etablissement']);
+            extract($searchEntity); 
+            if($dossier !== '')
+                $qb->andWhere('p.n_dossier = :dossier')->setParameter('dossier', $dossier);
+            if($gender !== '')
+                $qb->andWhere('p.gender = :gender')->setParameter('gender', $gender);
+            if($city !== '')
+                $qb->andWhere('p.city = :city')->setParameter('city', $city);
+            if($exellence !== '')
+                $qb->andWhere('p.exellence = :exellence')->setParameter('exellence', $exellence);
+            if($parents_revenu !== '')
+                $qb->andWhere('p.parents_revenu = :parents_revenu')->setParameter('parents_revenu', $parents_revenu);
+            if($bro_sis_number !== '')
+                $qb->andWhere('p.bro_sis_number = :bro_sis_number')->setParameter('bro_sis_number', $bro_sis_number);
+            if($ancientete !== '')
+                $qb->andWhere('p.ancientete = :ancientete')->setParameter('ancientete', $ancientete);
+            if($etablissement !== '')
+                $qb->andWhere('e.id = :etablissement')->setParameter('etablissement', $etablissement);
+            if($sortBy !== ''){
+                $sortBy = in_array($sortBy, array('n_dossier', 'family_name', 'status', 'type')) ? $sortBy : 'id';
+                $sortDir = $sortDir == 'ASC' ? 'ASC' : 'DESC';
+                $qb->orderBy('p.' . $sortBy, $sortDir);
+            }
         }
 
         $qb->setFirstResult(($page - 1) * $nombreParPage)
@@ -56,32 +64,44 @@ class PersonRepository extends EntityRepository
        return new Paginator($qb->getQuery());
     }
 
-    public function getList($logement, $gender, $type, $limit) {       
+    public function getList($logement, $university, $gender, $type, $status, $limit = null) {       
        $qb = $this->createQueryBuilder('p')
                 ->leftJoin('p.logement', 'l')
+                ->leftJoin('p.etablissement', 'e')
+                ->addSelect('e')
                 ->andWhere('l.id = :logement')
-                ->setParameter('logement', $logement)
-                ->andWhere('p.status = :status')
-                ->setParameter('status', Person::$valideStatus)
-                ->andWhere('p.gender = :gender')
-                ->setParameter('gender', $gender);
+                ->setParameter('logement', $logement);
+        if($status !== 'all')
+            $qb->andWhere('p.status = :status')->setParameter('status', $status);
         if($type !== 'all')
             $qb->andWhere('p.type = :type')->setParameter('type', $type);
-
-        $qb->setMaxResults($limit)->orderBy('p.note', 'DESC');
+        if($gender !== 'all')
+            $qb->andWhere('p.gender = :gender')->setParameter('gender', $gender);
+        if(isset($university))
+            $qb->andWhere('e.id = :university')->setParameter('university', $university);
+        if(isset($limit))
+            $qb->setMaxResults($limit)->orderBy('p.note', 'DESC');
 
        return $qb->getQuery()->getResult();
     }
 
-    public function counter($logement, $status) {
+    public function counter($logement, $status = 'all', $gender = 'all', $type='all') {
         $qb = $this->createQueryBuilder('p')
                 ->select('COUNT(p)')
                 ->leftJoin('p.logement', 'l')
                 ->andWhere('l.id = :logement')
                 ->setParameter('logement', $logement);
-        if($status != 'all') 
+        if($status !== 'all') 
             $qb->andWhere('p.status like :status')->setParameter('status', $status);
+
+        if($gender !== 'all') 
+            $qb->andWhere('p.gender like :gender')->setParameter('gender', $gender);
+
+        if($type !== 'all') 
+            $qb->andWhere('p.type like :type')->setParameter('type', $type);
 
         return $qb->getQuery()->getSingleScalarResult();
     }
+
+
 }

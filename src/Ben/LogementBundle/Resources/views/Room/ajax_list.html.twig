@@ -6,9 +6,9 @@
         <td>{{ entity.block.type }}</td>
         <td>{{ entity.capacity }}</td>
         <td>{{ entity.free }}</td>
-        <td class="hide-print">
+        <td class="hidden-print">
             <div class="text-center">
-            {% if page is defined %}
+            {% if pagination is defined %}
                 <a class="btn btn-info btn-xs" href="{{ path('room_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
                 <a class="btn btn-danger btn-xs" href="{{ path('room_edit', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-edit"></span></a>
             </div>
@@ -18,23 +18,7 @@
         </td>
     </tr>
 {% endfor %}
-                
-{% if entities|length > nombreParPage %}
-<tr class="mypagination hide-print">
-    <td colspan="10">
-      <div class="text-center">
-          <ul class="pagination">
-            {% if page != 1 %}
-            <li class="previous"><a href="#" class="js-page" data-page="{{ page-1 }}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-            {% endif %}
-            <li class="active">
-              <a href="#" class="js-page" data-page="{{ page }}" >{{ page}} / {{nombrePage}}</a>
-            </li>
-            {% if page != nombrePage %}
-              <li class="next"><a href="#" class="js-page" data-page="{{ page+1 }}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-            {% endif %}
-          </ul>
-      </div>
-    </td>
-</tr>
+
+{% if pagination is defined %}
+{% include "BenLogementBundle:Default:pagination.html.twig" %}
 {% endif %}

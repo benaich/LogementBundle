@@ -3,8 +3,8 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h3><span class="glyphicon glyphicon-file"></span> Liste des réservations <a class="btn btn-primary pull-right" id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer</a></h3>
-
+<div class="col-md-12"><h3><span class="glyphicon glyphicon-file"></span> Liste des réservations</h3></div>
+<div class="col-md-9">
 <table class="table table-hover table-bordered">
     <thead>
         <tr>
@@ -36,26 +36,28 @@ Tableau de bord | {{ parent() }}
             </td>
         </tr>
     {% endfor %}
-
+    {% if pagination|length > 1 %}
+    <tr class="mypagination hide-print">
+        <td colspan="10">
+          <div class="text-center">
+              <ul class="pagination">
+                {% for p in pagination %}
+                <li{% if p.is_current %} class="active"{% endif %}>
+                  <a href="{{ path('reservation', { 'page': p.page_number }) }}" class="js-page">{{ p.label }}</a>
+                </li>
+                {% endfor %}
+              </ul>
+          </div>
+        </td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
-
-{% if entities|length > nombreParPage %}
-      <div class="text-center hide-print">
-          <ul class="pagination">
-            {% if page != 1 %}
-            <li class="previous"><a href="{{ path('reservation', { 'page': page-1 }) }}"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-            {% endif %}
-            {% for p in range(1, nombrePage) %}
-            <li{% if p == page %} class="active"{% endif %}>
-              <a href="{{ path('reservation', { 'page': p }) }}" >{{ p}}</a>
-            </li>
-            {% endfor %}
-            {% if page != nombrePage %}
-              <li class="next"><a href="{{ path('reservation', { 'page': page+1 }) }}"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-            {% endif %}
-          </ul>
-      </div>
-{% endif %}
+</div>
+<div class="col-md-3">
+    <a class="btn btn-primary btn-block" href="{{ path('reservation', { 'status': 'valide' }) }}">Reservations valide</a>
+    <a class="btn btn-primary btn-block" href="{{ path('reservation', { 'status': 'non valide' }) }}">Reservations non valide</a>
+    <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> Imprimer cette page</a>
+</div>
 
 {% endblock body %}

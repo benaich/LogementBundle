@@ -9,10 +9,12 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class userType extends AbstractType
 {
     private $isAdmin;
+    private $isOwner;
 
-    public function __construct($isAdmin = true)
+    public function __construct($isAdmin = true, $isOwner = false)
     {
         $this->isAdmin = $isAdmin;
+        $this->isOwner = $isOwner;
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -27,8 +29,10 @@ class userType extends AbstractType
             ->add('username')
             ->add('email')
             ->add('plainpassword', 'text', array('required' => false))
-            ->add('enabled', 'checkbox', array('required' => false))
-            ->add('logement');
+            ->add('enabled', 'checkbox', array('required' => false));
+            
+        if($this->isAdmin || $this->isOwner)
+            $builder->add('logement');
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

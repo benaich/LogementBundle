@@ -6,14 +6,13 @@ use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
-use FOS\MessageBundle\Model\ParticipantInterface;
 
 /**
  * @ORM\Entity(repositoryClass="UserRepository"))
  * @ORM\Table(name="user")
  * @ORM\HasLifecycleCallbacks
  */
-class User extends BaseUser implements ParticipantInterface {
+class User extends BaseUser{
 
     /**
      * @ORM\Id
@@ -242,12 +241,11 @@ class User extends BaseUser implements ParticipantInterface {
     {
         return $this->image;
     }
-    
+
     /**
-     * Set logement
+     * Get the most significant role
      *
-     * @param \Ben\LogementBundle\Entity\Logement $logement
-     * @return Logement
+     * @return string 
      */
     public function setLogement(\Ben\LogementBundle\Entity\Logement $logement = null)
     {

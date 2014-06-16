@@ -3,15 +3,38 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<div class="col-md-12"><h3>Réservation #{{ entity.id }}</h3></div>
-
+<div class="col-md-12 hidden-print"><h3>Réservation #{{ entity.id }}</h3></div>
+<h3 class="visible-print">Autorisation d'encaisse</h3>
 <div class="col-md-9">
     <table class="table table-bordered">
         <tbody>
             <tr>
-                <th>Etudiant</th>
+                <th>N° dossier</th>
+                <td>{{ entity.person.nDossier }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
                 <td>{{ entity.person.fullName }}</td>
             </tr>
+            {% if entity.person.type == person.foreign %}
+            <tr>
+                <th>N° de passport</th>
+                <td>{{ entity.person.passport }}</td>
+            </tr>
+            <tr>
+                <th>Carte de séjour</th>
+                <td>{{ entity.person.carteSejour }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <th>CIN</th>
+                <td>{{ entity.person.cin }}</td>
+            </tr>
+            <tr>
+                <th>CNE</th>
+                <td>{{ entity.person.cne }}</td>
+            </tr>
+            {% endif %}
             <tr>
                 <th>Chambre</th>
                 <td>{{ entity.room.name }}</td>
@@ -33,21 +56,30 @@ Tableau de bord | {{ parent() }}
                 <td>{{ entity.dateto|date('d/m/Y') }}</td>
             </tr>
             <tr>
-                <th>Status</th>
+                <th>Etat</th>
                 <td>{{ entity.status }}</td>
             </tr>
             <tr>
-                <th>Montant</th>
+                <th>Montant à payer</th>
                 <td>{{ entity.price }} DH</td>
             </tr>
         </tbody>
     </table>
 </div>
 
-<div class="col-md-3">
+<div class="visible-print pull-right">
+    Fait à {{ app_config.app_city }} le {{ 'now'|date('d/m/Y')}}
+</div>
+
+<div class="col-md-3 hidden-print">
     <form action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post" class="">
         {{ form_widget(delete_form) }}
         <a class="btn btn-primary btn-block" href="{{ path('reservation_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
+        {% if entity.isValide %}
+            <a class="btn btn-primary btn-block" href="{{ path('reservation_status', { 'id': entity.id, 'status': 0 }) }}"> Annuler</a>
+        {% else %}
+            <a class="btn btn-primary btn-block" href="{{ path('reservation_status', { 'id': entity.id, 'status': 1 }) }}"> Valider</a>
+        {% endif %}
         <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
         <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
     </form>

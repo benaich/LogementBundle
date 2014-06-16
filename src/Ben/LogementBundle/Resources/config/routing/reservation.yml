@@ -1,6 +1,6 @@
 reservation:
-    pattern:  /page/{page}-{perPage}
-    defaults: { _controller: "BenLogementBundle:Reservation:index", page:1,  perPage:100}
+    pattern:  /page/{page}-{perPage}/{status}
+    defaults: { _controller: "BenLogementBundle:Reservation:index", page:1,  perPage:20, status: all}
 
 reservation_show:
     pattern:  /{id}/show
@@ -28,3 +28,7 @@ reservation_delete:
     pattern:  /{id}/delete
     defaults: { _controller: "BenLogementBundle:Reservation:delete" }
     requirements: { _method: post }
+
+reservation_status:
+    pattern:  /status/{id}-{status}
+    defaults: { _controller: "BenLogementBundle:Reservation:setStatus"}

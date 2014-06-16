@@ -4,7 +4,7 @@ fos_user:
     firewall_name: main
     user_class: Ben\UserBundle\Entity\User
     from_email:
-        address:        info@knowledge.com
+        address:        info@onousc.com
         sender_name:    admin
     registration:
         confirmation:
