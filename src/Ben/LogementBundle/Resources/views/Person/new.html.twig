@@ -11,7 +11,7 @@ Tableau de bord | {{ parent() }}
 <div class="col-md-12"><h3><span class="glyphicon glyphicon-pencil"></span> Inscription d'un étudiant</h3></div>
 
 <div id="formFeedback" class="alert alert-danger col-md-12 hide"></div>
-<form id="ajaxForm" class="form-horizontal" class="form-horizontal" action="{{ path('etudiant_create') }}" method="post" {{ form_enctype(form) }}>
+<form id="ajaxForm" class="form-horizontal" action="{{ path('etudiant_create') }}" method="post" {{ form_enctype(form) }}>
     {% include "BenLogementBundle:Person:form.html.twig" %}
 
     <div class="form-group">

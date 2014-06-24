@@ -241,11 +241,11 @@ class User extends BaseUser{
     {
         return $this->image;
     }
-
+    
     /**
-     * Get the most significant role
+     * Get logement
      *
-     * @return string 
+     * @return \Ben\LogementBundle\Entity\Logement 
      */
     public function setLogement(\Ben\LogementBundle\Entity\Logement $logement = null)
     {
@@ -265,9 +265,9 @@ class User extends BaseUser{
     }
 
     /**
-     * Get logement
+     * Get the most significant role
      *
-     * @return \Ben\LogementBundle\Entity\Logement 
+     * @return string 
      */
     public function getRole()
     {

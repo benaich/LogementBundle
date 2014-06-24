@@ -253,7 +253,7 @@ class Room
     public function addReservation(\Ben\LogementBundle\Entity\Reservation $reservation)
     {
         $this->reservations[] = $reservation;
-        $reservation->setUser($this);
+        $reservation->setRoom($this);
     
         return $this;
     }

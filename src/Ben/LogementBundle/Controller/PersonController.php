@@ -311,7 +311,7 @@ class PersonController extends Controller
     }
 
     /**
-     * valider la liste elegible
+     * 
      * @Secure(roles="ROLE_USER")
      */
     public function removeSomeAction(Request $request)
