@@ -93,11 +93,12 @@ class DefaultController extends Controller
         $conn = $this->get('doctrine.dbal.sqlite_connection');
 
         $em = $this->getDoctrine()->getManager();
-        $logement = $conn->fetchAll("select *  from REFERENTIEL;")[0]['NOM'];
+        $logement = $conn->fetchAll("select * from REFERENTIEL;")[0]['NOM'];
         $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         $data_array = $conn->fetchAll("select e.*, datetime(e.DATE_NAISSANCE_ETUDIANT) as birday, datetime(e.DATE_DEBUT) as date_from, datetime(e.DATE_FIN) as date_to, datetime(p.DATE_PAY) as DATE_PAY, p.MONTANT 
          from ETUDIANT as e
          left join  PAIEMENT as p on e.N_DOSSIER = p.N_DOSSIER 
+         where e.ETAT_ETUDIANT = 'résidant'
          group by e.ID_ETUDIANT;");
         foreach ($data_array as $data) {    
             $person  = new Person();
@@ -147,6 +148,12 @@ class DefaultController extends Controller
             $em->persist($entity);
         }
         $em->flush();
+        /* update user default logement */
+        $userManager = $this->get('fos_user.user_manager');
+        $user = $this->container->get('security.context')->getToken()->getUser();
+        $user->setLogement($entity);
+        $userManager->updateUser($user);
+
         $length = count($data_array);
         $this->get('session')->getFlashBag()->add('success', "$length logement ajouté.");
         return $data_array;
@@ -164,6 +171,7 @@ class DefaultController extends Controller
             return $data['PAVILLON'];
         }, $data_array);
         $unique_aray = array_keys(array_unique($unique_aray));
+        $uniquedata = [];
         foreach ($unique_aray as $key) {
             $uniquedata[] = $data_array[$key];
         }
@@ -187,15 +195,16 @@ class DefaultController extends Controller
         $logement = $conn->fetchAll("select * from REFERENTIEL;")[0]['NOM'];
         $logement = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         $data_array = $conn->fetchAll("select *  from CHAMBRE;");
+
         $unique_aray = array_map(function($data){
              unset($data['ID_CHAMBRE'], $data['CAPACITE'], $data['LIBRE'], $data['TYPE']);
              return implode($data, '/');
         }, $data_array);
         $unique_aray = array_keys(array_unique($unique_aray));
+        $uniquedata = [];
         foreach ($unique_aray as $key) {
             $uniquedata[] = $data_array[$key];
         }
-
         foreach ($uniquedata as $data) {    
             $entity  = new Room();
             $block = $em->getRepository('BenLogementBundle:Block')->findbyLogement($logement->getId(), $data['PAVILLON']);
@@ -249,7 +258,12 @@ class DefaultController extends Controller
     {
         $conn = $this->get('doctrine.dbal.sqlite_connection');
         $em = $this->getDoctrine()->getManager();
-        $logement = $conn->fetchAll("select * from REFERENTIEL;")[0]['NOM'];
+        $logement = $conn->fetchAll("select * from REFERENTIEL;");
+        if(!$logement){
+            $this->get('session')->getFlashBag()->add('danger', "cette base de données est invalide");
+            return false;
+        }
+        $logement = $logement[0]['NOM'];
         $entity = $em->getRepository('BenLogementBundle:Logement')->findOneByName($logement);
         if ($entity)  {
             $this->get('session')->getFlashBag()->add('danger', "cette base de données a déja été importé");

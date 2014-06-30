@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Reservation
  *
- * @ORM\Table()
+ * @ORM\Table(name="reservation")
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\ReservationRepository")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -26,6 +26,13 @@ class Reservation
     /* static params */
     public static $notValideStatus  = 'non valide';
     public static $valideStatus     = 'valide';
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="reference", type="integer")
+     */
+    private $reference;
 
     /**
      * @var \DateTime $date_payement
@@ -82,7 +89,8 @@ class Reservation
         $this->date_from = new \DateTime;
         $this->date_payement = new \DateTime;
         $this->date_to = new \DateTime;
-        $this->status = Reservation::$notValideStatus;
+        $this->status = Reservation::$valideStatus;
+        $this->reference = 0;
     }
     
     /************ getters & setters  ************/
@@ -95,6 +103,27 @@ class Reservation
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * set id
+     *
+     * @param integer 
+     */
+    public function setReference($reference)
+    {
+        $this->reference = $reference;
+        return $this;
+    }
+
+    /**
+     * Get reference
+     *
+     * @return integer 
+     */
+    public function getReference()
+    {
+        return $this->reference;
     }
 
     /**

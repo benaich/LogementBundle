@@ -22,81 +22,86 @@ Tableau de bord | {{ parent() }}
 <h3><span class="glyphicon glyphicon-user"></span> Etudiant{{ entity.gender == 'Fille' ? 'e' }}: {{ entity.fullName }}</h3>
 
 </div>
-<div class="col-md-4">
-    <div class="box">
-      <header>
-          <h4><span class="glyphicon glyphicon-file"></span> Informations générale</h4>
-      </header>
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Nom :</strong> {{ entity.familyName }}
-          <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
-          </li>
-          <li class="list-group-item"><strong>Preom :</strong>  {{ entity.firstname }} 
-          <span class="pull-right text-right">{{ entity.firstnamear }} </span>
-          </li>
-          <li class="list-group-item"><strong>CIN :</strong> {{ entity.cin }}</li>
-          <li class="list-group-item"><strong>CNE :</strong> {{ entity.cne }}</li>
-          <li class="list-group-item"><strong>Sexe :</strong> {{ entity.gender }}</li>
-          <li class="list-group-item"><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
-          <li class="list-group-item"><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
-          <li class="list-group-item"><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
-          <li class="list-group-item"><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
-          <li class="list-group-item"><strong>Note du Baccalauréat :</strong> {{ entity.exellence }}</li>
-          <li class="list-group-item"><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
-        </ul>
-    </div>
+<div class="visible-print">
+  <ul class="list-unstyled">
+    <li><strong>Nom :</strong> {{ entity.familyName }}
+    <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
+    </li>
+    <li><strong>Preom :</strong>  {{ entity.firstname }} 
+    <span class="pull-right text-right">{{ entity.firstnamear }} </span>
+    </li>
+    <li><strong>CIN :</strong> {{ entity.cin }}</li>
+    <li><strong>CNE :</strong> {{ entity.cne }}</li>
+    <li><strong>Sexe :</strong> {{ entity.gender }}</li>
+    <li><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
+    <li><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
+    <li><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
+    <li><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
+    <li><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
+  </ul>
 </div>
-<div class="col-md-4">
-    <div class="box">
-      <header>
-          <h4><span class="glyphicon glyphicon-pushpin"></span> Informations de contact</h4>
-      </header>
-      <ul class="list-group">
-          <li class="list-group-item"><strong>Adresse :</strong> {{ entity.address }}</li>
-          <li class="list-group-item"><strong>Province :</strong> {{ entity.city }}</li>
-          <li class="list-group-item"><strong>Pay :</strong> {{ entity.contry }}</li>
-          <li class="list-group-item"><strong>Tél :</strong> {{ entity.tel }}</li>
-          {% if entity.type == person.foreign %}
-          <li class="list-group-item"><strong>Passeport :</strong> {{ entity.passport }}</li>
-          <li class="list-group-item"><strong>Carte de séjour :</strong> {{ entity.carteSejour }}</li>
+<div class="hidden-print">
+  <div class="col-md-4">
+      <div class="box">
+        <header>
+            <h4><span class="glyphicon glyphicon-file"></span> Informations générale</h4>
+        </header>
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Nom :</strong> {{ entity.familyName }}
+            <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
+            </li>
+            <li class="list-group-item"><strong>Preom :</strong>  {{ entity.firstname }} 
+            <span class="pull-right text-right">{{ entity.firstnamear }} </span>
+            </li>
+            <li class="list-group-item"><strong>CIN :</strong> {{ entity.cin }}</li>
+            <li class="list-group-item"><strong>CNE :</strong> {{ entity.cne }}</li>
+            <li class="list-group-item"><strong>Sexe :</strong> {{ entity.gender }}</li>
+            <li class="list-group-item"><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
+            <li class="list-group-item"><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
+            <li class="list-group-item"><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
+            <li class="list-group-item"><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
+            <li class="list-group-item"><strong>Note du Baccalauréat :</strong> {{ entity.exellence }}</li>
+            <li class="list-group-item"><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
+          </ul>
+      </div>
+  </div>
+  <div class="col-md-4">
+      <div class="box">
+          <header>
+              <h4><span class="glyphicon glyphicon-home"></span> Informations de logement</h4>
+          </header>
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
+            <li class="list-group-item"><strong>Note de logement :</strong> {{ entity.note }}</li>
+          {% if entity.isResident %}
+            <li class="list-group-item"><strong>Date début :</strong> {{ entity.reservation.dateFrom|date('d/m/Y') }}  </li>
+            <li class="list-group-item"><strong>Date fin :</strong> {{ entity.reservation.dateTo|date('d/m/Y') }} </li>
+            <li class="list-group-item"><strong>Numero de chambre :</strong> {{ entity.reservation.room.name }} </li>
+            <li class="list-group-item"><strong>Numero de pavé :</strong> {{ entity.reservation.room.block.name }} </li>
+            <li class="list-group-item"><strong>Date de payement :</strong> {{ entity.reservation.datePayement|date('d/m/Y') }}  </li>
+            <li class="list-group-item"><strong>Montant :</strong> {{ entity.reservation.price }} DH </li>
           {% endif %}
-          <li class="list-group-item"><strong>adresse email :</strong> <a href="mailto:{{ entity.email }}">{{ entity.email }}</a></li>
-      </ul>
-    </div>
+          </ul>
+      </div>
+  </div>
+  <div class="col-md-4">   
+      <div class="box">
+          <header>
+              <h4><span class="glyphicon glyphicon-tag"></span> Autres Informations</h4>
+          </header>
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Pay :</strong> {{ entity.contry }}</li>
+            <li class="list-group-item"><strong>Province :</strong> {{ entity.city }}</li>
+            <li class="list-group-item"><strong>Revenu des parents :</strong> {{ entity.parentsrevenu }} DH </li>
+            <li class="list-group-item"><strong>Nombre de frères et soeurs :</strong> {{ entity.brosisnumber }} </li>
+            {% if entity.type == person.special %}<li class="list-group-item"><strong>Comportement :</strong> {{ entity.conditionSpecial }}</li>{% endif %}
+            <li class="list-group-item"><strong>Etat :</strong> {{ entity.status }}</li>
+            <li class="list-group-item"><strong>Type :</strong> {{ entity.type }}</li>
+            <li class="list-group-item"><strong>Remarque :</strong> {{ entity.remarque }} </li>
+          </ul>
+      </div>          
+  </div>
 </div>
-<div class="col-md-4">
-    <div class="box">
-        <header>
-            <h4><span class="glyphicon glyphicon-home"></span> Informations de logement</h4>
-        </header>
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
-          <li class="list-group-item"><strong>Note de logement :</strong> {{ entity.note }}</li>
-        {% if entity.hasReservation %}
-          <li class="list-group-item"><strong>Date début :</strong> {{ entity.reservation.dateFrom|date('d/m/Y') }}  </li>
-          <li class="list-group-item"><strong>Date fin :</strong> {{ entity.reservation.dateTo|date('d/m/Y') }} </li>
-          <li class="list-group-item"><strong>Numero de chambre :</strong> {{ entity.reservation.room.name }} </li>
-          <li class="list-group-item"><strong>Numero de pavé :</strong> {{ entity.reservation.room.block.name }} </li>
-          <li class="list-group-item"><strong>Date de payement :</strong> {{ entity.reservation.datePayement|date('d/m/Y') }}  </li>
-          <li class="list-group-item"><strong>Montant :</strong> {{ entity.reservation.price }} DH </li>
-        {% endif %}
-        </ul>
-    </div>   
-    <div class="box">
-        <header>
-            <h4><span class="glyphicon glyphicon-tag"></span> Autres Informations</h4>
-        </header>
-        <ul class="list-group">
-          <li class="list-group-item"><strong>Revenu des parents :</strong> {{ entity.parentsrevenu }} DH </li>
-          <li class="list-group-item"><strong>Nombre de frères et soeurs :</strong> {{ entity.brosisnumber }} </li>
-          {% if entity.type == person.special %}<li class="list-group-item"><strong>Comportement :</strong> {{ entity.conditionSpecial }}</li>{% endif %}
-          <li class="list-group-item"><strong>Etat :</strong> {{ entity.status }}</li>
-          <li class="list-group-item"><strong>Type :</strong> {{ entity.type }}</li>
-          <li class="list-group-item"><strong>Remarque :</strong> {{ entity.remarque }} </li>
-        </ul>
-    </div>          
-</div>
-
 <form id="deleteForm" action="{{ path('etudiant_delete', { 'id': entity.id }) }}" method="post" class="">
     {{ form_widget(delete_form) }}
 </form>  

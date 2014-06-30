@@ -9,17 +9,14 @@ Tableau de bord | {{ parent() }}
 
 <div class="col-md-10">
   {% include "BenLogementBundle:Reservation:form.html.twig" %}
+
+    <div class="form-group">
+      <div class="col-sm-offset-4 col-sm-4">
+        <button type="submit" name="subvalider" class="btn btn-primary"><span class="glyphicon glyphicon-edit"></span> Mettre à jour</button>
+        <button id="js-delete" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Supprimer</button>
+      </div>
+    </div>
 </div>
-
-<div class="col-md-2">
-        <a id="js-submit" href="#" class="btn btn-primary btn-block"  data-toggle="modal" data-target="#infoModal">Liste des chambre</a>
-        <button type="submit" class="btn btn-primary btn-block"> Mettre à jour</button>
-        <a class="btn btn-primary btn-block " href="{{ path('reservation') }}"> Retourner</a>
-        <button id="js-delete" class="btn btn-danger btn-block"> Supprimer</button>
-</div>
-</form>
-
-
 
 <form id="deleteForm" action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post">
     {{ form_widget(delete_form) }}
@@ -30,7 +27,7 @@ Tableau de bord | {{ parent() }}
 {{ parent() }}
 <script> 
 (function($) {
-
+  
     var roomInput = $('#reservationtype_room'),
         jsroom = $('#js-room'),
         jsblock = $('#js-block'),

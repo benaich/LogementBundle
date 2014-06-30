@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Person
  *
- * @ORM\Table()
+ * @ORM\Table(name="person")
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\PersonRepository")
  */
 class Person
@@ -28,6 +28,7 @@ class Person
     public static $valideStatus     = 'valide';
     public static $eligibleStatus   = 'éligible';
     public static $residentStatus   = 'résidant';
+    public static $suspendedStatus   = 'suspendu';
 
     public static $foreignType      = 'etranger';
     public static $newType          = 'nouveau';
@@ -66,7 +67,6 @@ class Person
      * @var string $email
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
-     * @Assert\Email(message="adresse email non valide")
      */
     private $email;
 
@@ -969,6 +969,15 @@ class Person
      * already has a reservation
      */
     public function hasReservation()
+    {
+        if(!$this->reservation) return false;
+        return true ;
+    }
+
+    /**
+     * check if user has a valide reservation
+     */
+    public function isResident()
     {
         if(!$this->reservation) return false;
         return ($this->reservation->getStatus() === \Ben\LogementBundle\Entity\Reservation::$valideStatus) ;

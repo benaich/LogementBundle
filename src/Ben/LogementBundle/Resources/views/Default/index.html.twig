@@ -13,7 +13,7 @@ Tableau de bord | {{ parent() }}
 <div class="col-md-8">
     <div class="box">
         <header class=" hidden-print">
-            <h4><span class="glyphicon glyphicon-file"></span> Statistiques: {{ app.user.logement }}</h4>
+            <h4><span class="glyphicon glyphicon-file"></span> {{ app.user.logement }}</h4>
         </header>
         <table class="table table-hover table-bordered">
             <thead>
@@ -110,10 +110,10 @@ Tableau de bord | {{ parent() }}
       <ul class="list-group" id="contact-list">
       {% for entity in users %}
           <li class="list-group-item">
-              <div class="col-xs-12 col-sm-3">
+              <div class="col-xs-12 col-sm-3 hide">
                   <img src="{{ asset( entity.image.getwebpath)}}" alt="{{ entity.fullName }}" class="img-responsive img-circle" />
               </div>
-              <div class="col-xs-12 col-sm-9">
+              <div class="col-md-12">
                   <span class="name">{{ entity.fullName }}</span><br/>
                   <span class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip" title="{{ entity.tel }}"></span>
                   <span class="visible-xs"> <span class="text-muted">{{ entity.tel }}</span><br/></span>
@@ -125,6 +125,7 @@ Tableau de bord | {{ parent() }}
       {% endfor %}
       </ul>
     </div>
+    <a href="{{ path('update_db') }}" class="btn btn-primary btn-lg btn-block"><span class="glyphicon glyphicon-plus"></span> Ajouter une année d'ancieneté</a>
 </div>
 {% endblock body %}
 {% block javascripts %}

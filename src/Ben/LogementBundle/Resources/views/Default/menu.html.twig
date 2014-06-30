@@ -1,5 +1,6 @@
 {% set route = app.request.attributes.get('_route') %} 
 
+{% set statsMenu = ['ben_stats', 'ben_stats_univesity', 'ben_stats_diplome', 'ben_stats_age', 'ben_stats_ancientete'] %}
 
 {% set personMenu = ['etudiant','etudiant_elegible','etudiant_show','etudiant_new','etudiant_edit','etudiant_generate_list'] %} 
 {% set logementMenu = ['logement', 'logement_show', 'logement_new', 'logement_edit', 'block', 'block_show', 'block_new', 'block_edit', 'room', 'room_show', 'room_new', 'room_edit'] %} 
@@ -16,13 +17,24 @@
 <nav id="adminmenu">
     <ul class="top-menu">
         <li class="{% if route!='ben_dashboard' %}not-{% endif %}current"><a href="{{ path('ben_dashboard') }}"><span class="glyphicon glyphicon-dashboard block"></span> <span class="menu-title">Dashborad</span></a></li>
+        <li class="{% if route not in statsMenu %}not-{% endif %}current has-submenu"><a href="{{ path('ben_stats') }}"><span class="glyphicon glyphicon-stats block"></span> <span class="menu-title">Statistiques</span></a>
+            <ul class="sub-menu">
+                <li class="submenu-head">Statistiques</li>
+                <li><a href="{{ path('ben_stats') }}" {% if route in ['ben_stats'] %}class="active"{% endif %}>Province</a></li>
+                <li><a href="{{ path('ben_stats_univesity') }}" {% if route in ['ben_stats_univesity'] %}class="active"{% endif %}>Etablissement</a></li>
+                <li><a href="{{ path('ben_stats_diplome') }}" {% if route in ['ben_stats_diplome'] %}class="active"{% endif %}>Cycle d'etudes</a></li>
+                <li><a href="{{ path('ben_stats_age') }}" {% if route in ['ben_stats_age'] %}class="active"{% endif %}>Age</a></li>
+                <li><a href="{{ path('ben_stats_ancientete') }}" {% if route in ['ben_stats_ancientete'] %}class="active"{% endif %}>Ancienteté</a></li>
+            </ul>
+        </li>
         <li class="{% if route not in personMenu %}not-{% endif %}current has-submenu"><a href="{{ path('etudiant') }}"><span class="glyphicon glyphicon-user block"></span> <span class="menu-title">Etudiants</span></a>
             <ul class="sub-menu">
                 <li class="submenu-head">Etudiants</li>
-                <li><a href="{{ path('etudiant', {status : 'valide'}) }}" {% if status is defined and status == 'valide' %}class="active"{% endif %}>Liste valide</a></li>
+                <li><a href="{{ path('etudiant', {status : 'valide'}) }}" {% if status is defined and status == 'valide' %}class="active"{% endif %}>Liste des étudiants</a></li>
                 <li><a href="{{ path('etudiant_generate_list') }}" {% if route in ['etudiant_generate_list'] %}class="active"{% endif %} >Générer une liste</a></li>
                 <li><a href="{{ path('etudiant_elegible') }}" {% if route in ['etudiant_elegible'] %}class="active"{% endif %}>Liste éligibles</a></li>
                 <li><a href="{{ path('etudiant', {status : 'résidant'}) }}" {% if status is defined and status == 'résidant' %}class="active"{% endif %}>Liste résident</a></li>
+                <li><a href="{{ path('etudiant', {status : 'suspendu'}) }}" {% if status is defined and status == 'suspendu' %}class="active"{% endif %}>Liste des reservation</a></li>
                 <li><a href="{{ path('etudiant', {status : 'non valide'}) }}" {% if status is defined and status == 'non valide' %}class="active"{% endif %}>Etudiants rejetés</a></li>
             </ul>
         </li>

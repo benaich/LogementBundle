@@ -96,7 +96,7 @@ class ReservationController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
+            $this->get('session')->getFlashBag()->add('success', "Paiement effectué avec succée.");
             return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
         }
 
@@ -198,7 +198,7 @@ class ReservationController extends Controller
             $entity->getPerson()->setStatus(Person::$residentStatus);
         }else{
             $entity->setStatus(Reservation::$notValideStatus);
-            $entity->getPerson()->setStatus(Person::$notValideStatus);
+            $entity->getPerson()->setStatus(Person::$suspendedStatus);
         }
         $em->persist($entity);
         $em->flush();

@@ -27,12 +27,11 @@ Tableau de bord | {{ parent() }}
         roomForm = $('#multipleRoom'),
         zoneBefore = roomForm.find('.js-before'),
         etageBtn = roomForm.find('#etageplus');
-        etageHtml ='<div class="well relative"> <span class="label label-warning">Etage N° @@</span><div class="form-group"> <label for="" class="col-sm-4 control-label">Nombre de chambres</label> <div class="col-sm-4"> <input type="text" name="floor[@@][length]" class="form-control"> </div> </div> <div class="form-group"> <label for="" class="col-sm-4 control-label">Capacité</label> <div class="col-sm-4"> <input type="text" name="floor[@@][capacity]" class="form-control"> </div> </div> <div class="form-group"> <label for="" class="col-sm-4 control-label">Numero </label> <div class="col-sm-4"> <input type="text" name="floor[@@][number]" class="form-control"> </div> </div> </div>';
+        etageHtml ='<div class="well relative"> <span class="label label-warning">Etage N° @@</span><div class="form-group"> <label for="" class="col-sm-4 control-label">Nombre de chambres</label> <div class="col-sm-4"> <input type="text" name="floor[@@][length]" class="form-control"> </div> </div> <div class="form-group"> <label for="" class="col-sm-4 control-label">Capacité</label> <div class="col-sm-4"> <input type="text" name="floor[@@][capacity]" class="form-control"> </div> </div></div>';
         etageBtn.on('click', function(){
         	var i = etage_number++,
         	html = etageHtml;
 
-            html = html.replace('@@', i);
             html = html.replace('@@', i);
             html = html.replace('@@', i);
             html = html.replace('@@', i);

@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * Room
  *
- * @ORM\Table()
+ * @ORM\Table(name="room")
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\RoomRepository")
  * @UniqueEntity(fields={"name", "block"}, message="duplicate room")
  */

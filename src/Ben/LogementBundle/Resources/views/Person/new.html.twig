@@ -33,12 +33,12 @@ Tableau de bord | {{ parent() }}
             formFeedback = $('#formFeedback'),
             parentSelect = form.find('#university'),
             childSelect = form.find('#ben_persontype_etablissement'),
-            emailInput = form.find('#ben_persontype_email'),
             cneInput = form.find('#ben_persontype_cne'),
             cinInput = form.find('#ben_persontype_cin'),
             passportInput = form.find('#ben_persontype_passport'),
             sejourInput = form.find('#ben_persontype_carte_sejour'),
             cityInput = form.find('#ben_persontype_city'),
+            cycleInput = form.find('#ben_persontype_diplome'),
             noteInput = form.find('#ben_persontype_exellence'),
             revenuInput = form.find('#ben_persontype_parents_revenu'),
             etabInput = form.find('#ben_persontype_etablissement');
@@ -75,7 +75,7 @@ Tableau de bord | {{ parent() }}
           if(!validateCne(cneInput.val())) errors.push('CNE non valide: il doit contenir 10 chiffres');
           {% endif %}
 
-          if(!validateFloat(noteInput.val()) or parseInt(noteInput.val()) > 20) errors.push('Note du Baccalauréat non valide (ex: 15.30)');
+          if(!validateFloat(noteInput.val()) || parseInt(noteInput.val()) > 20) errors.push('Note du Baccalauréat non valide (ex: 15.30)');
           if(!validateFloat(revenuInput.val())) errors.push('Revenu des parents non valide (ex: 5700.90)');
           if(etabInput.val()==="") errors.push('L\'etablissement est obligatoire');
           if(errors.length > 0){
@@ -89,7 +89,7 @@ Tableau de bord | {{ parent() }}
         });
 
         form.find('select').removeClass('form-control').select2();
-        citiesData = ['AL HAJEB', 'AGADIR', 'AL HOCEIMA', 'AZILAL', 'BENI MELLAL', 'BENSLIMANE', 'BOUJDOUR', 'BOULEMANE', 'BERRECHID', 'CASABLANCA  ', 'CHEFCHAOUEN', 'CHTOUKA AIT BAHA', 'CHICHAOUA', 'EL JADIDA', 'EL KELAA DES SRAGHNAS', 'ERRACHIDIA  ESSAOUIRA', 'ES SEMARA', 'FES', 'FIGUIG', 'GUELMIM', 'IFRANE', 'KENITRA', 'KHEMISSET', 'KHENIFRA  ', 'KHOURIBGA', 'LAAYOUNE  ', 'LARACHE', 'MOHAMMEDIA  ', 'MARRAKECH', 'MEKNES  ', 'NADOR', 'OUARZAZATE  ', 'OUJDA', 'OUED EDDAHAB  ', 'RABAT', 'SALE', 'SKHIRAT ', 'TEMARA', 'SEFROU', 'SAFI', 'SETTAT', 'SIDI KACEM', 'TANGER', 'TAN TAN', 'TAOUNAT', 'TAROUDANNT', 'TATA', 'TAZA', 'TETOUAN', 'TIZNIT'];
+        citiesData = ['Agadir Ida Outanane','Al Haouz','Al Houceima','Meknes','Aousserd','Assa Zag','Azilal','Beni Mellal','Benslimane','Berkane','Boujdour','Boulmane','Casablanca Anfa','Al fida_Mers Sultan','Ain Sebaa_Hay Mohammadi','Ain Chok','Hay Hassani','Ben Msik','Moulay R\'chid_Sidi Otmane','Sidi Bernoussi','Chefchaouen','Chichaoua','Chtouka Ait Baha','El Hajeb','El Jadida','El Kelaa Des Sraghna','Errachidia','Essaouira','Es-smara','Fahs Anjra','Fès','Figuig','Guelmim','Ifrane','Inzegane Ait Melloul','Jerada','Kenitra','Khemisset','Khenifra','Khouribga','Laayoune','Larache','Marrakech','Mediouna','Mohammadia','Nador','Nouaceur','Oued Ed-dahab','Ouarzazate','Oujda Angad','Rabat','Safi','Salé','Sefrou','Settat','Sidi Kacem','Skhirate Temara','Tanger Assilah','Tantan','Taounate','Taourirt','Taroudant','Tata','Taza','Tetouan','M\'diq Fnidaq','Tiznit','Zagoura','Moulay Yacoub','Berrechid','Driouch','Fkih ben salah','Guercif','Midelt','Ouezzane','Rehamna','Sidi bennour','Sidi ifni','Sidi slimane','Tarfaya','Tinghir','Youssoufia'];
 
         citiesData = $.map(citiesData, function(val,index){return {id:val, text:val};});
         cityInput.removeClass('form-control').select2({
@@ -98,6 +98,14 @@ Tableau de bord | {{ parent() }}
           data: citiesData
           });
 
+        cycleData = ['Licence','DUT','Diplôme de l\'ENCG','Diplôme Ingénieur d\'Etat','Médecine','Médecine Dentaire','Doctorat','Master'];
+
+        cycleData = $.map(cycleData, function(val,index){return {id:val, text:val};});
+        cycleInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+          multiple: false,
+          data: cycleData
+          });
 
         {% if personType == person.special %}
         var specialInput = form.find('#ben_persontype_condition_special'),
@@ -115,4 +123,6 @@ Tableau de bord | {{ parent() }}
     })(jQuery);
 </script>
 {% endblock %}
+
+
 

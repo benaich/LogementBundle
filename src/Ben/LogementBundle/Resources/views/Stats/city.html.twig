@@ -1,0 +1,54 @@
+{% extends "BenLogementBundle::layout.html.twig" %}
+{% block title %}
+Tableau de bord | {{ parent() }}
+{% endblock %}
+{% block body %}
+<div class="col-md-12  hidden-print"><h3><span class="glyphicon glyphicon-stats"></span> Statistiques</h3></div>
+<div class="col-md-12  visible-print">
+    <h3 class="text-center">توزيع عدد الطلبة القاطنين حسب إقليم إقامة الأباء أوالأولياء و البلد الأصلي بالنسبة للأجانب</h3>
+    <h4 class="text-center">REPARTITION DES EFFECTIFS DES RESIDENTS SELON LA RESIDENCE DES PARENTS OU TUTEURS ET LE PAYS D'ORIGINE POUR LES ETRANGERS</h4>
+</div>
+<div class="col-md-12">
+    <div class="box">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr class="hidden-print"><th colspan="10"><div class="text-center">REPARTITION DES EFFECTIFS DES RESIDENTS SELON LA RESIDENCE DES PARENTS OU TUTEURS ET LE PAYS D'ORIGINE POUR LES ETRANGERS</div></th></tr>
+                
+                <tr>
+                    <th ROWSPAN="2">Province ou pays d'origine</th>
+                    <th colspan="2">Les deux sexes</th>
+                    <th colspan="2">Sexe féminin</th>
+                </tr>
+                <tr>
+                    <th>Global</th>
+                    <th>Nouveaux</th>
+                    <th>Global</th>
+                    <th>Nouvelles</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr>
+                    <td>{{ entity.city }}</td>
+                    <td>{{ entity.all }}</td>
+                    <td>{{ entity.allnew }}</td>
+                    <td>{{ entity.women }}</td>
+                    <td>{{ entity.womennew }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table> 
+    </div>
+</div>
+{% endblock body %}
+{% block javascripts %}
+{{ parent() }}
+
+<script> 
+(function($) { 
+    
+
+})(jQuery);
+
+</script>
+{% endblock %}

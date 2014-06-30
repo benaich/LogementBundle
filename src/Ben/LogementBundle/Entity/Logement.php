@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Logement
  *
- * @ORM\Table()
+ * @ORM\Table(name="logement")
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\LogementRepository")
  */
 class Logement

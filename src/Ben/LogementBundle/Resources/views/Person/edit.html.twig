@@ -2,6 +2,10 @@
 {% block title %}
 Tableau de bord | {{ parent() }}
 {% endblock %}
+{% block stylesheet %}
+{{ parent() }}
+        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
+{% endblock %}
 {% block body %}
 <div class="col-md-12"><h3><span class="glyphicon glyphicon-edit"></span> Mise à jour d'un etudiant</h3></div>
 <div id="formFeedback" class="alert alert-danger col-md-12 hide"></div>
@@ -21,17 +25,19 @@ Tableau de bord | {{ parent() }}
 
 {% block javascripts %}
 {{ parent() }}
+    <script src="{{ asset('js/select2.min.js') }}"></script>
 <script> 
     (function($) {
         var form = $('#ajaxForm'),
             formFeedback = $('#formFeedback'),
             parentSelect = form.find('#university'),
             childSelect = form.find('#ben_persontype_etablissement'),
-            emailInput = form.find('#ben_persontype_email'),
             cneInput = form.find('#ben_persontype_cne'),
             cinInput = form.find('#ben_persontype_cin'),
             passportInput = form.find('#ben_persontype_passport'),
             sejourInput = form.find('#ben_persontype_carte_sejour'),
+            cityInput = form.find('#ben_persontype_city'),
+            cycleInput = form.find('#ben_persontype_diplome'),
             etabInput = form.find('#ben_persontype_etablissement');
             
         parentSelect.on('change', function(){
@@ -75,6 +81,40 @@ Tableau de bord | {{ parent() }}
             return false;
           }
         });
+
+
+        form.find('select').removeClass('form-control').select2();
+        citiesData = ['Agadir Ida Outanane','Al Haouz','Al Houceima','Meknes','Aousserd','Assa Zag','Azilal','Beni Mellal','Benslimane','Berkane','Boujdour','Boulmane','Casablanca Anfa','Al fida_Mers Sultan','Ain Sebaa_Hay Mohammadi','Ain Chok','Hay Hassani','Ben Msik','Moulay R\'chid_Sidi Otmane','Sidi Bernoussi','Chefchaouen','Chichaoua','Chtouka Ait Baha','El Hajeb','El Jadida','El Kelaa Des Sraghna','Errachidia','Essaouira','Es-smara','Fahs Anjra','Fès','Figuig','Guelmim','Ifrane','Inzegane Ait Melloul','Jerada','Kenitra','Khemisset','Khenifra','Khouribga','Laayoune','Larache','Marrakech','Mediouna','Mohammadia','Nador','Nouaceur','Oued Ed-dahab','Ouarzazate','Oujda Angad','Rabat','Safi','Salé','Sefrou','Settat','Sidi Kacem','Skhirate Temara','Tanger Assilah','Tantan','Taounate','Taourirt','Taroudant','Tata','Taza','Tetouan','M\'diq Fnidaq','Tiznit','Zagoura','Moulay Yacoub','Berrechid','Driouch','Fkih ben salah','Guercif','Midelt','Ouezzane','Rehamna','Sidi bennour','Sidi ifni','Sidi slimane','Tarfaya','Tinghir','Youssoufia'];
+
+        citiesData = $.map(citiesData, function(val,index){return {id:val, text:val};});
+        cityInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+          multiple: false,
+          data: citiesData
+          });
+
+        cycleData = ['Licence','DUT','Diplôme de l\'ENCG','Diplôme Ingénieur d\'Etat','Médecine','Médecine Dentaire','Doctorat','Master'];
+
+        cycleData = $.map(cycleData, function(val,index){return {id:val, text:val};});
+        cycleInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} },
+          multiple: false,
+          data: cycleData
+          });
+        
+        {% if personType == person.special %}
+        var specialInput = form.find('#ben_persontype_condition_special'),
+            specialData = ['Handicapé', 'Ancien combattant', 'Ancien militaire', 'Pupille de l’état', 'Gendarmerie Royale militaire', 'Sud'];
+        specialData = $.map(specialData, function(val,index){return {id:val, text:val};});
+        specialInput.removeClass('form-control').select2({
+          createSearchChoice:function(term, data) { 
+            if ($(data).filter(function() { return this.text.localeCompare(term)===0; }).length===0) {return {id:term, text:term};} 
+          },
+          multiple: false,
+          data: specialData
+        });
+        {% endif %}
     })(jQuery);
 </script>
 {% endblock %}
+

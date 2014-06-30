@@ -5,8 +5,8 @@
         <td>{{ entity.fullName }}</td>
         <td>{{ entity.cin }}</td>
         <td>{{ entity.cne }}</td>
-        <td>{{ entity.status }}</td>
-        <td>{{ entity.type }}</td>
+        <td class="hidden-print">{{ entity.status }}</td>
+        <td class="hidden-print">{{ entity.type }}</td>
         <td class="hidden-print">
         <div class="text-center">
             <a class="btn" href="{{ path('reservation_new', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-check"></span> Paiement</a>

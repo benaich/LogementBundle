@@ -6,3 +6,23 @@ ben_import:
     pattern:  /import
     defaults: { _controller: BenLogementBundle:Default:import }
 
+ben_stats:
+    pattern:  /statistiques
+    defaults: { _controller: BenLogementBundle:Stats:index }
+
+ben_stats_univesity:
+    pattern:  /statistiques/univesité
+    defaults: { _controller: BenLogementBundle:Stats:statsByUniversity }
+
+ben_stats_diplome:
+    pattern:  /statistiques/cycle
+    defaults: { _controller: BenLogementBundle:Stats:statsByDiplome }
+
+ben_stats_age:
+    pattern:  /statistiques/age
+    defaults: { _controller: BenLogementBundle:Stats:statsByAge }
+
+ben_stats_ancientete:
+    pattern:  /statistiques/ancientete
+    defaults: { _controller: BenLogementBundle:Stats:statsByAncientete }
+

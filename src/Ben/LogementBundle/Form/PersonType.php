@@ -21,13 +21,10 @@ class PersonType extends AbstractType
             ->add('n_dossier')
             ->add('family_name')
             ->add('first_name')
-            ->add('email')
             ->add('bird_day', 'date', array('widget' => 'single_text'))
             ->add('gender', 'choice', array('choices' => array('Garçon' => 'Garçon','Fille' => 'Fille'),
                 'required' => false,))
-            ->add('address')
             ->add('city')
-            ->add('tel')
             ->add('etablissement')
             ->add('niveau_etude', 'choice', array('choices' => array('S1'=>'S1' ,'S2'=>'S2' ,'S3'=>'S3' ,'S4'=>'S4' ,'S5'=>'S5' ,'S6'=>'S6' ,'S7'=>'S7' ,'S8'=>'S8' ,'S9'=>'S9' ,'S10'=>'S10', '>=S11'=>'>=S11'),
                 'required' => true,))

@@ -386,6 +386,23 @@ class PersonController extends Controller
         return new Response('1');
     }
 
+
+    /**
+     * update the db to the new year
+     * @Secure(roles="ROLE_MANAGER")
+     *
+     */
+    public function addOneYearAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();        
+        $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
+        $em->getRepository('BenLogementBundle:Person')->addOneYear($logement->getId());
+
+        $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
+        return $this->redirect($this->generateUrl('etudiant'));
+    }
+
     /**
      * export to excel
      * @Secure(roles="ROLE_USER")
