@@ -12,7 +12,9 @@
                 <a class="btn btn-primary js-show btn-xs" data-toggle="tooltip" data-placement="top" title="afficher" href="{{ path('etudiant_show', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-search"></span></a>
                 <a class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="modifier" href="{{ path('etudiant_edit', { 'id': entity.id, 'type': entity.type }) }}"><span class="glyphicon glyphicon-edit"></span></a>
                 {% if entity.hasReservation %}
-                <a class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="information du paiement" href="{{ path('reservation_show', { 'id': entity.reservation.id }) }}"><span class="glyphicon glyphicon-file"></span></a>
+                <a class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="information du paiement" href="{{ path('reservation_edit', { 'id': entity.reservation.id }) }}"><span class="glyphicon glyphicon-file"></span></a>
+                {% else %}
+                <a class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="paiement" href="{{ path('reservation_new', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-file"></span></a>
                 {% endif %}
             </div>
         </td>

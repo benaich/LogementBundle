@@ -24,16 +24,10 @@ class DefaultController extends Controller
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
         if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
 
-        $data['capacityMen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'all', 'Garçon');
-        $data['capacityWomen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'all', 'Fille');
-        $data['capacity'] = $data['capacityMen'] + $data['capacityWomen'];
+        $data = $em->getRepository('BenLogementBundle:Room')->getStats($logement->getId());
 
-        $data['availableMen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'free', 'Garçon');
-        $data['availableWomen'] = $em->getRepository('BenLogementBundle:Room')->sum($logement->getId(), 'free', 'Fille');
-        $data['available'] = $data['availableMen'] + $data['availableWomen'];
-
-        $data['requestMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'all', 'Garçon');
-        $data['requestWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'all', 'Fille');
+        $data['requestMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'request', 'Garçon');
+        $data['requestWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), 'request', 'Fille');
         $data['request'] = $data['requestMen'] + $data['requestWomen'];
 
         $data['residentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon');
@@ -51,8 +45,6 @@ class DefaultController extends Controller
         $data['foreignResidentMen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Garçon', Person::$foreignType);
         $data['foreignResidentWomen'] = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), Person::$residentStatus, 'Fille', Person::$foreignType);
         $data['foreignResident'] = $data['foreignResidentMen'] + $data['foreignResidentWomen'];
-
-        $data['users'] = $em->getRepository('BenUserBundle:user')->findAll();
 
         return $this->render('BenLogementBundle:Default:index.html.twig', $data);
     }
@@ -107,27 +99,6 @@ class DefaultController extends Controller
             $person->setEtablissement($etablissement);
             $person->setLogement($logement);
             $em->persist($person);
-
-            if($person->getStatus()==='0'){
-                $reservation  = new \Ben\LogementBundle\Entity\Reservation();
-                $room = $em->getRepository('BenLogementBundle:Room')->findRoombyName($logement->getName(), $data['PAVILLON'], $data['CHAMBRE']);
-                if(!$room){
-                    $person->setStatus(Person::$valideStatus);
-                    $em->persist($person);
-                    // $room  = new Room();
-                    // $block = $em->getRepository('BenLogementBundle:Block')->findOneByName($data['PAVILLON']);
-                    // $room->setData($data);
-                    // $room->setBlock($block);
-                    // $em->persist($room);
-                }else{
-                    $reservation->setData($data);
-                    $reservation->setPerson($person);
-                    $reservation->setRoom($room);
-                    $person->setStatus(Person::$residentStatus);
-                    $em->persist($person);
-                    $em->persist($reservation);
-                }
-            }
         }
 
         $em->flush();

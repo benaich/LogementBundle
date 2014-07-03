@@ -124,4 +124,20 @@ class RoomRepository extends EntityRepository
 
         return $qb->getQuery()->getSingleScalarResult();
     }
+
+
+    public function getStats($logement) {
+        $sql1 = "
+        select * from 
+            (select SUM(capacity) capacity from room left join block on block.id =room.block_id where block.logement_id = $logement) A
+        join(select SUM(capacity) capacityMen from room left join block on block.id =room.block_id where block.type = 'Garçon' and block.logement_id = $logement) B
+        join(select SUM(capacity) capacityWomen from room left join block on block.id =room.block_id where block.type = 'Fille' and block.logement_id = $logement) C
+        join(select SUM(free) available from room left join block on block.id =room.block_id where block.logement_id = $logement) D
+        join(select SUM(free) availableMen from room left join block on block.id =room.block_id where block.type = 'Garçon' and block.logement_id = $logement) E
+        join(select SUM(free) availableWomen from room left join block on block.id =room.block_id where block.type = 'Fille' and block.logement_id = $logement) F;
+        ";
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql1);
+        $stmt->execute();
+        return  $stmt->fetchAll()[0];
+    }
 }

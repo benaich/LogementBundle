@@ -78,12 +78,7 @@ Tableau de bord | {{ parent() }}
 <div class="col-md-3 hidden-print">
     <form action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post" class="">
         {{ form_widget(delete_form) }}
-        <a class="btn btn-primary btn-block" href="{{ path('reservation_edit', { 'id': entity.id }) }}"> Mettre à jour</a>
-        {% if entity.isValide %}
-            <a class="btn btn-primary btn-block" href="{{ path('reservation_status', { 'id': entity.id, 'status': 0 }) }}"> Annuler</a>
-        {% else %}
-            <a class="btn btn-primary btn-block" href="{{ path('reservation_status', { 'id': entity.id, 'status': 1 }) }}"> Valider</a>
-        {% endif %}
+        <a class="btn btn-primary btn-block" href="{{ path('reservation_edit', { 'id': entity.id }) }}"> Modifier</a>
         <a id="btnPrint" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-print"></span> imprimer</a>
         <button type="submit" class="btn btn-embossed btn-danger btn-block"> Supprimer </button>
     </form>

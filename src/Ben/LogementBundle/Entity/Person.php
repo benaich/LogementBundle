@@ -5,6 +5,7 @@ namespace Ben\LogementBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Person
@@ -29,6 +30,7 @@ class Person
     public static $eligibleStatus   = 'éligible';
     public static $residentStatus   = 'résidant';
     public static $suspendedStatus   = 'suspendu';
+    public static $archiveStatus   = 'archive';
 
     public static $foreignType      = 'etranger';
     public static $newType          = 'nouveau';
@@ -226,11 +228,26 @@ class Person
     private $obtention_bac;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="bac_year", type="integer")
+     */
+    private $bac_year;
+
+    /**
      * @var float
      *
      * @ORM\Column(name="note", type="float")
      */
     private $note;
+
+    /**
+     * @var \DateTime $created
+     *
+     * @ORM\Column(name="created", type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $created;
 
     /**
     * @ORM\OneToOne(targetEntity="Ben\LogementBundle\Entity\Reservation", mappedBy="person", cascade={"remove", "persist"})
@@ -254,6 +271,7 @@ class Person
     public function __construct()
     {
         $this->bird_day =  new \DateTime;
+        $this->created = new \DateTime;
         $this->note=0;
         $this->ancientete = 1;
         $this->parents_revenu=0;
@@ -622,6 +640,29 @@ class Person
     }
 
     /**
+     * Set bac_year
+     *
+     * @param string $bac_year
+     * @return Person
+     */
+    public function setBacYear($bac_year)
+    {
+        $this->bac_year = $bac_year;
+    
+        return $this;
+    }
+
+    /**
+     * Get bac_year
+     *
+     * @return string 
+     */
+    public function getBacYear()
+    {
+        return $this->bac_year;
+    }
+
+    /**
      * Set family_name
      *
      * @param string $familyName
@@ -932,6 +973,27 @@ class Person
     }
 
     /**
+     * Set created
+     *
+     * @param \DateTime $created
+     * @return User
+     */
+    public function setCreated($created) {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    /**
+     * Get created
+     *
+     * @return \DateTime 
+     */
+    public function getCreated() {
+        return $this->created;
+    }
+
+    /**
      * set reservation
      *
      * @param Ben\LogementBundle\Entity\Reservation $reservation
@@ -1063,8 +1125,6 @@ class Person
         if ($exellence > 19 ) $exellence=10;
         else $exellence=$exellence%10 +1;
 
-
-
         $note = $revenu * 20 + $brothers * 5 + $level * 0.5 + $exellence * 2;
         $this->setNote($note);
     }
@@ -1095,17 +1155,16 @@ class Person
         $this->setPassport($data['PASSPORT']);
         $this->setCarteSejour($data['CARTE_SEJOUR']);
         $this->setExellence($data['EXCELLENCE']);
+        $this->created->modify('-1 year');
 
         $this->type = ($data['COMPORTEMENT'] != '') ? 'special' : 'ancien';
         $this->type = ($data['PASSPORT'] != '') ? 'etranger' : $this->type;
 
-        if($this->getStatus() === 'non résidant') {
-            $this->setStatus(Person::$valideStatus);
-            if($this->getAncientete() === 1) $this->type = Person::$newType;
-        }
-        elseif($this->getStatus() === Person::$residentStatus) $this->setStatus('0');
+        $this->setStatus(Person::$suspendedStatus);
 
         $this->calculateNote();
+
+        
     
         return $this;
     }

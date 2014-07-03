@@ -4,11 +4,12 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     {% set addr = app.request.server.get('SERVER_ADDR') %} 
-    <link href="http://{{ addr }}/logement/web/bootstrap/css/bootstrap.css" rel="stylesheet">
+    {% set addr = 'http://' ~ app.request.server.get('SERVER_ADDR') %} 
+    <link href="{{ addr ~ asset('bootstrap/css/bootstrap.css') }}" rel="stylesheet">
     <title>onousc</title>
 </head>
 <body>
-  <div class="col-md-12 text-left"><img src="http://{{ addr }}/logement/web/images/header.png" alt="logo" /></div>
+  <div class="col-md-12 text-left"><img src="{{ addr ~ asset('images/header.png') }}"/></div>
   <h3><span class="glyphicon glyphicon-user"></span> Liste des étudiants  
  {% if type != 'all' %}{{ type }}{% endif %}
  {% if status != 'all' %}{{ status }}{% endif %}
@@ -17,6 +18,7 @@
   <table class="table table-striped table-hover table-bordered">
       <thead>
           <tr>
+              <th>#</th>
               <th>N° dossier</th>
               <th>CNE</th>
               <th>Nom</th>
@@ -35,6 +37,7 @@
       <tbody id="dataContainer">
           {% for entity in entities %}
             <tr>
+              <td>{{ loop.index }}</td>
               <td>{{ entity.ndossier }}</td>
               <td>{{ entity.cne }}</td>
               <td>{{ entity.familyName }}</td>

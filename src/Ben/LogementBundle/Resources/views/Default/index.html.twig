@@ -101,32 +101,6 @@ Tableau de bord | {{ parent() }}
         </div> 
     </div>
 </div>
-
-<div class="col-md-4 hidden-print">
-    <div class="box">
-      <header>
-          <h4><span class="glyphicon glyphicon-user"></span> Contacts</h4>
-      </header>
-      <ul class="list-group" id="contact-list">
-      {% for entity in users %}
-          <li class="list-group-item">
-              <div class="col-xs-12 col-sm-3 hide">
-                  <img src="{{ asset( entity.image.getwebpath)}}" alt="{{ entity.fullName }}" class="img-responsive img-circle" />
-              </div>
-              <div class="col-md-12">
-                  <span class="name">{{ entity.fullName }}</span><br/>
-                  <span class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip" title="{{ entity.tel }}"></span>
-                  <span class="visible-xs"> <span class="text-muted">{{ entity.tel }}</span><br/></span>
-                  <span class="glyphicon glyphicon-envelope text-muted c-info" data-toggle="tooltip" title="{{ entity.email }}"></span>
-                  <span class="visible-xs"> <span class="text-muted">{{ entity.email }}</span><br/></span>
-              </div>
-              <div class="clearfix"></div>
-          </li>
-      {% endfor %}
-      </ul>
-    </div>
-    <a href="{{ path('update_db') }}" class="btn btn-primary btn-lg btn-block"><span class="glyphicon glyphicon-plus"></span> Ajouter une année d'ancieneté</a>
-</div>
 {% endblock body %}
 {% block javascripts %}
 {{ parent() }}

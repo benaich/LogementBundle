@@ -3,7 +3,8 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<div class="col-md-12  hidden-print"><h3><span class="glyphicon glyphicon-stats"></span> Statistiques</h3></div>
+<div class="col-md-12  hidden-print"><h3><span class="glyphicon glyphicon-stats"></span> Statistiques 
+<a id="btnPrint" class="btn btn-default pull-right"><span class="glyphicon glyphicon-print"></span> imprimer</a></h3></div>
 <div class="col-md-12  visible-print">
     <h3 class="text-center">توزيع عدد الطلبة القاطنين حسب سنوات الإقامة</h3>
     <h4 class="text-center">REPARTITION DES EFFECTIFS DES RESIDENTS SELON LE NOMBRE D'ANNEES D'HEBERGEMENT</h4>
@@ -15,8 +16,8 @@ Tableau de bord | {{ parent() }}
                 <tr class="hidden-print"><th colspan="10"><div class="text-center">REPARTITION DES EFFECTIFS DES RESIDENTS SELON LE NOMBRE D'ANNEES D'HEBERGEMENT</div></th></tr>
                 <tr>
                     <th ROWSPAN="2">Nombre d'années d'hebergement</th>
-                    <th colspan="3">Les deux sexes</th>
-                    <th colspan="3">Sexe féminin</th>
+                    <th colspan="2">Les deux sexes</th>
+                    <th colspan="2">Sexe féminin</th>
                 </tr>
                 <tr>
                     <th>Global</th>

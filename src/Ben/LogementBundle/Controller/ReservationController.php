@@ -61,14 +61,14 @@ class ReservationController extends Controller
      */
     public function newAction(Person $person)
     {
-        if ($person->hasReservation()) {
+        /*if ($person->hasReservation()) {
             $this->get('session')->getFlashBag()->add('success', "L'étudiant est déja résidant.");
             $person->setStatus(Person::$residentStatus);
             $em = $this->getDoctrine()->getManager();
             $em->persist($person);
             $em->flush();
             return $this->redirect($this->generateUrl('etudiant_show', array('id' => $person->getId())));
-        }
+        }*/
         $entity = new Reservation();
         $entity->setPerson($person);
         $form   = $this->createForm(new ReservationType(), $entity);
@@ -92,6 +92,12 @@ class ReservationController extends Controller
 
         if ($form->isValid()) {
             $entity->getRoom()->minusFree();
+            if($entity->getStatus() === Reservation::$valideStatus){
+                $entity->getPerson()->setStatus(Person::$residentStatus);
+            }else{
+                $entity->getPerson()->setStatus(Person::$suspendedStatus);
+            }
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
@@ -145,11 +151,17 @@ class ReservationController extends Controller
                 $entity->getRoom()->minusFree();
                 $em->persist($room);
             }
+            
+            if($entity->getStatus() === Reservation::$valideStatus){
+                $entity->getPerson()->setStatus(Person::$residentStatus);
+            }else{
+                $entity->getPerson()->setStatus(Person::$suspendedStatus);
+            }
             $em->persist($entity);
             $em->flush();
 
             $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
-            return $this->redirect($this->generateUrl('reservation_edit', array('id' => $entity->getId())));
+            return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
         }
 
         return $this->render('BenLogementBundle:Reservation:edit.html.twig', array(

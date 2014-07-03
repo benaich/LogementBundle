@@ -283,7 +283,7 @@ class Room
         $this->setName($data['NOM_CHAMBRE']);
         $this->setCapacity($data['CAPACITE']);
         $this->setFloor($data['ETAGE']);
-        $this->setFree($data['LIBRE']);
+        $this->setFree($data['CAPACITE']);
         return $this;
     }
 }

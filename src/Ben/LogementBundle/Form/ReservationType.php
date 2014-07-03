@@ -17,6 +17,7 @@ class ReservationType extends AbstractType
             ->add('price')
             ->add('person')
             ->add('room')
+            ->add('status', 'choice', array('choices' => array('valide' => 'valide','non valide' => 'non valide')))
             ->add('oldroom', 'hidden')
         ;
     }

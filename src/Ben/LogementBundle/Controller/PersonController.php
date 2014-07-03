@@ -32,7 +32,7 @@ class PersonController extends Controller
         $universities = $em->getRepository('BenLogementBundle:University')->findByType('etablissement');
         $entitiesLength = $em->getRepository('BenLogementBundle:Person')->counter($logement->getId(), $status);
         $template = 'index';
-        $template = ($status === Person::$notValideStatus) ? 'rejected' : $template;
+        $template = ($status === Person::$notValideStatus || $status === Person::$archiveStatus) ? 'rejected' : $template;
         $template="BenLogementBundle:Person:$template.html.twig";
         return $this->render($template, array(
                     'status' => $status,
@@ -400,7 +400,7 @@ class PersonController extends Controller
         $em->getRepository('BenLogementBundle:Person')->addOneYear($logement->getId());
 
         $this->get('session')->getFlashBag()->add('success', "Action effectué avec succée.");
-        return $this->redirect($this->generateUrl('etudiant'));
+        return $this->redirect($this->generateUrl('ben_dashboard'));
     }
 
     /**
@@ -420,61 +420,59 @@ class PersonController extends Controller
        $phpExcelObject->getProperties()->setCreator("onousc");
        $phpExcelObject->setActiveSheetIndex(0)
             ->setCellValue("A1", "Id")
-            ->setCellValue("B1", "Nom")
-            ->setCellValue("C1", "Prenom")
-            ->setCellValue("D1", "CIN")
-            ->setCellValue("E1", "CNE")
-            ->setCellValue("F1", "Email")
-            ->setCellValue("G1", "Sexe")
-            ->setCellValue("H1", "Adresse")
-            ->setCellValue("I1", "Province")
-            ->setCellValue("J1", "Pays")
-            ->setCellValue("K1", "Telephone")
-            ->setCellValue("L1", "Note de lgement")
-            ->setCellValue("M1", "Revenu des parents")
-            ->setCellValue("N1", "Nombre des fréres/soeurs")
-            ->setCellValue("O1", "Niveau d'etude")
-            ->setCellValue("P1", "Etat")
-            ->setCellValue("Q1", "N° dossier")
-            ->setCellValue("R1", "Comportement")
-            ->setCellValue("S1", "Ancienneté")
-            ->setCellValue("T1", "Cycle d'étude")
-            ->setCellValue("U1", "Remarque")
-            ->setCellValue("V1", "N° passport")
-            ->setCellValue("W1", "Carte de sejour")
-            ->setCellValue("X1", "Note du Baccalauréat")
-            ->setCellValue("Y1", "Etablissement")
-            ->setCellValue("Z1", "Date de naissance");
+            ->setCellValue("B1", "N° dossier")
+            ->setCellValue("C1", "Nom")
+            ->setCellValue("D1", "Prenom")
+            ->setCellValue("E1", "CIN")
+            ->setCellValue("F1", "CNE")
+            ->setCellValue("G1", "N° passport")
+            ->setCellValue("H1", "Carte de sejour")
+            ->setCellValue("I1", "Date de naissance")
+            ->setCellValue("J1", "Sexe")
+            ->setCellValue("K1", "Ancienneté")
+            ->setCellValue("L1", "Pays")
+            ->setCellValue("M1", "Province")
+            ->setCellValue("N1", "Etablissement")
+            ->setCellValue("O1", "Cycle d'étude")
+            ->setCellValue("P1", "Niveau d'etude")
+            ->setCellValue("Q1", "Revenu des parents")
+            ->setCellValue("R1", "Année d'obtention du bac")
+            ->setCellValue("S1", "Note du Baccalauréat")
+            ->setCellValue("T1", "Nombre des fréres/soeurs")
+            ->setCellValue("U1", "Note de lgement")
+            ->setCellValue("V1", "Etat")
+            ->setCellValue("W1", "Comportement")
+            ->setCellValue("X1", "Remarque")
+            ->setCellValue("Y1", "Date 'inscription");
        $i=2;
        foreach ($entities as $entity) {
             $university = ($entity->getEtablissement()) ? $entity->getEtablissement()->getName() : '';
            $phpExcelObject->setActiveSheetIndex(0)
                 ->setCellValue("A$i", $entity->getId())
-                ->setCellValue("B$i", $entity->getFamilyName())
-                ->setCellValue("C$i", $entity->getFirstName())
-                ->setCellValue("D$i", $entity->getCin())
-                ->setCellValue("E$i", $entity->getCne())
-                ->setCellValue("F$i", $entity->getEmail())
-                ->setCellValue("G$i", $entity->getGender())
-                ->setCellValue("H$i", $entity->getAddress())
-                ->setCellValue("I$i", $entity->getCity())
-                ->setCellValue("J$i", $entity->getContry())
-                ->setCellValue("K$i", $entity->getTel())
-                ->setCellValue("L$i", $entity->getNote())
-                ->setCellValue("M$i", $entity->getParentsRevenu())
-                ->setCellValue("N$i", $entity->getBroSisNumber())
-                ->setCellValue("O$i", $entity->getNiveauEtude())
-                ->setCellValue("P$i", $entity->getStatus())
-                ->setCellValue("Q$i", $entity->getNDossier())
-                ->setCellValue("R$i", $entity->getConditionSpecial())
-                ->setCellValue("S$i", $entity->getAncientete())
-                ->setCellValue("T$i", $entity->getDiplome())
-                ->setCellValue("U$i", $entity->getRemarque())
-                ->setCellValue("V$i", $entity->getPassport())
-                ->setCellValue("W$i", $entity->getCarteSejour())
-                ->setCellValue("X$i", $entity->getExellence())
-                ->setCellValue("Y$i", $university)
-                ->setCellValue("Z$i", $entity->getBirdDay()->format('d/m/Y'));
+                ->setCellValue("B$i", $entity->getNDossier())
+                ->setCellValue("C$i", $entity->getFamilyName())
+                ->setCellValue("D$i", $entity->getFirstName())
+                ->setCellValue("E$i", $entity->getCin())
+                ->setCellValue("F$i", $entity->getCne())
+                ->setCellValue("G$i", $entity->getPassport())
+                ->setCellValue("H$i", $entity->getCarteSejour())
+                ->setCellValue("I$i", $entity->getBirdDay()->format('d/m/Y'))
+                ->setCellValue("J$i", $entity->getGender())
+                ->setCellValue("K$i", $entity->getAncientete())
+                ->setCellValue("L$i", $entity->getContry())
+                ->setCellValue("M$i", $entity->getCity())
+                ->setCellValue("N$i", $university)
+                ->setCellValue("O$i", $entity->getDiplome())
+                ->setCellValue("P$i", $entity->getNiveauEtude())
+                ->setCellValue("Q$i", $entity->getParentsRevenu())
+                ->setCellValue("R$i", $entity->getBacYear())
+                ->setCellValue("S$i", $entity->getExellence())
+                ->setCellValue("T$i", $entity->getBroSisNumber())
+                ->setCellValue("U$i", $entity->getNote())
+                ->setCellValue("V$i", $entity->getStatus())
+                ->setCellValue("W$i", $entity->getConditionSpecial())
+                ->setCellValue("X$i", $entity->getRemarque())
+                ->setCellValue("Y$i", $entity->getCreated()->format('d/m/Y'));
             $i++;
        }
 
@@ -512,6 +510,7 @@ class PersonController extends Controller
 
         $now = new \DateTime;
         $now = $now->format('d-m-Y_H-i');
+
         $html = $this->renderView('BenLogementBundle:Person:print.html.twig', array(
             'entities' => $entities,
             'type' => $type,
@@ -525,18 +524,5 @@ class PersonController extends Controller
                 'Content-Disposition'   => 'attachment; filename="file'.$now.'.pdf"'
             )
         );
-    }
-
-
-    /**
-     * render html response to the pdf function
-     * temporary function just for testing 
-     */
-    public function prepareToPdfAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entities = $em->getRepository('BenLogementBundle:Person')->findByStatus(Person::$residentStatus);
-
-        return $this->render('BenLogementBundle:Person:print.html.twig', array('entities' => $entities, 'type' => 'all'));
     }
 }

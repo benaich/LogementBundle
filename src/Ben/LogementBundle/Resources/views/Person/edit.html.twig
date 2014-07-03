@@ -64,14 +64,20 @@ Tableau de bord | {{ parent() }}
         form.submit(function(){
           var errors = [],
               html='';
+
           {% if personType == person.foreign %}
-          if(passportInput.val()==="") errors.push('N° passport est obligatoire');
-          if(sejourInput.val()==="") errors.push('N° de la carte de séjour est obligatoire');
+            if(passportInput.val()==="") errors.push('N° passport est obligatoire');
+            if(sejourInput.val()==="") errors.push('N° de la carte de séjour est obligatoire');
           {% else %}
-          if(!validateCin(cinInput.val())) errors.push('Cin non valide ');
-          if(!validateCne(cneInput.val())) errors.push('Cne non valide: il doit contenir 10 chiffres');
+            if(!validateCin(cinInput.val())) errors.push('CIN non valide ');
+            if(!validateCne(cneInput.val())) errors.push('CNE non valide: il doit contenir 10 chiffres');
+          {% endif %}
+          {% if personType == person.new %}
+            if(!validateFloat(noteInput.val()) || parseInt(noteInput.val()) > 20) errors.push('Note du Baccalauréat non valide (ex: 15.30)');
+            if(!validateFloat(revenuInput.val())) errors.push('Revenu des parents non valide (ex: 5700.90)');
           {% endif %}
           if(etabInput.val()==="") errors.push('L\'etablissement est obligatoire');
+
           if(errors.length > 0){
             html = '<ul><li>';
             html += errors.join('</li><li>');

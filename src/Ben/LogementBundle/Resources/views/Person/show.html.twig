@@ -4,6 +4,38 @@ Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
 
+
+<div class="visible-print">
+
+<h3><span class="glyphicon glyphicon-user"></span> Fiche étudiant</h3>
+<table class="table table-hover table-bordered">
+  <tr>
+    <td>CNE</td><td>CIN</td><td>Nom</td>
+  </tr>
+  <tr>
+    <td>{{ entity.cne }}</td><td>{{ entity.cin }}</td><td>{{ entity.fullName }}</td>
+  </tr>
+</table>
+  <ul class="list-unstyled list-print">
+    <li><strong>Nom :</strong> {{ entity.familyName }}</li>
+    <li><strong>Preom :</strong>  {{ entity.firstname }}</li>
+    <li><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
+    <li><strong>CNE :</strong> {{ entity.cne }}</li>
+    <li><strong>CIN :</strong> {{ entity.cin }}</li>
+    <li><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
+    <li><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
+    <li><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
+    <li><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
+  {% if entity.isResident %}
+    <li><strong>Numero de la chambre :</strong> {{ entity.reservation.room.name }} </li>
+    <li><strong>Numero du pavillon :</strong> {{ entity.reservation.room.block.name }} </li>
+    <li><strong>Ancienceté :</strong> {{ entity.ancientete }} </li>
+  {% endif %}
+  </ul>
+</div>
+
+
+<div class="hidden-print">
 <div class="col-md-12">
 <div class="btn-group pull-right" style="margin-top: 15px;">              
   <button class="btn btn-primary "><span class="glyphicon glyphicon-cog"></span> Action</button>
@@ -22,25 +54,6 @@ Tableau de bord | {{ parent() }}
 <h3><span class="glyphicon glyphicon-user"></span> Etudiant{{ entity.gender == 'Fille' ? 'e' }}: {{ entity.fullName }}</h3>
 
 </div>
-<div class="visible-print">
-  <ul class="list-unstyled">
-    <li><strong>Nom :</strong> {{ entity.familyName }}
-    <span class="pull-right text-right">{{ entity.familyNameAr }} </span>
-    </li>
-    <li><strong>Preom :</strong>  {{ entity.firstname }} 
-    <span class="pull-right text-right">{{ entity.firstnamear }} </span>
-    </li>
-    <li><strong>CIN :</strong> {{ entity.cin }}</li>
-    <li><strong>CNE :</strong> {{ entity.cne }}</li>
-    <li><strong>Sexe :</strong> {{ entity.gender }}</li>
-    <li><strong>Date de naissance :</strong> {% if entity.birdday %}{{ entity.birdday|date('d/m/Y') }}{% endif %}</li>
-    <li><strong>Université :</strong> {% if entity.etablissement %}{{ entity.etablissement.parent }}{% endif %}</li>
-    <li><strong>Etablissement :</strong> {{ entity.etablissement }}</li>
-    <li><strong>Cycle d'etude :</strong> {{ entity.diplome }}</li>
-    <li><strong>Niveau d'etude :</strong> {{ entity.niveauetude }}</li>
-  </ul>
-</div>
-<div class="hidden-print">
   <div class="col-md-4">
       <div class="box">
         <header>
@@ -71,8 +84,9 @@ Tableau de bord | {{ parent() }}
               <h4><span class="glyphicon glyphicon-home"></span> Informations de logement</h4>
           </header>
           <ul class="list-group">
-            <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
+            <li class="list-group-item"><strong>Date d'inscription :</strong> {% if entity.created %}{{ entity.created|date('d/m/Y') }}{% endif %}</li>
             <li class="list-group-item"><strong>Note de logement :</strong> {{ entity.note }}</li>
+            <li class="list-group-item"><strong>Ancienceté :</strong> {{ entity.ancientete }} ans</li>
           {% if entity.isResident %}
             <li class="list-group-item"><strong>Date début :</strong> {{ entity.reservation.dateFrom|date('d/m/Y') }}  </li>
             <li class="list-group-item"><strong>Date fin :</strong> {{ entity.reservation.dateTo|date('d/m/Y') }} </li>

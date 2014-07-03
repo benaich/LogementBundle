@@ -66,6 +66,8 @@ Tableau de bord | {{ parent() }}
                       <li><a href="{{ path('etudiant_to_pdf', {status:status}) }}" id="js-print-all"><span class="glyphicon glyphicon-print"></span> imprimer tout</a></li>
                     <li><a href="#" data-toggle="modal" data-target="#confirmationModal"><span class="glyphicon glyphicon-ban-circle"></span> Rejeter</a></li>
                     <li><a href="#" id="js-delete"><span class="glyphicon glyphicon-trash"></span> Supprimer</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ path('update_db') }}"><span class="glyphicon glyphicon-wrench"></span> Ajouter une année d'ancieneté</a></li>
                   </ul>
                 </div>
               </div>

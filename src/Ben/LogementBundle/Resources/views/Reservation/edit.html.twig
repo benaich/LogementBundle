@@ -3,11 +3,9 @@
 Tableau de bord | {{ parent() }}
 {% endblock %}
 {% block body %}
-<h3>modification d'une réservation</h3>
+<h3>Modification d'une réservation</h3>
 
 <form class="form-horizontal" action="{{ path('reservation_update', { 'id': entity.id }) }}" method="post" {{ form_enctype(form) }}>
-
-<div class="col-md-10">
   {% include "BenLogementBundle:Reservation:form.html.twig" %}
 
     <div class="form-group">
@@ -16,7 +14,6 @@ Tableau de bord | {{ parent() }}
         <button id="js-delete" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Supprimer</button>
       </div>
     </div>
-</div>
 
 <form id="deleteForm" action="{{ path('reservation_delete', { 'id': entity.id }) }}" method="post">
     {{ form_widget(delete_form) }}

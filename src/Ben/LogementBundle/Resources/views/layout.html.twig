@@ -17,7 +17,7 @@
         <link href="{{ asset('css/layout.css') }}" rel="stylesheet">
         <link href="{{ asset('css/main.css') }}" rel="stylesheet">
     {% endblock %}
-    <title>{% block title %}onousc{% endblock %}</title>
+    <title>{% block title %}{{ app_config.app_name }}{% endblock %}</title>
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('icon.png') }}" />
     <style>{{ app_config.app_css }}</style>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements. All other JS at the end of file. -->

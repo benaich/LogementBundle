@@ -88,19 +88,14 @@ class PersonRepository extends EntityRepository
     public function addOneYear($logement)
     {
         // reomve non resident
-        $sql1 = "DELETE FROM reservation
-                where reservation.person_id IN 
+        $sql1 = "DELETE FROM reservation where person_id IN 
                 (select id from person where status != 'résidant' and logement_id = $logement)";
-        $sql2 = "DELETE FROM person 
-                where status != 'résidant' and logement_id =$logement";
+        $sql2 = "DELETE FROM person where status != 'résidant' and logement_id = $logement";
+        $sql2 = "UPDATE person set remarque = status where status != 'résidant' and logement_id = $logement";
+        $sql22 = "UPDATE person set status = 'archive' where status != 'résidant' and logement_id = $logement";
         // disable resident users        
-        $sql3 = "UPDATE person
-                set status = 'suspendu', ancientete = ancientete + 1
-                where logement_id = $logement";
-        $sql4 = "UPDATE person
-                set type = 'ancien'
-                where type = 'nouveau'
-                and logement_id = $logement";
+        $sql3 = "UPDATE person set status = 'suspendu', ancientete = ancientete + 1 where status = 'résidant' and logement_id = $logement";
+        $sql4 = "UPDATE person set type = 'ancien' where type = 'nouveau' and status != 'archive' and logement_id = $logement";
         $sql5 = "UPDATE reservation 
                 left join person on person.id = reservation.person_id
                 set reservation.status = 'non valide'
@@ -109,6 +104,7 @@ class PersonRepository extends EntityRepository
         $stmt = $this->getEntityManager()->getConnection();
         $stmt->prepare($sql1)->execute();
         $stmt->prepare($sql2)->execute();
+        $stmt->prepare($sql22)->execute();
         $stmt->prepare($sql3)->execute();
         $stmt->prepare($sql4)->execute();
         $stmt->prepare($sql5)->execute();
@@ -120,8 +116,11 @@ class PersonRepository extends EntityRepository
                 ->leftJoin('p.logement', 'l')
                 ->andWhere('l.id = :logement')
                 ->setParameter('logement', $logement);
-        if($status !== 'all') 
-            $qb->andWhere('p.status like :status')->setParameter('status', $status);
+        if($status !== 'all')
+            if($status === 'request') 
+                $qb->andWhere("p.ancientete = 1 and p.status != 'archive' and p.status != 'suspendu' or p.status = 'résidant'");
+                // $qb->andWhere('SUBSTRING(CURRENT_DATE(),1,10) = SUBSTRING(p.created,1,10) or p.status like :status')->setParameter('status', Person::$residentStatus);
+            else $qb->andWhere('p.status like :status')->setParameter('status', $status);
 
         if($gender !== 'all') 
             $qb->andWhere('p.gender like :gender')->setParameter('gender', $gender);
@@ -169,12 +168,12 @@ class PersonRepository extends EntityRepository
     public function statsByDiplome($logement) {
         $sql1 = "
         select * from
-        (SELECT diplome, count(*) as 'all' FROM person where logement_id = $logement and status = 'résidant' group by diplome order By diplome ASC) A
-        left join (SELECT  diplome as diplome1, count(*) as 'allnew' FROM person where type = 'nouveau' and status = 'résidant' and logement_id = $logement group by diplome) B on B.diplome1 = A.diplome
-        left join (SELECT  diplome as diplome2, count(*) as 'women' FROM person where gender = 'FILLE' and status = 'résidant' and logement_id = $logement group by diplome) C on C.diplome2 = A.diplome
-        left join (SELECT  diplome as diplome3, count(*) as 'womennew' FROM person where gender = 'FILLE' and status = 'résidant' and type = 'nouveau' and logement_id = $logement group by diplome) D on D.diplome3 = A.diplome
-        left join (SELECT  diplome as diplome4, count(*) as 'womenforeign' FROM person where gender = 'FILLE' and status = 'résidant' and person.type = 'etranger' and logement_id = $logement group by diplome) E on E.diplome4 = A.diplome
-        left join (SELECT  diplome as diplome5, count(*) as 'allforeign' FROM person where person.type = 'etranger' and status = 'résidant' and logement_id = $logement group by diplome) F on F.diplome5 = A.diplome
+        (select diplome, niveau_etude, count(*) as 'all' FROM person where logement_id = $logement and status = 'résidant' group by diplome, niveau_etude order By diplome ASC) A
+        left join (select diplome as diplome1, niveau_etude as niveau_etude1, count(*) as 'allnew' FROM person where type = 'nouveau' and status = 'résidant' and logement_id = $logement group by diplome, niveau_etude) B on B.diplome1 = A.diplome and B.niveau_etude1 = A.niveau_etude
+        left join (select diplome as diplome2, niveau_etude as niveau_etude2, count(*) as 'women' FROM person where gender = 'FILLE' and status = 'résidant' and logement_id = $logement group by diplome, niveau_etude) C on C.diplome2 = A.diplome and C.niveau_etude2 = A.niveau_etude
+        left join (select diplome as diplome3, niveau_etude as niveau_etude3, count(*) as 'womennew' FROM person where gender = 'FILLE' and status = 'résidant' and type = 'nouveau' and logement_id = $logement group by diplome, niveau_etude) D on D.diplome3 = A.diplome and D.niveau_etude3 = A.niveau_etude
+        left join (select diplome as diplome4, niveau_etude as niveau_etude4, count(*) as 'womenforeign' FROM person where gender = 'FILLE' and status = 'résidant' and person.type = 'etranger' and logement_id = $logement group by diplome, niveau_etude) E on E.diplome4 = A.diplome and E.niveau_etude4 = A.niveau_etude
+        left join (select diplome as diplome5, niveau_etude as niveau_etude5, count(*) as 'allforeign' FROM person where person.type = 'etranger' and status = 'résidant' and logement_id = $logement group by diplome, niveau_etude) F on F.diplome5 = A.diplome and F.niveau_etude5 = A.niveau_etude 
         ";
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql1);
         $stmt->execute();
@@ -202,17 +201,10 @@ class PersonRepository extends EntityRepository
         (SELECT ancientete, count(*) as 'all' FROM person where logement_id = $logement and status = 'résidant' group by ancientete order By ancientete ASC) A
         left join (SELECT  ancientete as ancientete2, count(*) as 'women' FROM person where gender = 'FILLE' and status = 'résidant' and logement_id = $logement group by ancientete) C on C.ancientete2 = A.ancientete
         left join (SELECT  ancientete as ancientete4, count(*) as 'womenforeign' FROM person where gender = 'FILLE' and status = 'résidant' and person.type = 'etranger' and logement_id = $logement group by ancientete) E on E.ancientete4 = A.ancientete
-        left join (SELECT  ancientete as ancientete5, count(*) as 'allforeign' FROM person where person.type = 'etranger' and and status = 'résidant' logement_id = $logement group by ancientete) F on F.ancientete5 = A.ancientete
+        left join (SELECT  ancientete as ancientete5, count(*) as 'allforeign' FROM person where person.type = 'etranger' and status = 'résidant' and logement_id = $logement group by ancientete) F on F.ancientete5 = A.ancientete
         ";
         $stmt = $this->getEntityManager()->getConnection()->prepare($sql1);
         $stmt->execute();
         return  $stmt->fetchAll();
     }
 }
-
-
-// select * from
-// (SELECT city, count(id) as 'all' FROM person where city is not NULL group by city) A
-// left join (SELECT  city as city1, count(id) as 'allnew' FROM person where type = 'nouveau' group by city) B on B.city1 = A.city
-// left join (SELECT  city as city2, count(id) as 'women' FROM person where gender = 'FILLE' group by city) C on C.city2 = A.city
-// left join (SELECT  city as city3, count(id) as 'womennew' FROM person where gender = 'FILLE' and type = 'nouveau' group by city) D on D.city3 = A.city

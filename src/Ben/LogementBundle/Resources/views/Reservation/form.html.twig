@@ -1,4 +1,5 @@
     
+    {{ form_row(form.reference, { 'label': 'N° de quitance'}) }}
     <div class="form-group ">
         <label class="col-md-4 control-label" for="Person">Etudiant</label>
         <div class="col-md-4">
@@ -8,7 +9,7 @@
     {{ form_row(form.date_from, { 'label': 'Date début'}) }}
     {{ form_row(form.date_to, { 'label': 'Date fin'}) }}
     {{ form_row(form.price, { 'label': 'Montant'}) }}
-    {{ form_row(form.reference, { 'label': 'N° de quitance'}) }}
+    {{ form_row(form.status, { 'label': 'Status'}) }}
     {{ form_row(form.person) }}
     {{ form_row(form.room) }}
 
@@ -28,7 +29,7 @@
  {{ form_rest(form) }}
 
 <!-- Modal -->
-<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+<div class="modal" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -36,20 +37,28 @@
         <h4 class="modal-title" id="infoModalLabel">Liste des chambres libre</h4>
       </div>
       <div class="modal-body">
-      <table class="table table-striped table-hover table-bordered">
-        <thead>
-            <tr>
-                <th>Chambre</th>
-                <th>Etage</th>
-                <th>Pavillon</th>
-                <th>Type</th>
-                <th>Capacité</th>
-                <th>Libre</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="dataContainer">{% render "BenLogementBundle:Room:freeRooms" with { id: form.vars.value.person.id } %}</tbody>
-    </table>
+
+
+        <div class="filterable">
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr class="filters">
+                        <th><input type="text" class="form-control" placeholder="Chambre" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Etage" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Pavillon" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Type" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Capacité" disabled></th>
+                        <th><input type="text" class="form-control" placeholder="Libre" disabled></th>
+                        <th><button class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter</button></th>
+                    </tr>
+                </thead>
+                <tbody id="dataContainer">{% render "BenLogementBundle:Room:freeRooms" with { id: form.vars.value.person.id } %}</tbody>
+            </table>
+        </div>
+
+      <div class="col-md-12 text-center">
+      <ul class="pagination" id="myPager"></ul>
+      </div>
       
       </div>
     </div>

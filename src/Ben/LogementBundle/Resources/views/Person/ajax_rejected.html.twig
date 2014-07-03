@@ -5,6 +5,9 @@
         <td>{{ entity.fullName }}</td>
         <td>{{ entity.cin }}</td>
         <td>{{ entity.cne }}</td>
+        {% if entity.status == 'archive' %}
+        <td>{% if entity.created %}{{ entity.created|date('d/m/Y') }}{% endif %}</td>
+        {% endif %}
         <td>{{ entity.remarque }}</td>
         <td class="hidden-print">
         <div class="text-center">

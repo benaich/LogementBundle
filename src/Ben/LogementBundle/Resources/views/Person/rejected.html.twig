@@ -7,8 +7,7 @@ Tableau de bord | {{ parent() }}
         <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
 {% endblock %}
 {% block body %}
-
- <h3><span class="glyphicon glyphicon-user"></span> Liste des étudiants rejetés</h3>
+<h3><span class="glyphicon glyphicon-user"></span> {% if status == 'non valide' %}Liste des étudiants rejetés{% else  %}Archive des étudiants{% endif %}</h3>
     <form  id="jsForm" role="form" method="post" action="">
           <input id="pagenumber" type="hidden" name="page" value="1"> 
           <input id="sortBy" type="hidden" name="searchEntity[sortBy]" value="all"> 
@@ -56,7 +55,9 @@ Tableau de bord | {{ parent() }}
                     <li><a href="{{ path('etudiant_new') }}"><span class="glyphicon glyphicon-plus"></span> Ajouter ({{person.new}})</a></li>
                     <li><a href="{{ path('etudiant_new', {type: person.foreign}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter ({{person.foreign}})</a></li>
                     <li><a href="{{ path('etudiant_new', {type: person.special}) }}"><span class="glyphicon glyphicon-plus"></span> Ajouter ({{person.special}})</a></li>
+                    {% if status == 'non valide' %}
                     <li><a href="#" class="js-enable" data-action="valide"><span class="glyphicon glyphicon-ok-circle"></span> Activer</a></li>
+                    {% endif %}
                     <li><a href="#"  data-toggle="modal" data-target="#searchModal"><span class="glyphicon glyphicon-search"></span> Recherche avancée</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ path('etudiant_to_excel', {status:status}) }}" id="btnApprouver"><span class="glyphicon glyphicon-export"></span> Exporter</a></li>
@@ -76,7 +77,12 @@ Tableau de bord | {{ parent() }}
                         <th class="sortable"><a href="#" class="js-sort" data-order="family_name">Nom<span class="caret"></span></a></th>
                         <th class="sortable"><a href="#" class="js-sort" data-order="cin">CIN<span class="caret"></span></a></th>
                         <th class="sortable"><a href="#" class="js-sort" data-order="cne">CNE<span class="caret"></span></a></th>
+                        {% if status == 'archive' %}
+                        <th class="sortable"><a href="#" class="js-sort" data-order="cne">Date d'inscription<span class="caret"></span></a></th>
+                        <th>Status</th>
+                        {% else %}
                         <th>Remarque</th>
+                        {% endif %}
                         <th class="hidden-print">action</th>
                     </tr>
                 </thead>

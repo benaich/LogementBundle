@@ -36,6 +36,7 @@
                 <li><a href="{{ path('etudiant', {status : 'résidant'}) }}" {% if status is defined and status == 'résidant' %}class="active"{% endif %}>Liste résident</a></li>
                 <li><a href="{{ path('etudiant', {status : 'suspendu'}) }}" {% if status is defined and status == 'suspendu' %}class="active"{% endif %}>Liste des reservation</a></li>
                 <li><a href="{{ path('etudiant', {status : 'non valide'}) }}" {% if status is defined and status == 'non valide' %}class="active"{% endif %}>Etudiants rejetés</a></li>
+                <li><a href="{{ path('etudiant', {status : 'archive'}) }}" {% if status is defined and status == 'archive' %}class="active"{% endif %}>Archive</a></li>
             </ul>
         </li>
         <li class="{% if route not in ReservationMenu %}not-{% endif %}current"><a href="{{ path('reservation') }}"><span class="glyphicon glyphicon-file block"></span> <span class="menu-title">Résérvation</span></a></li>
