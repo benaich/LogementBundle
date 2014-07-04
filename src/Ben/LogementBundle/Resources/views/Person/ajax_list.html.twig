@@ -13,9 +13,18 @@
                 <a class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="modifier" href="{{ path('etudiant_edit', { 'id': entity.id, 'type': entity.type }) }}"><span class="glyphicon glyphicon-edit"></span></a>
                 {% if entity.hasReservation %}
                 <a class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="information du paiement" href="{{ path('reservation_edit', { 'id': entity.reservation.id }) }}"><span class="glyphicon glyphicon-file"></span></a>
-                {% else %}
+                {% elseif entity.status == person.suspended %}
                 <a class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="paiement" href="{{ path('reservation_new', { 'id': entity.id }) }}"><span class="glyphicon glyphicon-file"></span></a>
                 {% endif %}
+            </div>
+        </td>
+    </tr>
+{% else %}
+    <tr class="mypagination">            
+        <td colspan="10">
+            <div id="msgbox" class="alert alert-danger fade in" role="alert"> 
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                <strong>info !</strong> aucun résultat ne correspond à vos critères
             </div>
         </td>
     </tr>
@@ -23,8 +32,7 @@
                 
 {% include "BenLogementBundle:Default:pagination.html.twig" %}
 
-<script>
-    
+<script>   
 (function($) {
 
     /* tooltip */

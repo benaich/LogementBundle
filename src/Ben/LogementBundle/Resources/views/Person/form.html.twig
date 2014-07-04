@@ -8,9 +8,9 @@
           {{ form_row(form.gender, { 'label': 'Sexe'}) }}
           {{ form_row(form.bird_day, { 'label': 'Date de naissance'}) }}
 
-<legend>Informations de contact</legend>
+            {% if personType != person.foreign %}
             {{ form_row(form.city, { 'label': 'Province'}) }}
-            {% if personType == person.foreign %}
+            {% else %}
               {{ form_row(form.contry, { 'label': 'Pays'})  }}
               {{ form_row(form.passport)  }}
               {{ form_row(form.carte_sejour)  }}

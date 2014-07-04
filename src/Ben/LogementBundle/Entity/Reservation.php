@@ -78,6 +78,8 @@ class Reservation
     /**
     * @ORM\ManyToOne(targetEntity="Ben\LogementBundle\Entity\Room", inversedBy="reservations")
     * @ORM\JoinColumn(name="room_id",referencedColumnName="id", nullable=false)
+    * @Assert\valid
+    * @Assert\NotBlank
     */
     private $room;
 

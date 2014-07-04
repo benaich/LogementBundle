@@ -41,19 +41,6 @@ class RoomRepository extends EntityRepository
         
     }
 
-    public function getFreeRooms($logement, $gender) {     
-       $qb = $this->createQueryBuilder('r')
-                ->leftJoin('r.block', 'b')
-                ->leftJoin('b.logement', 'l')
-                ->andWhere('b.type like :gender')
-                ->setParameter('gender', $gender)
-                ->andWhere('l.id = :logement')
-                ->setParameter('logement', $logement)
-                ->andWhere('r.free > 0')
-                ;
-        return $qb->getQuery()->getResult();
-    }
-
     public function search($perPage, $page, $logement, $searchEntity) {     
        $qb = $this->createQueryBuilder('r')
                 ->leftJoin('r.block', 'b')
@@ -63,8 +50,12 @@ class RoomRepository extends EntityRepository
                 ->setParameter('logement', $logement);
 
         if($searchEntity){
-            if($searchEntity['block'] !== '')
-                $qb->andWhere('b.id = :block')->setParameter('block', $searchEntity['block']);
+            if($searchEntity['block'] !== ''){
+                if(0+$searchEntity['block'] === 0)
+                    $qb->andWhere('b.name = :block')->setParameter('block', $searchEntity['block']);
+                else
+                    $qb->andWhere('b.id = :block')->setParameter('block', $searchEntity['block']);
+            }
             if($searchEntity['gender'] !== '')
                 $qb->andWhere('b.type = :gender')->setParameter('gender', $searchEntity['gender']);
             if($searchEntity['name'] !== '')

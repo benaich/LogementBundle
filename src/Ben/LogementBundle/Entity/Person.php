@@ -12,6 +12,9 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Table(name="person")
  * @ORM\Entity(repositoryClass="Ben\LogementBundle\Entity\PersonRepository")
+ * @UniqueEntity(fields="n_dossier", message="Un dossier existe déja avec ce nom")
+ * @UniqueEntity(fields="cne", message="Un étudiant existe déja avec ce cne")
+ * @UniqueEntity(fields="cin", message="Un étudiant existe déja avec ce cin")
  */
 class Person
 {
@@ -64,13 +67,6 @@ class Person
      * @ORM\Column(name="first_name_ar", type="string", length=255, nullable=true)
      */
     private $first_name_ar;
-    
-    /**
-     * @var string $email
-     *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
-     */
-    private $email;
 
     /**
      * @var string $cin
@@ -102,13 +98,6 @@ class Person
     private $gender;
 
     /**
-     * @var string $address
-     *
-     * @ORM\Column(name="address", type="string", length=255, nullable=true)
-     */
-    private $address;
-
-    /**
      * @var string $city
      *
      * @ORM\Column(name="city", type="string", length=255, nullable=true)
@@ -121,13 +110,6 @@ class Person
      * @ORM\Column(name="contry", type="string", length=255, nullable=true)
      */
     private $contry;
-    
-    /**
-     * @var string $tel
-     *
-     * @ORM\Column(name="tel", type="string", length=255, nullable=true)
-     */
-    private $tel;
 
     /**
      * @var float
@@ -226,13 +208,6 @@ class Person
      * @ORM\Column(name="obtention_bac", type="string", length=255, nullable=true)
      */
     private $obtention_bac;
-
-    /**
-     * @var integer
-     *
-     * @ORM\Column(name="bac_year", type="integer")
-     */
-    private $bac_year;
 
     /**
      * @var float
@@ -395,6 +370,8 @@ class Person
     public function setType($type)
     {
         $this->type = $type;
+        if($this->type == Person::$foreignType)
+            $this->city = $this->contry;
     
         return $this;
     }
@@ -640,29 +617,6 @@ class Person
     }
 
     /**
-     * Set bac_year
-     *
-     * @param string $bac_year
-     * @return Person
-     */
-    public function setBacYear($bac_year)
-    {
-        $this->bac_year = $bac_year;
-    
-        return $this;
-    }
-
-    /**
-     * Get bac_year
-     *
-     * @return string 
-     */
-    public function getBacYear()
-    {
-        return $this->bac_year;
-    }
-
-    /**
      * Set family_name
      *
      * @param string $familyName
@@ -766,29 +720,6 @@ class Person
     }
 
     /**
-     * Set email
-     *
-     * @param string $email
-     * @return Person
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string 
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
      * Set cin
      *
      * @param string $cin
@@ -858,29 +789,6 @@ class Person
     }
 
     /**
-     * Set address
-     *
-     * @param string $address
-     * @return Person
-     */
-    public function setAddress($address)
-    {
-        $this->address = $address;
-    
-        return $this;
-    }
-
-    /**
-     * Get address
-     *
-     * @return string 
-     */
-    public function getAddress()
-    {
-        return $this->address;
-    }
-
-    /**
      * Set city
      *
      * @param string $city
@@ -889,7 +797,7 @@ class Person
     public function setCity($city)
     {
         $this->city = $city;
-    
+
         return $this;
     }
 
@@ -912,7 +820,7 @@ class Person
     public function setContry($contry)
     {
         $this->contry = $contry;
-    
+
         return $this;
     }
 
@@ -924,29 +832,6 @@ class Person
     public function getContry()
     {
         return $this->contry;
-    }
-
-    /**
-     * Set tel
-     *
-     * @param string $tel
-     * @return Person
-     */
-    public function setTel($tel)
-    {
-        $this->tel = $tel;
-    
-        return $this;
-    }
-
-    /**
-     * Get tel
-     *
-     * @return string 
-     */
-    public function getTel()
-    {
-        return $this->tel;
     }
 
     /**
@@ -1094,7 +979,7 @@ class Person
     {
         $revenu = $this->getParentsRevenu();
         $brothers = $this->getBroSisNumber();
-        $level = $this->getNiveauEtude();
+        $bacYear = $this->getObtentionBac();
         $exellence = $this->getExellence();
 
         if ($revenu == 0 ) $revenu=14;
@@ -1115,17 +1000,27 @@ class Person
         if ($brothers > 4 ) $brothers=10;
         else $brothers *=2;
 
-        if ($level == 'S1' or $level == 'S2') $level=3.5;
-        elseif ($level == 'S3' or $level == 'S4')$level=3;
-        elseif ($level == 'S5' or $level == 'S6')$level=2.5;
-        elseif ($level == 'S7' or $level == 'S8')$level=2;
-        elseif ($level == 'S9' or $level == 'S10')$level=1.5;
-        else $level=1;
+        $now = new \DateTime;
+        $currentYear = $now->format('Y');
+        $bacYear = $currentYear - $bacYear;
+        if($bacYear > 4) $bacYear = 1;
+        else $bacYear = 3.5 - (0.5*$bacYear);
 
-        if ($exellence > 19 ) $exellence=10;
-        else $exellence=$exellence%10 +1;
+        if ($exellence < 10.5 ) $exellence=1;
+        elseif ($exellence  < 11 )$exellence=2;
+        elseif ($exellence  < 11.5 )$exellence=3;
+        elseif ($exellence  < 12 )$exellence=4;
+        elseif ($exellence  < 12.5 )$exellence=5;
+        elseif ($exellence  < 13 )$exellence=6;
+        elseif ($exellence  < 13.5 )$exellence=7;
+        elseif ($exellence  < 14 )$exellence=8;
+        elseif ($exellence  < 14.5 )$exellence=9;
+        elseif ($exellence  < 15 )$exellence=10;
+        elseif ($exellence  < 15.5 )$exellence=11;
+        elseif ($exellence  < 16 )$exellence=12;
+        else $exellence=13;
 
-        $note = $revenu * 20 + $brothers * 5 + $level * 0.5 + $exellence * 2;
+        $note = $revenu * 20 + $brothers * 5 + $bacYear * 3 + $exellence * 2;
         $this->setNote($note);
     }
     public function setData($data)

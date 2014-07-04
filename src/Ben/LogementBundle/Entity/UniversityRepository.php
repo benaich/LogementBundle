@@ -24,7 +24,7 @@ class UniversityRepository extends EntityRepository
 		 return $qb->getArrayResult();
 	}
 
-	public function findUniversity($logement) {       
+	public function findUniversity($logement, $gender = null) {       
        $qb = $this->createQueryBuilder('u')
                 ->select('distinct u.id, u.name')
                 ->leftJoin('u.persons', 'p')
@@ -35,6 +35,8 @@ class UniversityRepository extends EntityRepository
                 ->setParameter('status', Person::$valideStatus)
                 ->andWhere('p.type != :type')
                 ->setParameter('type', Person::$oldType);
+        if(isset($gender))
+            $qb->andWhere('p.gender = :gender')->setParameter('gender', $gender);
 
        return $qb->getQuery()->getArrayResult();
     }

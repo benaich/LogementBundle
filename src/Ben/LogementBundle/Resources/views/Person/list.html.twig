@@ -4,23 +4,25 @@ Elaboration des listes | {{ parent() }}
 {% endblock %}
 {% block body %}
 
-<form  id="form1" role="form" method="post" action=""> 
- <h3><span class="glyphicon glyphicon-user"></span> Elaboration des listes
+
+ <h3><span class="glyphicon glyphicon-user"></span> Liste Eligibles
  <div class="pull-right hidden-print">
-  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#infoModal"><span class="glyphicon glyphicon-cog"></span> université</a>
+  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#infoModal2"><span class="glyphicon glyphicon-cog"></span> Par ordre de mérite</a>
+    <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#infoModal"><span class="glyphicon glyphicon-cog"></span> université</a>
    {% if entities %}<a href="#" class="btn btn-primary" id="js-submit"><span class="glyphicon glyphicon-ok-circle"></span> Confirmer</a>{% endif %}
    <a id="btnPrint" class="btn btn-primary" href="#"><span class="glyphicon glyphicon-print"></span> Imprimer</a>
  </div>
 </h3>
 
-      <!-- Modal -->
+<!-- Modal -->
+<form  id="form1" role="form" method="post" action="{{ path('etudiant_generate_list_university') }}"> 
 <div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
           <div class="col-md-3 pull-right">
-          <select  name="gender" class="form-control">
+          <select id="geder-select" name="gender" class="form-control">
             <option value="Fille" >Fille</option>
             <option value="Garçon" >Garçon</option>
           </select>
@@ -29,16 +31,40 @@ Elaboration des listes | {{ parent() }}
 
       </div>
       <div class="modal-body">
-        {% for entity in universities %}
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok-circle"></span> Lancer</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+<!-- Modal -->
+<form  id="form2" role="form" method="post" action="{{ path('etudiant_generate_list_quota') }}"> 
+<div class="modal fade" id="infoModal2" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <div class="col-md-3 pull-right">
+          <select name="gender" class="form-control">
+            <option value="Fille" >Fille</option>
+            <option value="Garçon" >Garçon</option>
+          </select>
+          </div>
+        <h4 class="modal-title" id="infoModalLabel2"><span class="glyphicon glyphicon-user"></span> Nombre de candidat éligible</h4>
+      </div>
+      <div class="modal-body">
         <div class="col-md-12">
           <div class="form-group">
-            <label class="col-md-10 control-label" for=""><small>{{entity.name}}</small></label>
+            <label class="col-md-10 control-label" for=""><small>Nombre de candidat éligible</small></label>
             <div class="col-md-2 form-group">
-              <input class="form-control" id="" type="number" name="quota[{{entity.id}}]">
+              <input class="form-control" id="" type="number" name="quota">
             </div>
           </div>
         </div> 
-        {% endfor %}
         <div class="clearfix"></div>
       </div>
       <div class="modal-footer">
@@ -47,8 +73,9 @@ Elaboration des listes | {{ parent() }}
     </div>
   </div>
 </div>
-  </form>
-  <form  id="form2" role="form" method="post" action="{{ path('etudiant_validate_list') }}">
+</form>
+
+  <form  id="form3" role="form" method="post" action="{{ path('etudiant_validate_list') }}">
     <table class="table table-striped table-hover table-bordered">
         <thead>
             <tr>
@@ -64,7 +91,9 @@ Elaboration des listes | {{ parent() }}
         <tbody id="dataContainer">
         {% set i = 0 %}
         {% for e in entities %}
+        {% if entities|length > 1 %}
         <tr class="info hidden-print"><td colspan="10">{{ e[0].etablissement }} <span class="badge pull-right">{{ e|length }}</span></td></tr>
+        {% endif %}
         {% for entity in e %}
         {% set i = i+1 %}
             <tr>
@@ -87,11 +116,31 @@ Elaboration des listes | {{ parent() }}
 {{ parent() }}
 <script> 
     (function($) {
+        var form1 = $('#form1'),
+            container = form1.find('.modal-content'),
+            dataContainer = form1.find('.modal-body');
 
         $('#js-submit').on('click', function(){
-            $('#form2').submit();
+            $('#form3').submit();
             return false;
         });
+        $('#geder-select').on('change', function(){
+            container.addClass('working');
+            $.ajax({ 
+              type: "POST", 
+              data: form1.serialize(),
+              url: "{{ path('etudiant_university_gender') }}", 
+              success: function(data){ 
+                container.removeClass('working');
+                dataContainer.empty().hide().html(data).fadeIn();
+              },
+              error:function(){
+                  container.removeClass('working');
+              }
+            });
+        });
+        $('#geder-select').trigger('change');
+
     })(jQuery);
 </script>
 {% endblock %}

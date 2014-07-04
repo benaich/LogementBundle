@@ -32,6 +32,7 @@ room_create_multiple:
     pattern:  /room_create_multiple
     defaults: { _controller: "BenLogementBundle:Room:createMultiple" }
     requirements: { _method: post }
+
 room_edit:
     pattern:  /{id}/edit
     defaults: { _controller: "BenLogementBundle:Room:edit" }

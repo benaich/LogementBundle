@@ -229,27 +229,79 @@ class PersonController extends Controller
     public function generateListAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $entities = array();
+        return $this->render('BenLogementBundle:Person:list.html.twig', array(
+                'entities' => $entities,
+                ));
+
+    }
+
+    /**
+     * generer une liste elegible by quota (note)
+     * @Secure(roles="ROLE_USER")
+     */
+    public function generateListByUniversityAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
         if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
         $entities = array();
-        $universities = $em->getRepository('BenLogementBundle:University')->findUniversity($logement->getId());
-        if ($request->getMethod() === 'POST') {
-            $gender = $request->get('gender');
-            $quota = $request->get('quota');
-            foreach ($quota as $university => $limit) {
-                $limit = ($limit>0) ? $limit : 0;
-                if($limit){
-                    $specialEntities = $em->getRepository('BenLogementBundle:Person')
-                        ->getList($logement->getId(), $university, $gender, Person::$specialType, Person::$valideStatus, $limit);
-                    $newEntities = $em->getRepository('BenLogementBundle:Person')
-                        ->getList($logement->getId(), $university, $gender, Person::$newType, Person::$valideStatus, $limit-count($specialEntities));
-                    $entities[] = array_merge($specialEntities, $newEntities);
-                }
+        $gender = $request->get('gender');
+        $quota = $request->get('quota');
+        foreach ($quota as $university => $limit) {
+            $limit = ($limit>0) ? $limit : 0;
+            if($limit){
+                $specialEntities = $em->getRepository('BenLogementBundle:Person')
+                    ->getList($logement->getId(), $university, $gender, Person::$specialType, Person::$valideStatus, $limit);
+                $newEntities = $em->getRepository('BenLogementBundle:Person')
+                    ->getList($logement->getId(), $university, $gender, Person::$newType, Person::$valideStatus, $limit-count($specialEntities));
+                $entities[] = array_merge($specialEntities, $newEntities);
             }
         }
 
         return $this->render('BenLogementBundle:Person:list.html.twig', array(
                 'entities' => $entities,
+                ));
+
+    }
+
+    /**
+     * generer une liste elegible by quota (note)
+     * @Secure(roles="ROLE_USER")
+     */
+    public function generateListByQuotaAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
+        $gender = $request->get('gender');
+        $limit = $request->get('quota');
+
+        $specialEntities = $em->getRepository('BenLogementBundle:Person')
+            ->getList($logement->getId(), null, $gender, Person::$specialType, Person::$valideStatus, $limit);
+        $newEntities = $em->getRepository('BenLogementBundle:Person')
+            ->getList($logement->getId(), null, $gender, Person::$newType, Person::$valideStatus, $limit-count($specialEntities));
+        $entities[] = array_merge($specialEntities, $newEntities);
+
+        return $this->render('BenLogementBundle:Person:list.html.twig', array(
+                'entities' => $entities,
+                ));
+
+    }
+
+
+    /**
+     * get universities by gender
+     * @Secure(roles="ROLE_USER")
+     */
+    public function universityBygenderAction(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $gender = $request->get('gender');
+        $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement();
+        $universities = $em->getRepository('BenLogementBundle:University')->findUniversity($logement->getId(), $gender);
+
+        return $this->render('BenLogementBundle:University:list.html.twig', array(
                 'universities' => $universities,
                 ));
 
@@ -465,7 +517,7 @@ class PersonController extends Controller
                 ->setCellValue("O$i", $entity->getDiplome())
                 ->setCellValue("P$i", $entity->getNiveauEtude())
                 ->setCellValue("Q$i", $entity->getParentsRevenu())
-                ->setCellValue("R$i", $entity->getBacYear())
+                ->setCellValue("R$i", $entity->getObtentionBac())
                 ->setCellValue("S$i", $entity->getExellence())
                 ->setCellValue("T$i", $entity->getBroSisNumber())
                 ->setCellValue("U$i", $entity->getNote())

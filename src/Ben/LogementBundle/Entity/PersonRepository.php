@@ -20,18 +20,17 @@ class PersonRepository extends EntityRepository
                 ->andWhere('l.id = :logement')
                 ->setParameter('logement', $logement)
                 ->leftJoin('p.etablissement', 'e')
-                ->andWhere("concat(p.family_name, p.first_name) like :keyword or p.email like :keyword or p.cin like :keyword or p.cne like :keyword")
+                ->andWhere("concat(p.family_name, p.first_name) like :keyword or p.cin like :keyword or p.cne like :keyword")
                 ->setParameter('keyword', '%'.$keyword.'%');
                  
         if($type !== 'all')
             $qb->andWhere('p.type = :type')->setParameter('type', $type);
-        if($status !== 'all')
-            $qb->andWhere('p.status = :status')->setParameter('status', $status);
 
         if ($orderList) {
-            $qb->andWhere('p.id in (:orderList)')->setParameter('orderList', $orderList)
-                ->andWhere('p.status = :status')->setParameter('status', Person::$eligibleStatus);
+            $qb->andWhere('p.id in (:orderList)')->setParameter('orderList', $orderList);
         }
+        elseif($status !== 'all')
+            $qb->andWhere('p.status = :status')->setParameter('status', $status);
 
         if($searchEntity){
             extract($searchEntity); 
@@ -118,7 +117,7 @@ class PersonRepository extends EntityRepository
                 ->setParameter('logement', $logement);
         if($status !== 'all')
             if($status === 'request') 
-                $qb->andWhere("p.ancientete = 1 and p.status != 'archive' and p.status != 'suspendu' or p.status = 'résidant'");
+                $qb->andWhere("p.ancientete = 1 and p.status not in ('archive', 'suspendu', 'résidant') ");
                 // $qb->andWhere('SUBSTRING(CURRENT_DATE(),1,10) = SUBSTRING(p.created,1,10) or p.status like :status')->setParameter('status', Person::$residentStatus);
             else $qb->andWhere('p.status like :status')->setParameter('status', $status);
 

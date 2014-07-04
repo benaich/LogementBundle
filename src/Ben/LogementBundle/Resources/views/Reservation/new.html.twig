@@ -17,8 +17,50 @@ Tableau de bord | {{ parent() }}
             <button type="submit" class="btn btn-primary"> Valider</button>
         </div>
     </div>
-        
 </form>
+
+<!-- Modal -->
+<div class="modal" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="infoModalLabel">Liste des chambres libre</h4>
+      </div>
+      <div class="modal-body">
+      <form id="ajaxForm" action="" method="post">
+      <input type="hidden" name="searchEntity[status]" value="free">
+      <input type="hidden" name="searchEntity[gender]" value="{{ form.vars.value.person.gender }}">
+      <input type="hidden" name="perpage" value="10">
+      <input id="pagenumber" type="hidden" name="page" value="1"> 
+      <input type="hidden" name="source" value="reservation"> 
+        <div class="filterable">
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <tr class="filters">
+                        <th><input type="text" name="searchEntity[name]" class="form-control input-sm hide" placeholder="Chambre"> <span>Chambre</span></th>
+                        <th><input type="text" name="searchEntity[floor]" class="form-control input-sm hide" placeholder="Etage"><span>Etage</span></th>
+                        <th><input type="text" name="searchEntity[block]" class="form-control input-sm hide" placeholder="Pavillon"><span>Pavillon</span></th>
+                        <th>Type</th>
+                        <th><input type="text" name="searchEntity[capacity]" class="form-control input-sm hide" placeholder="Capacité"><span>Capacité</span></th>
+                        <th>Libre</th>
+                        <th>
+
+                          <a href="#" class="btn btn-default btn-xs btn-filter"><span class="glyphicon glyphicon-filter"></span> Filter</a>
+                          <button class="hide" type="submit"></button>
+
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="dataContainer"></tbody>
+            </table>
+        </div>
+        </form>
+      
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock body %}
 {% block javascripts %}
@@ -26,13 +68,20 @@ Tableau de bord | {{ parent() }}
 <script> 
 (function($) {
 
-    var roomInput = $('#reservationtype_room'),
+    var form = $('#ajaxForm'),
+        dataContainer = form.find('#dataContainer'),
+        panel = form.find('.filterable'),
+        container = $('.modal-body')
+        filters = panel.find('.filters input'),
+        labels = panel.find('.filters span'),
+        roomInput = $('#reservationtype_room'),
+        pageInput = form.find('#pagenumber'),
         jsroom = $('#js-room'),
         jsblock = $('#js-block'),
         closeBtn = $('#infoModal').find('.close');
 
     roomInput.closest('.form-group').hide().prev().hide();
-    $('#dataContainer').on('click', '.js-check', function(){
+    dataContainer.on('click', '.js-check', function(){
       var id = $(this).data('id'),
           data = $(this).closest('tr').find('td');
       roomInput.val(id);
@@ -40,153 +89,46 @@ Tableau de bord | {{ parent() }}
       jsblock.val(data[2].innerHTML);
       closeBtn.trigger('click');
     });
-/*
-Please consider that the JS part isn't production ready at all, I just code it to show the concept of merging filters and titles together !
-*/
-    $('.filterable .btn-filter').click(function(){
-        var $panel = $(this).parents('.filterable'),
-        $filters = $panel.find('.filters input'),
-        $tbody = $panel.find('.table tbody');
-        if ($filters.prop('disabled') == true) {
-            $filters.prop('disabled', false);
-            $filters.first().focus();
+
+    panel.find('.btn-filter').click(function(){
+        if (filters.hasClass('hide')) {
+            filters.removeClass('hide');
+            labels.addClass('hide')
+            filters.first().focus();
         } else {
-            $filters.val('').prop('disabled', true);
-            $tbody.find('.no-result').remove();
-            $tbody.find('tr').show();
+            ajaxPost();
+            labels.removeClass('hide');
+            filters.addClass('hide');
         }
     });
 
-    $('.filterable .filters input').keyup(function(e){
-        /* Ignore tab key */
-        var code = e.keyCode || e.which;
-        if (code == '9') return;
-        /* Useful DOM data and selectors */
-        var $input = $(this),
-        inputContent = $input.val().toLowerCase(),
-        $panel = $input.parents('.filterable'),
-        column = $panel.find('.filters th').index($input.parents('th')),
-        $table = $panel.find('.table'),
-        $rows = $table.find('tbody tr');
-        /* Dirtiest filter function ever ;) */
-        var $filteredRows = $rows.filter(function(){
-            var value = $(this).find('td').eq(column).text().toLowerCase();
-            return value.indexOf(inputContent) === -1;
+
+    function ajaxPost(action) {
+        container.addClass('working');
+        $.ajax({ 
+          type: "POST", 
+          data: form.serialize(),
+          url: "{{ path('room_ajax') }}", 
+          success: function(data){ 
+            container.removeClass('working');
+            dataContainer.empty().hide().html(data).fadeIn();
+            pageInput.val('1');
+          },
+          error:function(){
+              alert('service denied');
+              container.removeClass('working');
+          }
         });
-        /* Clean previous no-result if exist */
-        $table.find('tbody .no-result').remove();
-        /* Show all rows, hide filtered ones (never do that outside of a demo ! xD) */
-        $rows.show();
-        $filteredRows.hide();
-        /* Prepend no-result row if all rows are filtered */
-        if ($filteredRows.length === $rows.length) {
-            $table.find('tbody').prepend($('<tr class="no-result text-center"><td colspan="'+ $table.find('.filters th').length +'">No result found</td></tr>'));
-        }
-    });
-
-$.fn.pageMe = function(opts){
-    var $this = this,
-        defaults = {
-            perPage: 100,
-            showPrevNext: false,
-            hidePageNumbers: false
-        },
-        settings = $.extend(defaults, opts);
-    
-    var listElement = $this;
-    var perPage = settings.perPage; 
-    var children = listElement.children();
-    var pager = $('.pager');
-    
-    if (typeof settings.childSelector!="undefined") {
-        children = listElement.find(settings.childSelector);
-    }
-    
-    if (typeof settings.pagerSelector!="undefined") {
-        pager = $(settings.pagerSelector);
-    }
-    
-    var numItems = children.size();
-    var numPages = Math.ceil(numItems/perPage);
-
-    pager.data("curr",0);
-    
-    if (settings.showPrevNext){
-        $('<li><a href="#" class="prev_link">«</a></li>').appendTo(pager);
-    }
-    
-    var curr = 0;
-    while(numPages > curr && (settings.hidePageNumbers==false)){
-        $('<li><a href="#" class="page_link">'+(curr+1)+'</a></li>').appendTo(pager);
-        curr++;
-    }
-    
-    if (settings.showPrevNext){
-        $('<li><a href="#" class="next_link">»</a></li>').appendTo(pager);
-    }
-    
-    pager.find('.page_link:first').addClass('active');
-    pager.find('.prev_link').hide();
-    if (numPages<=1) {
-        pager.find('.next_link').hide();
-    }
-    pager.children().eq(1).addClass("active");
-    
-    children.hide();
-    children.slice(0, perPage).show();
-    
-    pager.find('li .page_link').click(function(){
-        var clickedPage = $(this).html().valueOf()-1;
-        goTo(clickedPage,perPage);
         return false;
-    });
-    pager.find('li .prev_link').click(function(){
-        previous();
-        return false;
-    });
-    pager.find('li .next_link').click(function(){
-        next();
-        return false;
-    });
-    
-    function previous(){
-        var goToPage = parseInt(pager.data("curr")) - 1;
-        goTo(goToPage);
-    }
-     
-    function next(){
-        goToPage = parseInt(pager.data("curr")) + 1;
-        goTo(goToPage);
-    }
-    
-    function goTo(page){
-        var startAt = page * perPage,
-            endOn = startAt + perPage;
-        
-        children.css('display','none').slice(startAt, endOn).show();
-        
-        if (page>=1) {
-            pager.find('.prev_link').show();
-        }
-        else {
-            pager.find('.prev_link').hide();
-        }
-        
-        if (page<(numPages-1)) {
-            pager.find('.next_link').show();
-        }
-        else {
-            pager.find('.next_link').hide();
-        }
-        
-        pager.data("curr",page);
-        pager.children().removeClass("active");
-        pager.children().eq(page+1).addClass("active");
-    
-    }
-};
+      }
+    /* pagination */    
+      form.on('click', '.js-page', function(){
+          pageInput.val($(this).data('page'));
+          ajaxPost();
+      });
 
-$('#dataContainer').pageMe({pagerSelector:'#myPager',showPrevNext:true,hidePageNumbers:false,perPage:100});
+    form.on('submit', ajaxPost);
+    ajaxPost();
 
 })(jQuery);
 

@@ -34,20 +34,9 @@ Tableau de bord | {{ parent() }}
                 </select>
               </div><!-- /.col-md-3 -->
 
-              <div class="col-lg-2">
-              <div class="col-md-9">
-              <select id="js-perpage" name="perpage" class="form-control">
-                <option value="10" {% if app_config.rows_per_page == 10 %}selected{% endif %}>10</option>
-                <option value="20" {% if app_config.rows_per_page == 20 %}selected{% endif %}>20</option>
-                <option value="50" {% if app_config.rows_per_page == 50 %}selected{% endif %}>50</option>
-                <option value="100" {% if app_config.rows_per_page == 100 %}selected{% endif %}>100</option>
-              </select>
-              </div>
-              </div>
-
-              <div class="col-md-2">
-                <div class="btn-group pull-right">              
-                  <button class="btn btn-primary "><span class="glyphicon glyphicon-cog"></span> Action</button>
+              <div class="col-md-4">
+                <div class="btn-group pull-right">                            
+                  <a href="#" data-toggle="modal" data-target="#searchModal" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Recherche avancée</a>
                   <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
                   </button>
@@ -58,7 +47,6 @@ Tableau de bord | {{ parent() }}
                     {% if status == 'non valide' %}
                     <li><a href="#" class="js-enable" data-action="valide"><span class="glyphicon glyphicon-ok-circle"></span> Activer</a></li>
                     {% endif %}
-                    <li><a href="#"  data-toggle="modal" data-target="#searchModal"><span class="glyphicon glyphicon-search"></span> Recherche avancée</a></li>
                     <li class="divider"></li>
                     <li><a href="{{ path('etudiant_to_excel', {status:status}) }}" id="btnApprouver"><span class="glyphicon glyphicon-export"></span> Exporter</a></li>
                     <li><a id="btnPrint"><span class="glyphicon glyphicon-print"></span> imprimer cette page</a></li>

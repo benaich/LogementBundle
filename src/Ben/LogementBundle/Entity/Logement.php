@@ -33,21 +33,21 @@ class Logement
     /**
      * @var string
      *
-     * @ORM\Column(name="city", type="string", length=255)
+     * @ORM\Column(name="city", type="string", length=255, nullable=true)
      */
     private $city;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="place_etranger", type="integer")
+     * @ORM\Column(name="place_etranger", type="integer", nullable=true)
      */
     private $place_etranger;
 
     /**
      * @var integer
      *
-     * @ORM\Column(name="place_ancien", type="integer")
+     * @ORM\Column(name="place_ancien", type="integer", nullable=true)
      */
     private $place_ancien;
 

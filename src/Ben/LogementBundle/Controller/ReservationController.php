@@ -61,14 +61,10 @@ class ReservationController extends Controller
      */
     public function newAction(Person $person)
     {
-        /*if ($person->hasReservation()) {
+        if ($person->hasReservation()) {
             $this->get('session')->getFlashBag()->add('success', "L'étudiant est déja résidant.");
-            $person->setStatus(Person::$residentStatus);
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($person);
-            $em->flush();
             return $this->redirect($this->generateUrl('etudiant_show', array('id' => $person->getId())));
-        }*/
+        }
         $entity = new Reservation();
         $entity->setPerson($person);
         $form   = $this->createForm(new ReservationType(), $entity);
@@ -105,7 +101,8 @@ class ReservationController extends Controller
             $this->get('session')->getFlashBag()->add('success', "Paiement effectué avec succée.");
             return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
         }
-
+        
+        $this->get('session')->getFlashBag()->add('danger', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Reservation:new.html.twig', array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -164,6 +161,7 @@ class ReservationController extends Controller
             return $this->redirect($this->generateUrl('reservation_show', array('id' => $entity->getId())));
         }
 
+        $this->get('session')->getFlashBag()->add('danger', "Il y a des erreurs dans le formulaire soumis !");
         return $this->render('BenLogementBundle:Reservation:edit.html.twig', array(
             'entity'      => $entity,
             'form'   => $editForm->createView(),

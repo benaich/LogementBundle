@@ -50,6 +50,7 @@ class RoomController extends Controller
         $em = $this->getDoctrine()->getManager();
         $perPage = $request->get('perpage');
         $page = $request->get('page');
+        $source = $request->get('source');
         $logement = $this->container->get('security.context')->getToken()->getUser()->getLogement()->getId();
         if (!$logement)  throw $this->createNotFoundException('Unable to find logement entity.');
         $searchEntity = $request->get('searchEntity');
@@ -59,22 +60,8 @@ class RoomController extends Controller
         $pagination = (new Paginator())->setItems(count($entities), $perPage)->setPage($page)->toArray();
         return $this->render($template, array(
                     'entities' => $entities,
-                    'pagination' => $pagination
-                    ));
-    }
-
-    /**
-     * List all available rooms
-     * @Secure(roles="ROLE_USER")
-     * 
-     */
-    public function freeRoomsAction(Request $request, Person $person)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $entities = $em->getRepository('BenLogementBundle:Room')->getFreeRooms($person->getLogement()->getId(), $person->getGender());
-        return $this->render('BenLogementBundle:Room:ajax_list.html.twig', array(
-                    'entities' => $entities,
-                    'nombreParPage' => 99999,
+                    'pagination' => $pagination,
+                    'source' => $source
                     ));
     }
 

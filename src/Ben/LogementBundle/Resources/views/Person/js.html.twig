@@ -50,7 +50,7 @@
             else ajaxPost();
           },
           error:function(){
-              alert('service non disponible pour le moment');
+              console.log('service non disponible pour le moment');
               container.removeClass('working');
           }
         });
@@ -95,8 +95,6 @@
           ajaxPost();
       });
 
-      /* number of rows per page */
-      perPageBtn.on('change', ajaxPost);
       typeInput.on('change', function () {
         var url = '{{ path('etudiant_to_pdf', { type: 1111, status: status }) }}';
             type = $(this).val();
@@ -158,9 +156,7 @@
           multiple: false,
           data: rejectRaisonData
         });
-        typeInput.removeClass('form-control').select2();
-        perPageBtn.removeClass('form-control').select2();
-        $('#universitySelect').removeClass('form-control').select2();
+        form.find('select').removeClass('form-control').select2();
 
         citiesData = ['Agadir Ida Outanane','Al Haouz','Al Houceima','Meknes','Aousserd','Assa Zag','Azilal','Beni Mellal','Benslimane','Berkane','Boujdour','Boulmane','Casablanca Anfa','Al fida_Mers Sultan','Ain Sebaa_Hay Mohammadi','Ain Chok','Hay Hassani','Ben Msik','Moulay R\'chid_Sidi Otmane','Sidi Bernoussi','Chefchaouen','Chichaoua','Chtouka Ait Baha','El Hajeb','El Jadida','El Kelaa Des Sraghna','Errachidia','Essaouira','Es-smara','Fahs Anjra','Fès','Figuig','Guelmim','Ifrane','Inzegane Ait Melloul','Jerada','Kenitra','Khemisset','Khenifra','Khouribga','Laayoune','Larache','Marrakech','Mediouna','Mohammadia','Nador','Nouaceur','Oued Ed-dahab','Ouarzazate','Oujda Angad','Rabat','Safi','Salé','Sefrou','Settat','Sidi Kacem','Skhirate Temara','Tanger Assilah','Tantan','Taounate','Taourirt','Taroudant','Tata','Taza','Tetouan','M\'diq Fnidaq','Tiznit','Zagoura','Moulay Yacoub','Berrechid','Driouch','Fkih ben salah','Guercif','Midelt','Ouezzane','Rehamna','Sidi bennour','Sidi ifni','Sidi slimane','Tarfaya','Tinghir','Youssoufia'];
 

@@ -57,6 +57,20 @@ etudiant_generate_list:
     pattern:  /generate/list
     defaults: { _controller: BenLogementBundle:Person:generateList }
 
+etudiant_generate_list_university:
+    pattern:  /generate/list/university
+    defaults: { _controller: BenLogementBundle:Person:generateListByUniversity }
+    requirements: { _method: post }
+
+etudiant_generate_list_quota:
+    pattern:  /generate/list/quota
+    defaults: { _controller: BenLogementBundle:Person:generateListByQuota }
+    requirements: { _method: post }
+
+etudiant_university_gender:
+    pattern:  /university/gender
+    defaults: { _controller: BenLogementBundle:Person:universityBygender }
+
 etudiant_validate_list:
     pattern:  /generate/list/valide
     defaults: { _controller: BenLogementBundle:Person:validateList }

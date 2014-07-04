@@ -13,11 +13,11 @@
               <input type="text" name="searchEntity[dossier]" class="form-control">
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="js-detach">
             <label for="" class="col-sm-5 control-label">Sexe</label>
             <div class="col-sm-6">
-              <select name="searchEntity[gender]" class="form-control">
-                <option value=""></option>
+              <select id="genderselect" name="searchEntity[gender]" class="form-control">
+                <option value="">Tous</option>
                 <option value="Garçon">Garçon</option>
                 <option value="Fille">Fille</option>
               </select>
@@ -62,6 +62,17 @@
             <label for="" class="col-sm-5 control-label">Ancienteté</label>
             <div class="col-sm-6">
               <input type="text" name="searchEntity[ancientete]" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-5 control-label">Lignes par page</label>
+            <div class="col-sm-6">
+                <select id="js-perpage" name="perpage" class="form-control">
+                  <option value="10" {% if app_config.rows_per_page == 10 %}selected{% endif %}>10</option>
+                  <option value="20" {% if app_config.rows_per_page == 20 %}selected{% endif %}>20</option>
+                  <option value="50" {% if app_config.rows_per_page == 50 %}selected{% endif %}>50</option>
+                  <option value="100" {% if app_config.rows_per_page == 100 %}selected{% endif %}>100</option>
+                </select>
             </div>
           </div>
       </div>

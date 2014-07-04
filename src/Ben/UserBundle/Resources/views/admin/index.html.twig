@@ -13,7 +13,7 @@ Tableau de bord | {{ parent() }}
                 <div class="input-group">
                   <input type="text" name="keyword" class="form-control" placeholder="Search">
                   <div class="input-group-btn">
-                  <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                  <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                   </div><!-- /btn-group -->
                 </div><!-- /input-group -->
               </div><!-- /.col-md-6 -->
@@ -31,7 +31,7 @@ Tableau de bord | {{ parent() }}
 
               <div class="col-lg-5">
                 <div class="btn-group pull-right">              
-                  <button class="btn btn-primary "><span class="glyphicon glyphicon-cog"></span> Action</button>
+                  <a href="{{ path('ben_new_user') }}" class="btn btn-primary "><span class="glyphicon glyphicon-plus"></span> Ajouter un utilisateurs</a>
                   <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
                   </button>
@@ -65,9 +65,8 @@ Tableau de bord | {{ parent() }}
                 </thead>
                 <tbody id="dataContainer"></tbody>
             </table>
-            <div>
-              <em><strong>Total:</strong> {{ entitiesLength }} utilisateur</em>
-              <a name="remove" href="{{ path('ben_new_user') }}" class="btn btn-embossed btn-primary btn-wide pull-right"><span class="glyphicon glyphicon-plus"></span> Ajouter un utilisateurs</a>
+            <div class="caption">
+              <strong>Total:</strong> <em>{{ entitiesLength }} utilisateur</em>
             </div>
         </form>
 </div>
