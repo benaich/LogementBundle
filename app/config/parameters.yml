@@ -31,4 +31,5 @@ parameters:
     person_valide:   valide
     person_eligible:   éligible
     person_resident:   résidant
+    person_suspended:   suspendu
 

@@ -22,7 +22,7 @@ framework:
 # Twig Configuration
 twig:
     globals:
-        person: {foreign: "%person_foreign%", new: "%person_new%", old: "%person_old%", special: "%person_special%", notvalide: "%person_not_valide%", valide: "%person_valide%", eligible: "%person_eligible%", resident: "%person_resident%"}
+        person: {foreign: "%person_foreign%", new: "%person_new%", old: "%person_old%", special: "%person_special%", notvalide: "%person_not_valide%", valide: "%person_valide%", eligible: "%person_eligible%", resident: "%person_resident%", suspended: "%person_suspended%"}
     form:
         resources:
             - 'BenLogementBundle:Form:fields.html.twig'

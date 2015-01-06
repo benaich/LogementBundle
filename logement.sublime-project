@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"path": "src\\Ben\\LogementBundle"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "src\\Ben\\UserBundle"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "src\\Ben\\LogementBundle\\Resources\\views"
+		}
+	]
+}

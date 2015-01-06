@@ -53,10 +53,10 @@ Tableau de bord | {{ parent() }}
 {{ parent() }}
 <script> 
     (function($) {
-        var $people = $('.room-widget'),
-            $peopleli = $people.children();
+        var roomWidget = $('.room-widget'),
+            rooms = roomWidget.children();
 
-        $peopleli.sort(function(a,b){
+        rooms.sort(function(a,b){
             var an = a.getAttribute('data-floor'),
                 bn = b.getAttribute('data-floor');
 
@@ -69,7 +69,7 @@ Tableau de bord | {{ parent() }}
             return 0;
         });
 
-        $peopleli.detach().appendTo($people);
+        rooms.detach().appendTo(roomWidget);
         for (var i = 0; i < 6; i++)
             $('.floor'+i).wrapAll('<div class="row"></div>').parent().prepend('<div class="col-md-12"><p class="bg-info col-md-12">Etage N°'+i+'</p></div>');
     })(jQuery);

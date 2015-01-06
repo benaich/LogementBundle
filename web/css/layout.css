@@ -132,7 +132,7 @@ a:hover, a:focus {
 	border-right-color: #333;
 }
 #adminmenu li.has-submenu.current:after {
-	border-right-color: white;
+	border-right-color: #f5f5f5;
 }
 #adminmenu li.not-current.has-submenu li, .shelf #adminmenu .submenu-head{
 	width: 160px;

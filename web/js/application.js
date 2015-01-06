@@ -59,4 +59,7 @@ function confirmation() {
         else $("input:checkbox").prop("checked",false);
     });
 
+    /* tooltip */
+    $('a[data-toggle="tooltip"]').tooltip();
+
 })(jQuery);
